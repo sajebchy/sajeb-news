@@ -74,7 +74,7 @@ self.addEventListener('push', event => {
     }
 
     let notificationData = {
-        title: 'সাজেব নিউজ',
+        title: 'Sajeb NEWS',
         body: 'নতুন নিউজ পাওয়া গেছে',
         icon: '/images/logo.png',
         badge: '/images/badge.png',

@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', $category->meta_title ?? $category->name . ' - সাজেব নিউজ')
+@section('title', $category->meta_title ?? $category->name . ' - Sajeb NEWS')
 @section('description', $category->meta_description ?? $category->description)
 
 @section('og_title', $category->meta_title ?? $category->name)

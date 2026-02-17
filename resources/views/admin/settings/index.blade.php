@@ -73,7 +73,7 @@
 
                 <div class="col-md-6">
                     <label for="site_name" class="form-label">Site Name</label>
-                    <input type="text" class="form-control @error('site_name') is-invalid @enderror" id="site_name" name="site_name" value="{{ old('site_name', $seoSettings->site_name ?? 'Sajeb News') }}" required>
+                    <input type="text" class="form-control @error('site_name') is-invalid @enderror" id="site_name" name="site_name" value="{{ old('site_name', $seoSettings->site_name ?? 'Sajeb NEWS') }}" required>
                     @error('site_name')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror

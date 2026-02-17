@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', 'সাজেব নিউজ - বাংলাদেশী নিউজ পোর্টাল')
+@section('title', 'Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল')
 
 @section('schema')
     @php
@@ -548,7 +548,7 @@
 
     <!-- Header -->
     <div class="header-section">
-        <h1 class="site-title">সাজেব নিউজ</h1>
+        <h1 class="site-title">Sajeb NEWS</h1>
         <p class="site-tagline">বাংলাদেশের সর্বশেষ এবং সবচেয়ে নির্ভরযোগ্য খবর পোর্টাল</p>
     </div>
 

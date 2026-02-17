@@ -21,7 +21,7 @@ class SeoService
     public function getNewsMetaTags(News $news)
     {
         return [
-            'title' => $news->meta_title ?? $news->title . ' - Sajeb News',
+            'title' => $news->meta_title ?? $news->title . ' - Sajeb NEWS',
             'description' => $news->meta_description ?? substr(strip_tags($news->excerpt ?? $news->content), 0, 160),
             'keywords' => $news->meta_keywords,
             'canonical' => $news->canonical_url ?? route('news.show', $news->slug),
@@ -57,7 +57,7 @@ class SeoService
             ],
             'publisher' => [
                 '@type' => 'Organization',
-                'name' => 'Sajeb News',
+                'name' => 'Sajeb NEWS',
                 'logo' => [
                     '@type' => 'ImageObject',
                     'url' => asset('images/logo.png'),

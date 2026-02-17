@@ -15,8 +15,8 @@ class SettingController extends Controller
     public function index()
     {
         $seoSettings = SeoSetting::first() ?? SeoSetting::create([
-            'site_title' => config('app.name', 'Sajeb News'),
-            'site_name' => config('app.name', 'Sajeb News'),
+            'site_title' => config('app.name', 'Sajeb NEWS'),
+            'site_name' => config('app.name', 'Sajeb NEWS'),
             'site_description' => 'Bengali News Portal',
         ]);
         
@@ -141,8 +141,8 @@ class SettingController extends Controller
 
         // Update SEO Settings
         $seoSettings = SeoSetting::first() ?? SeoSetting::create([
-            'site_title' => config('app.name', 'Sajeb News'),
-            'site_name' => config('app.name', 'Sajeb News'),
+            'site_title' => config('app.name', 'Sajeb NEWS'),
+            'site_name' => config('app.name', 'Sajeb NEWS'),
             'site_description' => 'Bengali News Portal',
         ]);
         

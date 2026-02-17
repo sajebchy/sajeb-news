@@ -94,7 +94,7 @@
 
                         <div class="mb-3">
                             <label for="claim_reviewer_name" class="form-label">Reviewer/Fact-Checker Name</label>
-                            <input type="text" class="form-control @error('claim_reviewer_name') is-invalid @enderror" id="claim_reviewer_name" name="claim_reviewer_name" value="{{ old('claim_reviewer_name', $category->claim_reviewer_name ?? '') }}" placeholder="e.g., Sajeb News Fact Check Team">
+                            <input type="text" class="form-control @error('claim_reviewer_name') is-invalid @enderror" id="claim_reviewer_name" name="claim_reviewer_name" value="{{ old('claim_reviewer_name', $category->claim_reviewer_name ?? '') }}" placeholder="e.g., Sajeb NEWS Fact Check Team">
                             <small class="text-muted">Organization or person responsible for fact-checking</small>
                             @error('claim_reviewer_name')
                                 <div class="invalid-feedback">{{ $message }}</div>

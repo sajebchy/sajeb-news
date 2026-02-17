@@ -50,7 +50,7 @@ class SeoSetting extends Model
     public static function getInstance()
     {
         return self::first() ?? self::create([
-            'site_title' => 'Sajeb News Bangladesh',
+            'site_title' => 'Sajeb NEWS Bangladesh',
             'site_description' => 'Bengali News Portal',
             'enable_sitemap' => true,
             'enable_robots' => true,

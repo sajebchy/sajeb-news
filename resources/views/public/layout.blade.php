@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vapid-public-key" content="{{ env('VAPID_PUBLIC_KEY', '') }}">
-    <title>@yield('title', $settings->site_title ?? 'সাজেব নিউজ - বাংলাদেশী নিউজ পোর্টাল')</title>
+    <title>@yield('title', $settings->site_title ?? 'Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল')</title>
     <meta name="description" content="@yield('description', $settings->site_description ?? 'বাংলাদেশের সর্বশেষ খবর, রাজনীতি, খেলাধুলা এবং আরও অনেক কিছু।')">
     <meta name="keywords" content="@yield('keywords', $settings->meta_keywords ?? 'বাংলাদেশ, খবর, নিউজ, বাংলা সংবাদ')">
     
     <!-- Open Graph Tags -->
-    <meta property="og:title" content="@yield('og_title', $settings->site_title ?? 'সাজেব নিউজ')">
+    <meta property="og:title" content="@yield('og_title', $settings->site_title ?? 'Sajeb NEWS')">
     <meta property="og:description" content="@yield('og_description', $settings->site_description ?? 'বাংলাদেশের সর্বশেষ খবর')">
     <meta property="og:image" content="@yield('og_image', $settings->og_image ? asset('storage/' . $settings->og_image) : '')">
     <meta property="og:url" content="@yield('og_url', url('/'))">
@@ -18,7 +18,7 @@
     
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('twitter_title', $settings->site_title ?? 'সাজেব নিউজ')">
+    <meta name="twitter:title" content="@yield('twitter_title', $settings->site_title ?? 'Sajeb NEWS')">
     <meta name="twitter:description" content="@yield('twitter_description', $settings->site_description ?? 'বাংলাদেশের সর্বশেষ খবর')">
     <meta name="twitter:image" content="@yield('twitter_image', $settings->og_image ? asset('storage/' . $settings->og_image) : '')">
     
@@ -137,9 +137,9 @@
                         <div class="Dlogo">
                             <a href="{{ route('home') }}" class="navbar-brand fw-bold">
                                 @if($settings && $settings->logo)
-                                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->site_name ?? 'লোগো' }}" title="{{ $settings->site_name ?? 'সাজেব নিউজ' }}" style="max-height: 50px; max-width: 180px;">
+                                    <img src="{{ asset('storage/' . $settings->logo) }}" alt="{{ $settings->site_name ?? 'লোগো' }}" title="{{ $settings->site_name ?? 'Sajeb NEWS' }}" style="max-height: 50px; max-width: 180px;">
                                 @else
-                                    <span class="fw-bold" style="font-size: 20px;">{{ $settings->site_name ?? 'সাজেব নিউজ' }}</span>
+                                    <span class="fw-bold" style="font-size: 20px;">{{ $settings->site_name ?? 'Sajeb NEWS' }}</span>
                                 @endif
                             </a>
                         </div>
@@ -286,7 +286,7 @@
             @if($settings && $settings->mobile_logo)
                 <img src="{{ asset('storage/' . $settings->mobile_logo) }}" alt="{{ $settings->site_name ?? 'লোগো' }}" style="max-height: 35px;">
             @else
-                <span class="fw-bold">{{ $settings->site_name ?? 'সাজেব নিউজ' }}</span>
+                <span class="fw-bold">{{ $settings->site_name ?? 'Sajeb NEWS' }}</span>
             @endif
         </a>
         <span class="search" onclick="openSearch()">🔍</span>
@@ -381,7 +381,7 @@
                             @if($settings && $settings->footer_logo)
                                 <img src="{{ asset('storage/' . $settings->footer_logo) }}" alt="{{ $settings->site_name ?? 'লোগো' }}" style="max-width: 260px; height: auto; display: block;" loading="lazy">
                             @else
-                                <span style="font-size: 24px; font-weight: bold; color: #1b1b18;">{{ $settings->site_name ?? 'সাজেব নিউজ' }}</span>
+                                <span style="font-size: 24px; font-weight: bold; color: #1b1b18;">{{ $settings->site_name ?? 'Sajeb NEWS' }}</span>
                             @endif
                         </a>
                     </div>
@@ -413,7 +413,7 @@
             <div class="container">
                 <div class="row">
                     <div class="col-sm-12">
-                        <h2 style="font-size: 24px; margin-bottom: 15px; color: #1b1b18;">{{ $settings->site_name ?? 'সাজেব নিউজ' }}</h2>
+                        <h2 style="font-size: 24px; margin-bottom: 15px; color: #1b1b18;">{{ $settings->site_name ?? 'Sajeb NEWS' }}</h2>
                         <p style="color: #706f6c; line-height: 1.8; margin-bottom: 0;">
                             {{ $settings->site_description ?? 'বাংলাদেশের সর্বাধুনিক নিউজ পোর্টাল। আমরা আপনাকে সত্য এবং নির্ভরযোগ্য সংবাদ প্রদান করি।' }}
                         </p>
@@ -431,7 +431,7 @@
                         <p style="font-size: 13px; line-height: 1.8; margin-bottom: 0; color: #666;">
                             <span style="display: block; margin-bottom: 12px;">
                                 <strong style="color: #1b1b18;">সম্পাদক:</strong> {{ $settings->editor_name ?? 'সম্পাদক নাম' }}<br>
-                                <strong style="color: #1b1b18;">© {{ date('Y') }} সর্বস্বত্ব সংরক্ষিত |</strong> {{ $settings->site_name ?? 'সাজেব নিউজ' }}{{ $settings->organization_name ? ', ' . $settings->organization_name : '' }}
+                                <strong style="color: #1b1b18;">© {{ date('Y') }} সর্বস্বত্ব সংরক্ষিত |</strong> {{ $settings->site_name ?? 'Sajeb NEWS' }}{{ $settings->organization_name ? ', ' . $settings->organization_name : '' }}
                             </span>
                             
                             <!-- Address -->

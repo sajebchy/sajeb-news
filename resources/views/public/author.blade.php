@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', $author->name . ' - লেখক - সাজেব নিউজ')
+@section('title', $author->name . ' - লেখক - Sajeb NEWS')
 @section('description', $author->bio ?? $author->name . ' এর লেখা সব আর্টিকেল দেখুন')
 
 @section('content')

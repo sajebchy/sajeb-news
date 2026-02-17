@@ -51,7 +51,7 @@ return [
      * Notification default configuration
      */
     'notification' => [
-        'title' => 'সাজেব নিউজ',
+        'title' => 'Sajeb NEWS',
         'icon' => '/images/logo.png',
         'badge' => '/images/badge.png',
         'require_interaction' => false,

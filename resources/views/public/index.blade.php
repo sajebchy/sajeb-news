@@ -1,6 +1,6 @@
 @extends('public.layout')
 
-@section('title', 'সাজেব নিউজ - বাংলাদেশী নিউজ পোর্টাল')
+@section('title', 'Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল')
 
 @section('schema')
     @php

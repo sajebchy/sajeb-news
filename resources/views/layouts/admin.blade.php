@@ -837,7 +837,7 @@
         <aside class="sidebar">
             <a href="{{ route('admin.dashboard') }}" class="sidebar-brand">
                 <i class="bi bi-newspaper"></i>
-                <span>Sajeb News</span>
+                <span>Sajeb NEWS</span>
             </a>
 
             <ul class="sidebar-menu">

@@ -22,8 +22,8 @@ class AppServiceProvider extends ServiceProvider
         // Share settings with all views
         view()->composer('*', function ($view) {
             $settings = \App\Models\SeoSetting::first() ?? \App\Models\SeoSetting::create([
-                'site_title' => config('app.name', 'Sajeb News'),
-                'site_name' => config('app.name', 'Sajeb News'),
+                'site_title' => config('app.name', 'Sajeb NEWS'),
+                'site_name' => config('app.name', 'Sajeb NEWS'),
                 'site_description' => 'Bengali News Portal',
             ]);
             

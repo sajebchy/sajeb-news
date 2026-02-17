@@ -58,7 +58,7 @@ class NewsController extends Controller
     {
         $news = $this->newsService->getNewsByCategory($category);
         $metaTags = [
-            'title' => $category->meta_title ?? $category->name . ' - Sajeb News',
+            'title' => $category->meta_title ?? $category->name . ' - Sajeb NEWS',
             'description' => $category->meta_description ?? $category->description,
             'keywords' => $category->meta_keywords,
         ];

@@ -24,7 +24,7 @@ class FactCheckerCategorySeeder extends Seeder
                 'is_fact_checker' => true,
                 'claim_review_enabled' => true,
                 'claim_rating_scale' => 'True',
-                'claim_reviewer_name' => 'Sajeb News Fact Check Team',
+                'claim_reviewer_name' => 'Sajeb NEWS Fact Check Team',
                 'claim_reviewer_url' => url('/'),
                 'is_active' => true,
             ]);
