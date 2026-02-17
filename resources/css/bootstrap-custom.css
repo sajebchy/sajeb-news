@@ -1,0 +1,297 @@
+/* Bootstrap 5 কাস্টমাইজেশন এবং Override */
+
+/* রঙ স্কিম */
+:root {
+    --bs-primary: #0d6efd;
+    --bs-secondary: #6c757d;
+    --bs-success: #198754;
+    --bs-danger: #dc3545;
+    --bs-warning: #ffc107;
+    --bs-info: #0dcaf0;
+    --bs-light: #f8f9fa;
+    --bs-dark: #212529;
+}
+
+/* ফন্ট সাইজিং */
+body {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 600;
+    letter-spacing: -0.5px;
+}
+
+/* বাটন স্টাইলিং */
+.btn {
+    font-weight: 500;
+    border-radius: 0.375rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+.btn-primary:hover {
+    background-color: #0b5ed7;
+    border-color: #0a58ca;
+}
+
+/* কার্ড স্টাইলিং */
+.card {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 600;
+}
+
+/* নেভবার কাস্টমাইজেশন */
+.navbar {
+    padding: 0.75rem 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-right: 2rem;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: #6c757d !important;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--bs-primary) !important;
+}
+
+.nav-link.active {
+    color: var(--bs-primary) !important;
+    font-weight: 600;
+}
+
+/* ফর্ম স্টাইলিং */
+.form-control, .form-select {
+    border: 1px solid #dee2e6;
+    border-radius: 0.375rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--bs-primary);
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #212529;
+    margin-bottom: 0.5rem;
+}
+
+/* টেবিল স্টাইলিং */
+.table {
+    margin-bottom: 0;
+}
+
+.table thead th {
+    border-bottom: 2px solid #dee2e6;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
+}
+
+.table-hover tbody tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* ব্যাজ স্টাইলিং */
+.badge {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+}
+
+/* অ্যালার্ট স্টাইলিং */
+.alert {
+    border: none;
+    border-radius: 0.375rem;
+    padding: 1rem 1.25rem;
+}
+
+.alert-success {
+    background-color: #d1e7dd;
+    color: #0f5132;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #842029;
+}
+
+.alert-warning {
+    background-color: #fff3cd;
+    color: #664d03;
+}
+
+.alert-info {
+    background-color: #cfe2ff;
+    color: #084298;
+}
+
+/* মডাল স্টাইলিং */
+.modal-content {
+    border: none;
+    border-radius: 0.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+}
+
+.modal-header {
+    background-color: #f8f9fa;
+    border-bottom: 1px solid #dee2e6;
+    padding: 1.5rem;
+}
+
+.modal-title {
+    font-weight: 600;
+}
+
+/* স্পিনার / লোডার */
+.spinner-border {
+    color: var(--bs-primary);
+}
+
+/* ড্রপডাউন */
+.dropdown-menu {
+    border: none;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    border-radius: 0.375rem;
+    padding: 0.5rem 0;
+}
+
+.dropdown-item {
+    padding: 0.75rem 1.25rem;
+    transition: background-color 0.2s ease;
+}
+
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: #f8f9fa;
+    color: var(--bs-primary);
+}
+
+.dropdown-divider {
+    margin: 0.25rem 0;
+}
+
+/* পেজিনেশন */
+.pagination {
+    border-radius: 0.375rem;
+}
+
+.page-link {
+    border-color: #dee2e6;
+    color: var(--bs-primary);
+    text-decoration: none;
+}
+
+.page-link:hover {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+.page-item.active .page-link {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+}
+
+/* ইনপুট গ্রুপ */
+.input-group-text {
+    background-color: #f8f9fa;
+    border-color: #dee2e6;
+}
+
+/* ইউটিলিটি ক্লাস */
+.shadow-sm {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1) !important;
+}
+
+.shadow {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+}
+
+.shadow-lg {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* রেসপন্সিভ */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.25rem;
+    }
+    
+    .navbar {
+        padding: 0.5rem 0;
+    }
+    
+    h1 {
+        font-size: 1.75rem;
+    }
+    
+    h2 {
+        font-size: 1.5rem;
+    }
+    
+    h3 {
+        font-size: 1.25rem;
+    }
+}
+
+/* প্রিন্ট স্টাইল */
+@media print {
+    .navbar,
+    .footer,
+    .btn,
+    .alert {
+        display: none;
+    }
+    
+    body {
+        font-size: 12pt;
+    }
+    
+    .table {
+        border: 1px solid #000;
+    }
+    
+    .table th,
+    .table td {
+        border: 1px solid #000;
+        padding: 0.5rem;
+    }
+}

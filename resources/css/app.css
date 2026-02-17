@@ -1,0 +1,116 @@
+/* Bootstrap 5 CSS - CDN থেকে লোড করা হয় */
+/* resources/views/layouts/app.blade.php এবং guest.blade.php এ লোড করা হয় */
+
+/* কাস্টম Bootstrap স্টাইল */
+@import './bootstrap-custom.css';
+
+/* কাস্টম স্টাইল */
+:root {
+    --bs-body-font-family: 'Figtree', sans-serif;
+}
+
+body {
+    font-family: 'Figtree', sans-serif;
+}
+
+/* স্ট্যাটিক কার্ড স্টাইলিং */
+.stat-card {
+    display: flex;
+    align-items: center;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    background: white;
+    border-left: 4px solid;
+}
+
+.stat-card.primary {
+    border-left-color: #0d6efd;
+}
+
+.stat-card.success {
+    border-left-color: #198754;
+}
+
+.stat-card.info {
+    border-left-color: #0dcaf0;
+}
+
+.stat-card.warning {
+    border-left-color: #ffc107;
+}
+
+.stat-card-icon {
+    font-size: 2rem;
+    margin-right: 1rem;
+    flex-shrink: 0;
+}
+
+.stat-card-value {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+.stat-card-label {
+    font-size: 0.875rem;
+    color: #6c757d;
+    margin-top: 0.5rem;
+}
+
+/* টেবিল রেপার */
+.table-wrapper {
+    background: white;
+    border-radius: 0.5rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.table-wrapper h5 {
+    color: #212529;
+    font-weight: 600;
+}
+
+/* ফর্ম ইনপুট কাস্টমাইজেশন */
+.form-control:focus,
+.form-select:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+/* নেভিগেশন */
+.navbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* বাটন হোভার ইফেক্ট */
+.btn {
+    transition: all 0.3s ease;
+}
+
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* কার্ড হোভার */
+.card {
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+}
+
+/* প্রিন্ট স্টাইল */
+@media print {
+    .navbar {
+        display: none;
+    }
+}
+
+/* প্রিন্ট স্টাইল */
+@media print {
+    .navbar {
+        display: none;
+    }
+}
