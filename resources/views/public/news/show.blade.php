@@ -2,6 +2,7 @@
 
 @section('title', $news->meta_title ?? $news->title)
 @section('description', $news->meta_description ?? $news->excerpt)
+@section('canonical', route('news.show', $news->slug))
 
 @section('og_title', $news->meta_title ?? $news->title)
 @section('og_description', $news->og_description ?? $news->excerpt)

@@ -2,6 +2,7 @@
 
 @section('title', $category->meta_title ?? $category->name . ' - Sajeb NEWS')
 @section('description', $category->meta_description ?? $category->description)
+@section('canonical', route('category.show', $category->slug))
 
 @section('og_title', $category->meta_title ?? $category->name)
 @section('og_description', $category->meta_description ?? $category->description)

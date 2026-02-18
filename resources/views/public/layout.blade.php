@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="2000">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vapid-public-key" content="{{ env('VAPID_PUBLIC_KEY', '') }}">
     <title>@yield('title', $settings->site_title ?? 'Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল')</title>
@@ -23,14 +24,20 @@
     <meta name="twitter:image" content="@yield('twitter_image', $settings->og_image ? asset('storage/' . $settings->og_image) : '')">
     
     <!-- Canonical URL -->
-    @if(isset($metaTags['canonical']))
-    <link rel="canonical" href="{{ $metaTags['canonical'] }}">
-    @endif
+    <link rel="canonical" href="@yield('canonical', isset($metaTags['canonical']) ? $metaTags['canonical'] : url()->current())">
     
     <!-- Favicon -->
     @if($settings && $settings->favicon)
         <link rel="icon" type="image/png" href="{{ asset('storage/' . $settings->favicon) }}">
     @endif
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json">
+    
+    <!-- Preload Critical Resources -->
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" as="style">
     
     <!-- JSON-LD Schema -->
     @php
@@ -483,7 +490,7 @@
     </footer>
 
     <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
     
     <!-- Mobile Navigation Styles -->
     <style>
@@ -973,8 +980,8 @@
     </script>
 
     <!-- Push Notification Manager -->
-    <script src="{{ asset('js/push-notification-manager.js') }}"></script>
-    <script>
+    <script src="{{ asset('js/push-notification-manager.js') }}" defer></script>
+    <script defer>
         // Initialize Push Notification Manager
         document.addEventListener('DOMContentLoaded', function() {
             // Only initialize if push notifications are supported

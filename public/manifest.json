@@ -1,0 +1,27 @@
+{
+  "name": "Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল",
+  "short_name": "Sajeb NEWS",
+  "description": "বাংলাদেশের সর্বশেষ খবর, রাজনীতি, খেলাধুলা এবং আরও অনেক কিছু",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#667eea",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/storage/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/storage/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["news", "media"],
+  "lang": "bn",
+  "dir": "ltr"
+}

@@ -2,6 +2,7 @@
 
 @section('title', $author->name . ' - লেখক - Sajeb NEWS')
 @section('description', $author->bio ?? $author->name . ' এর লেখা সব আর্টিকেল দেখুন')
+@section('canonical', route('author.show', $author->id))
 
 @section('content')
 
