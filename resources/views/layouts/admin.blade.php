@@ -881,6 +881,13 @@
                 </li>
 
                 <li>
+                    <a href="{{ route('admin.advertisements.index') }}" class="@if (request()->routeIs('admin.advertisements.*')) active @endif">
+                        <i class="bi bi-image"></i>
+                        <span>Advertisements</span>
+                    </a>
+                </li>
+
+                <li>
                     <a href="{{ route('admin.users.index') }}" class="@if (request()->routeIs('admin.users.*')) active @endif">
                         <i class="bi bi-people"></i>
                         <span>Users</span>

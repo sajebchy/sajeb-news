@@ -521,6 +521,13 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::get('/newsletters', [\App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletters.index');
     Route::delete('/newsletters/{subscriber}', [\App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('newsletters.destroy');
     
+    // Advertisement Management
+    Route::get('/advertisements/export/csv', [\App\Http\Controllers\Admin\AdController::class, 'export'])->name('advertisements.export');
+    Route::post('/advertisements/upload', [\App\Http\Controllers\Admin\AdController::class, 'uploadAdvertisementImage'])->name('upload-advertisement-image');
+    Route::resource('advertisements', \App\Http\Controllers\Admin\AdController::class);
+    Route::post('/advertisements/{advertisement}/toggle-status', [\App\Http\Controllers\Admin\AdController::class, 'toggleStatus'])->name('advertisements.toggle-status');
+    Route::get('/advertisements/{advertisement}/statistics', [\App\Http\Controllers\Admin\AdController::class, 'statistics'])->name('advertisements.statistics');
+    
     // Live Stream Management - Only for Admins
     Route::middleware('admin')->group(function () {
         Route::get('/live-streams', [\App\Http\Controllers\Admin\LiveStreamController::class, 'index'])->name('live-streams.index');
