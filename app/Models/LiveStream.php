@@ -120,7 +120,7 @@ class LiveStream extends Model
      */
     public function getRtmpUrl(): string
     {
-        return config('services.rtmp.server_url') . '/' . config('services.rtmp.app_name');
+        return config('broadcasting.rtmp.server_url') . '/' . config('broadcasting.rtmp.app_name');
     }
 
     /**
