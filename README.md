@@ -1,142 +1,142 @@
-# সজীব নিউজ - বাংলাদেশী আধুনিক নিউজ পোর্টাল
+# Sajeb News - Modern Bangladesh News Portal
 
-একটি সম্পূর্ণ পেশাদার নিউজ পোর্টাল প্ল্যাটফর্ম যা বাংলাদেশের মানুষের জন্য তৈরি করা হয়েছে। এটি Laravel 12 এবং Bootstrap ফ্রেমওয়ার্ক দিয়ে তৈরি।
+A complete professional news portal platform built for the people of Bangladesh. Built with Laravel 12 and Bootstrap framework.
 
-## 🎯 প্রধান বৈশিষ্ট্য
+## 🎯 Key Features
 
-### 🎉 নতুন: সম্পূর্ণ অ্যাডমিন ড্যাশবোর্ড (ফেজ 1 সম্পূর্ণ)
-✅ **8টি সম্পূর্ণ মডিউল** - ড্যাশবোর্ড, নিউজ, ক্যাটেগরি, ট্যাগ, ব্যবহারকারী, অ্যানালিটিক্স, কার্যকলাপ, সেটিংস
-✅ **50+ বৈশিষ্ট্য** - সম্পূর্ণ CRUD অপারেশন, ভূমিকা-ভিত্তিক অ্যাক্সেস, সুরক্ষা, যাচাইকরণ
-✅ **উত্পাদন প্রস্তুত** - পরীক্ষিত, সুরক্ষিত, নথিভুক্ত, মোবাইল-প্রতিক্রিয়াশীল
-📖 **সম্পূর্ণ ডকুমেন্টেশন** - 8টি বিস্তৃত ডকুমেন্ট (43 পৃষ্ঠা)
+### 🎉 New: Complete Admin Dashboard (Phase 1 Complete)
+✅ **8 Complete Modules** - Dashboard, News, Categories, Tags, Users, Analytics, Activity, Settings
+✅ **50+ Features** - Full CRUD operations, Role-based access, Security, Validation
+✅ **Production Ready** - Tested, Secure, Documented, Mobile-responsive
+📖 **Complete Documentation** - 8 comprehensive documents (43 pages)
 
-**অ্যাডমিন প্যানেল অ্যাক্সেস**: `/admin` (লগইন: admin@test.com / 12345)  
-**দ্রুত শুরু**: দেখুন [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
+**Admin Panel Access**: `/admin` (Login: admin@test.com / 12345)  
+**Quick Start**: See [DOCUMENTATION_INDEX.md](DOCUMENTATION_INDEX.md)
 
-### 📰 কোর নিউজ ম্যানেজমেন্ট
-- অনুক্রমিক ক্যাটেগরি এবং সাব-ক্যাটেগরি সিস্টেম
-- মাল্টিমিডিয়া নিউজ পোস্টিং (টেক্সট, ইমেজ, ভিডিও)
-- খসড়া, প্রকাশনা এবং নির্ধারিত পোস্ট সুবিধা
-- ফিচার্ড এবং ব্রেকিং নিউজ নিয়ন্ত্রণ
-- ট্যাগ-ভিত্তিক নিউজ সিস্টেম (রঙ কোডিং সহ)
-- স্বয়ংক্রিয় সম্পর্কিত নিউজ পরামর্শ
-- নিউজ আর্কাইভ এবং সংস্করণ নিয়ন্ত্রণ
+### 📰 Core News Management
+- Hierarchical categories and sub-categories system
+- Multimedia news posting (text, images, videos)
+- Draft, publish, and scheduled post features
+- Featured and breaking news controls
+- Tag-based news system (with color coding)
+- Automatic related news suggestions
+- News archive and version control
 
-### 🛠️ অ্যাডমিন প্যানেল (সম্পূর্ণ নিয়ন্ত্রণ)
-- সম্পূর্ণ পোস্ট ম্যানেজমেন্ট
-- ক্যাটেগরি ম্যানেজমেন্ট (প্যারেন্ট-চাইল্ড স্ট্রাকচার)
-- ট্যাগ ম্যানেজমেন্ট (রঙ কোডিং সহ)
-- ব্যবহারকারী ম্যানেজমেন্ট (অ্যাডমিন, সম্পাদক, রিপোর্টার, লেখক)
-- রোল এবং পারমিশন সিস্টেম
-- নিউজলেটার সাবস্ক্রাইবার ম্যানেজমেন্ট
-- পুশ নোটিফিকেশন ম্যানেজমেন্ট
-- বিজ্ঞাপন ম্যানেজমেন্ট
-- অ্যানালিটিক্স ড্যাশবোর্ড
-- কার্যকলাপ লগ
+### 🛠️ Admin Panel (Complete Control)
+- Full post management
+- Category management (parent-child structure)
+- Tag management (with color coding)
+- User management (Admin, Editor, Reporter, Author)
+- Roles and permissions system
+- Newsletter subscriber management
+- Push notification management
+- Advertisement management
+- Analytics dashboard
+- Activity logs
 
-### 🔍 SEO অপটিমাইজেশন
-- মেটা ট্যাগ ম্যানেজমেন্ট (সম্পূর্ণ কাস্টমাইজেশন)
-- Open Graph (OG) ট্যাগ সাপোর্ট
-- Twitter কার্ড সাপোর্ট
-- স্কিমা মার্কআপ (JSON-LD)
-- XML সাইটম্যাপ জেনারেশন
-- SEO-বান্ধব URLs এবং স্লাগ
-- **ক্যানোনিক্যাল URL সিস্টেম** (প্রতি পেজে অটোমেটিক)
-- **Meta Refresh Tag** (অটো-রিফ্রেশ ফিচার)
-- **Preload Directives** (Critical Resources এর জন্য)
-- Robots.txt এবং Sitemap কনফিগারেশন
+### 🔍 SEO Optimization
+- Meta tag management (full customization)
+- Open Graph (OG) tag support
+- Twitter card support
+- Schema markup (JSON-LD)
+- XML sitemap generation
+- SEO-friendly URLs and slugs
+- **Canonical URL System** (automatic per page)
+- **Meta Refresh Tag** (auto-refresh feature)
+- **Preload Directives** (for critical resources)
+- Robots.txt and Sitemap configuration
 
-### ⚡ পারফরম্যান্স অপটিমাইজেশন
-- Redis/Memcached কেশিং
-- অপটিমাইজড ডাটাবেস কোয়েরি
-- সম্পদ সংকোচন (CSS, JS, ইমেজ)
-- লেজি লোডিং
-- ব্রাউজার কেশিং (365 দিন পর্যন্ত)
-- CDN ইন্টিগ্রেশন
-- Core Web Vitals অপটিমাইজড
+### ⚡ Performance Optimization
+- Redis/Memcached caching
+- Optimized database queries
+- Resource compression (CSS, JS, images)
+- Lazy loading
+- Browser caching (up to 365 days)
+- CDN integration
+- Core Web Vitals optimized
 - **Preload Critical Resources** (CSS, Fonts, Icons)
 - **JavaScript Defer Attributes** (Non-blocking JS)
 - **Resource Hints** (Preconnect, DNS-Prefetch)
 - Optimized Font Loading (Google Fonts, Local Fonts)
 
-### 📊 অ্যানালিটিক্স এবং ট্র্যাকিং
-- Google Analytics 4 (GA4) ইন্টিগ্রেশন
+### 📊 Analytics and Tracking
+- Google Analytics 4 (GA4) integration
 - Google Tag Manager (GTM)
-- Facebook Pixel ইন্টিগ্রেশন
-- রিয়েল-টাইম ভিজিটর মনিটরিং
-- এনগেজমেন্ট মেট্রিক্স
+- Facebook Pixel integration
+- Real-time visitor monitoring
+- Engagement metrics
 
-### 💰 মনেটাইজেশন এবং বিজ্ঞাপন ✨ আপডেট
-- **সম্পূর্ণ বিজ্ঞাপন ম্যানেজমেন্ট সিস্টেম**
-  - অফলাইন বিজ্ঞাপন (স্থানীয় গ্রাহক)
-  - অনলাইন বিজ্ঞাপন নেটওয়ার্ক (Google AdSense + 11 নেটওয়ার্ক)
-- **Google AdSense সম্পূর্ণ ইন্টিগ্রেশন** ✨ নতুন
-  - AdSense কোড সরাসরি যোগ করুন
-  - নেটিভ শপিং এড সাপোর্ট
-  - Google নীতি মেনে চলা হয়
-- **ছবি আপলোড সিস্টেম** ✨ নতুন
-  - মোবাইল/পিসি থেকে সরাসরি আপলোড (AJAX)
-  - সাপোর্টেড ফরম্যাট: JPEG, PNG, GIF, WebP
-  - সর্বোচ্চ সাইজ: 5MB
-- **কাস্টম লিঙ্ক ম্যানেজমেন্ট** ✨ নতুন
-  - ডেস্টিনেশন URL সেট করুন
-  - নতুন ট্যাবে খোলার অপশন
-  - লিভ প্রিভিউ দেখুন
-- **মাল্টি-নেটওয়ার্ক সিস্টেম** ✨ নতুন
-  - 12টি ভিন্ন বিজ্ঞাপন নেটওয়ার্ক
-  - প্রতিটি নেটওয়ার্কের জন্য কাস্টম কনফিগারেশন
-  - ডায়নামিক ফিল্ড জেনারেশন
-- **অ্যাড অ্যানালিটিক্স**
-  - মাল্টিপল অ্যাড পজিশন (8টি)
-  - ডিভাইস-নির্দিষ্ট বিজ্ঞাপন (ডেস্কটপ/মোবাইল)
-  - নির্ধারিত বিজ্ঞাপন (সময় নির্ধারণ)
-  - UTM campaign ট্র্যাকিং
-  - পারফরম্যান্স মেট্রিক্স (Views, Clicks, CTR)
-- [বিস্তারিত ডকুমেন্টেশন](#) দেখুন: `README_ADVERTISEMENTS.md`
+### 💰 Monetization and Advertising ✨ Updated
+- **Complete Advertisement Management System**
+  - Offline advertising (local customers)
+  - Online advertising networks (Google AdSense + 11 networks)
+- **Google AdSense Full Integration** ✨ New
+  - Add AdSense codes directly
+  - Native shopping ads support
+  - Google policy compliant
+- **Image Upload System** ✨ New
+  - Direct upload from mobile/PC (AJAX)
+  - Supported formats: JPEG, PNG, GIF, WebP
+  - Maximum size: 5MB
+- **Custom Link Management** ✨ New
+  - Set destination URLs
+  - Option to open in new tab
+  - Live link preview
+- **Multi-Network System** ✨ New
+  - 12 different advertising networks
+  - Custom configuration for each network
+  - Dynamic field generation
+- **Ad Analytics**
+  - Multiple ad positions (8)
+  - Device-specific ads (desktop/mobile)
+  - Scheduled ads (time-based)
+  - UTM campaign tracking
+  - Performance metrics (Views, Clicks, CTR)
+- See detailed documentation: `README_ADVERTISEMENTS.md`
 
-### 👥 এনগেজমেন্ট ফিচার
-- ইমেইল নিউজলেটার সাবস্ক্রিপশন
-- ওয়েব পুশ নোটিফিকেশন
-- সোশ্যাল মিডিয়া শেয়ার বাটন
-- ট্রেন্ডিং নিউজ বিভাগ
-- সবচেয়ে পড়া নিউজ উইজেট
+### 👥 Engagement Features
+- Email newsletter subscription
+- Web push notifications
+- Social media sharing buttons
+- Trending news section
+- Most-read news widget
 
-### 📱 Progressive Web App (PWA) সাপোর্ট
+### 📱 Progressive Web App (PWA) Support
 - **Web App Manifest** (installable app)
-- মোবাইলে হোম স্ক্রীনে Add to Home Screen
-- Standalone মোড সাপোর্ট
-- কাস্টম App Icons (192x192, 512x512)
-- Offline Reading Capability (ভবিষ্যতে)
-- App-like Experience
-- iOS এবং Android উভয় সাপোর্ট
+- Add to Home Screen on mobile
+- Standalone mode support
+- Custom App Icons (192x192, 512x512)
+- Offline Reading Capability (future)
+- App-like experience
+- Support for both iOS and Android
 
-### 🔒 এন্টারপ্রাইজ-স্তরের নিরাপত্তা
-- SSL/TLS 1.2 & 1.3 সমর্থন
-- HSTS সমর্থন
-- নিরাপত্তা হেডার (CSP, X-Frame-Options, ইত্যাদি)
-- CSRF এবং XSS সুরক্ষা
-- দুই-ফ্যাক্টর অথেন্টিকেশন (2FA)
-- স্বয়ংক্রিয় ব্যাকআপ
+### 🔒 Enterprise-level Security
+- SSL/TLS 1.2 & 1.3 support
+- HSTS support
+- Security headers (CSP, X-Frame-Options, etc.)
+- CSRF and XSS protection
+- Two-factor authentication (2FA)
+- Automatic backups
 
-### 🏗️ আর্কিটেকচার
-- Laravel 12 ব্যাকএন্ড
-- মডুলার/HMVC স্ট্রাকচার
-- REST API ডিজাইন
-- Livewire/Inertia.js ইন্টিগ্রেশন
-- Queue সিস্টেম
-- মাল্টি-টেনেন্ট রেডি
+### 🏗️ Architecture
+- Laravel 12 backend
+- Modular/HMVC structure
+- REST API design
+- Livewire/Inertia.js integration
+- Queue system
+- Multi-tenant ready
 
-## 📋 প্রয়োজনীয়তা
+## 📋 Requirements
 
 - PHP 8.3+
 - Laravel 12
-- MySQL/PostgreSQL বা SQLite
-- Node.js 18+ (ফ্রন্টএন্ড বিল্ডের জন্য)
+- MySQL/PostgreSQL or SQLite
+- Node.js 18+ (for frontend build)
 - Composer
 
-## 🚀 দ্রুত শুরু করুন
+## 🚀 Quick Start
 
-1. **প্রজেক্ট ক্লোন এবং সেটআপ**:
+1. **Clone and setup the project**:
 ```bash
 composer install
 cp .env.example .env
@@ -145,56 +145,56 @@ php artisan migrate
 php artisan db:seed
 ```
 
-2. **ডেভেলপমেন্ট সার্ভার শুরু করুন**:
+2. **Start development server**:
 ```bash
 php artisan serve
 ```
 
-3. **অ্যাডমিনে লগইন করুন**: 
+3. **Login to admin**: 
 - URL: `http://localhost:8000/admin`
-- ইমেইল: `admin@sajeb-news.local`
+- Email: `admin@sajeb-news.local`
 
-## 📄 লাইসেন্স
+## 📄 License
 
-এই প্রজেক্টটি MIT লাইসেন্সের অধীন।
+This project is licensed under the MIT License.
 
 ---
 
-## 🆕 সর্বশেষ আপডেট (ফেব্রুয়ারি ১৯, ২০২৬)
+## 🆕 Latest Updates (February 19, 2026)
 
-### ✨ নতুন বিজ্ঞাপন ম্যানেজমেন্ট সিস্টেম (Version 2.0)
-- ✅ **Google AdSense Integration** - সম্পূর্ণ AdSense সাপোর্ট
-- ✅ **Multi-Network Support** - 12টি বিজ্ঞাপন নেটওয়ার্ক (Media.net, Ezoic, PropellerAds, এবং আরও অনেক)
-- ✅ **Image Upload System** - মোবাইল/পিসি থেকে AJAX আপলোড (সমর্থিত: JPEG, PNG, GIF, WebP)
-- ✅ **Dual Ad Source System** - অফলাইন এবং অনলাইন বিজ্ঞাপন একসাথে
-- ✅ **Custom Link Management** - নতুন ট্যাবে খোলার অপশন সহ
-- ✅ **Dynamic Network Fields** - প্রতিটি নেটওয়ার্কের জন্য কাস্টম কনফিগারেশন
-- ✅ **Live Link Preview** - রিয়েল-টাইম লিঙ্ক প্রিভিউ
+### ✨ New Advertisement Management System (Version 2.0)
+- ✅ **Google AdSense Integration** - Full AdSense support
+- ✅ **Multi-Network Support** - 12 advertising networks (Media.net, Ezoic, PropellerAds, and more)
+- ✅ **Image Upload System** - AJAX upload from mobile/PC (Supported: JPEG, PNG, GIF, WebP)
+- ✅ **Dual Ad Source System** - Offline and online advertising together
+- ✅ **Custom Link Management** - With option to open in new tab
+- ✅ **Dynamic Network Fields** - Custom configuration for each network
+- ✅ **Live Link Preview** - Real-time link preview
 
-### 📊 প্রভাব
-- 💰 **মনেটাইজেশন অপশন**: 2টি থেকে সীমাহীন
-- 🎯 **টার্গেটিং**: অনলাইন এবং অফলাইন উভয়
-- ⚡ **দ্রুত আপলোড**: AJAX-ভিত্তিক ফাইল আপলোড
-- 🔌 **নেটওয়ার্ক ইন্টিগ্রেশন**: 12 নেটওয়ার্ক সাপোর্ট
+### 📊 Impact
+- 💰 **Monetization Options**: From 2 to unlimited
+- 🎯 **Targeting**: Both online and offline
+- ⚡ **Fast Upload**: AJAX-based file upload
+- 🔌 **Network Integration**: Support for 12 networks
 
-### 📈 সর্বশেষ এসইও এবং পারফরম্যান্স (পূর্ববর্তী আপডেট)
-- ✅ **Canonical URL System** - প্রতিটি পেজে automatic canonical URL যুক্ত
-- ✅ **PWA Manifest** - মোবাইলে installable web app
+### 📈 Latest SEO and Performance (Previous Updates)
+- ✅ **Canonical URL System** - Automatic canonical URL added to every page
+- ✅ **PWA Manifest** - Installable web app on mobile
 - ✅ **Meta Refresh Tag** - Auto-refresh functionality (2000s interval)
-- ✅ **Preload Directives** - Critical CSS, Fonts, Icons দ্রুত লোড
+- ✅ **Preload Directives** - Fast load critical CSS, Fonts, Icons
 - ✅ **Defer JavaScript** - Non-blocking script loading
-- ✅ **Performance Optimization** - Page load speed 40% উন্নত
+- ✅ **Performance Optimization** - Page load speed improved 40%
 - ✅ **SEO Enhancement** - Duplicate content prevention
 
-### 📊 প্রভাব
-- 🚀 **Page Speed**: 40% দ্রুত লোডিং
+### 📊 Impact
+- 🚀 **Page Speed**: 40% faster loading
 - 📈 **SEO Score**: 95+ (Google PageSpeed Insights)
 - 📱 **Mobile UX**: App-like experience
-- 🔍 **Search Ranking**: Canonical URLs দিয়ে better indexing
+- 🔍 **Search Ranking**: Better indexing with canonical URLs
 
 ---
 
-**আপডেট**: ফেব্রুয়ারি ১৮, ২০২৬
+**Updated**: February 18, 2026
 
 Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
 
@@ -218,29 +218,5 @@ If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Lar
 
 We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
 
-### Premium Partners
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
 
-## Contributing
-
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
