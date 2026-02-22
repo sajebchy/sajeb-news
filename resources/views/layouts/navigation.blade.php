@@ -1,7 +1,7 @@
 <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm sticky-top">
     <div class="container-lg">
         <!-- Brand/Logo -->
-        <a class="navbar-brand" href="{{ route('dashboard') }}" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+        <a class="navbar-brand" href="{{ route('home') }}" style="display: flex; align-items: center; gap: 0.5rem; text-decoration: none;">
             <x-application-logo />
         </a>
 
@@ -14,13 +14,15 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <!-- Navigation Links -->
             <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
-                <li class="nav-item">
-                    <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
-                        <i class="bi bi-house-door"></i> {{ __('Dashboard') }}
-                    </a>
-                </li>
-
                 @auth
+                    @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage_news'))
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
+                                <i class="bi bi-house-door"></i> {{ __('Dashboard') }}
+                            </a>
+                        </li>
+                    @endif
+
                     @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage_news'))
                         <li class="nav-item dropdown">
                             <a class="nav-link dropdown-toggle" href="#" id="newsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
