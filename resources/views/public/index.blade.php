@@ -298,7 +298,241 @@
         box-shadow: 0 4px 12px rgba(0,0,0,0.15);
     }
 
-    /* Section Titles */
+    /* Push Modal Styles */
+    .push-modal-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+        animation: fadeIn 0.3s ease-in-out;
+    }
+
+    .push-modal {
+        display: none;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 1000;
+        animation: slideUp 0.4s ease-out;
+    }
+
+    .push-modal-overlay.active {
+        display: block;
+    }
+
+    .push-modal.active {
+        display: block;
+    }
+
+    .push-modal-content {
+        background: white;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        max-width: 400px;
+        width: 90vw;
+        animation: modalPopIn 0.4s ease-out;
+    }
+
+    /* Safari Style Icon */
+    .safari-style-header {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        padding: 24px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 80px;
+    }
+
+    .safari-style-icon {
+        width: 64px;
+        height: 64px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 36px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        position: relative;
+    }
+
+    .safari-style-icon::before {
+        content: '📬';
+        font-size: 40px;
+        display: block;
+    }
+
+    /* Modal Title Section */
+    .safari-style-title {
+        padding: 28px 24px 16px;
+        text-align: center;
+    }
+
+    .modal-title {
+        font-size: 24px;
+        font-weight: 700;
+        margin: 0 0 8px 0;
+        color: #1f2937;
+        line-height: 1.3;
+    }
+
+    .modal-subtitle {
+        font-size: 14px;
+        color: #6b7280;
+        margin: 0;
+        line-height: 1.4;
+    }
+
+    /* Modal Description */
+    .safari-style-description {
+        padding: 0 24px 24px;
+        text-align: center;
+    }
+
+    .safari-style-description p {
+        font-size: 15px;
+        color: #4b5563;
+        line-height: 1.6;
+        margin: 0;
+    }
+
+    /* Modal Buttons */
+    .modal-buttons {
+        display: flex;
+        gap: 12px;
+        padding: 20px 24px 24px;
+        border-top: 1px solid #e5e7eb;
+    }
+
+    .modal-btn {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        font-size: 15px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .modal-btn-cancel {
+        background: #f3f4f6;
+        color: #374151;
+    }
+
+    .modal-btn-cancel:hover {
+        background: #e5e7eb;
+        transform: translateY(-2px);
+    }
+
+    .modal-btn-confirm {
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        color: white;
+    }
+
+    .modal-btn-confirm:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(59, 130, 246, 0.3);
+    }
+
+    .modal-btn-confirm:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+    }
+
+    /* Floating Subscribe Button */
+    .floating-subscribe-btn {
+        position: fixed;
+        bottom: 24px;
+        right: 24px;
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
+        border: none;
+        box-shadow: 0 4px 16px rgba(59, 130, 246, 0.3);
+        cursor: pointer;
+        font-size: 28px;
+        transition: all 0.3s ease;
+        z-index: 500;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .floating-subscribe-btn:hover {
+        transform: scale(1.1);
+        box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
+    }
+
+    .floating-subscribe-btn:active {
+        transform: scale(0.95);
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+        }
+        to {
+            opacity: 1;
+        }
+    }
+
+    @keyframes slideUp {
+        from {
+            opacity: 0;
+            transform: translate(-50%, -40%);
+        }
+        to {
+            opacity: 1;
+            transform: translate(-50%, -50%);
+        }
+    }
+
+    @keyframes modalPopIn {
+        from {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        to {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+        .push-modal-content {
+            max-width: 95vw;
+        }
+
+        .modal-title {
+            font-size: 20px;
+        }
+
+        .floating-subscribe-btn {
+            bottom: 16px;
+            right: 16px;
+            width: 54px;
+            height: 54px;
+            font-size: 24px;
+        }
+
+        .modal-buttons {
+            flex-direction: column;
+        }
+
+        .modal-btn {
+            width: 100%;
+        }
+    }/* Section Titles */
     .section-title {
         font-size: 22px;
         font-weight: 700;
@@ -814,14 +1048,38 @@
         </a>
     </div>
 
-    <!-- Subscribe Banner -->
-    <div class="subscribe-banner">
-        <div>
-            <h3>📬 নতুন খবর সরাসরি পান!</h3>
-            <p>প্রতিদিন সর্বশেষ খবর সরাসরি আপনার কাছে</p>
+    <!-- Subscribe Popup Modal -->
+    <div id="push-modal-overlay" class="push-modal-overlay"></div>
+    <div id="push-modal" class="push-modal">
+        <div class="push-modal-content">
+            <!-- Safari-style Notification Header -->
+            <div class="safari-style-header">
+                <div class="safari-style-icon"></div>
+            </div>
+
+            <!-- Modal Body -->
+            <div class="safari-style-title">
+                <h2 class="modal-title">📬 নতুন খবর সরাসরি পান!</h2>
+                <p class="modal-subtitle">প্রতিদিন সর্বশেষ খবর সরাসরি আপনার কাছে</p>
+            </div>
+
+            <!-- Modal Description -->
+            <div class="safari-style-description">
+                <p>আমরা আপনাকে গুরুত্বপূর্ণ খবর, নতুন গল্প এবং ঘোষণা সম্পর্কে অবহিত রাখব।</p>
+            </div>
+
+            <!-- Modal Buttons -->
+            <div class="modal-buttons">
+                <button id="close-modal-btn" class="modal-btn modal-btn-cancel">এখন নয়</button>
+                <button id="push-subscribe-btn" class="modal-btn modal-btn-confirm">সাবস্ক্রাইব করুন</button>
+            </div>
         </div>
-        <button id="push-subscribe-btn" class="subscribe-btn">সাবস্ক্রাইব করুন</button>
     </div>
+
+    <!-- Floating Subscribe Button (for easy access) -->
+    <button id="floating-subscribe-btn" class="floating-subscribe-btn" title="সাবস্ক্রাইব করুন">
+        📬
+    </button>
 
     <!-- Categories Section -->
     <section class="categories-section">
@@ -1016,78 +1274,133 @@
 </div>
 
 <script>
-    // Push Notification Subscribe Button Handler
-    document.addEventListener('DOMContentLoaded', function() {
-        const subscribeBtn = document.getElementById('push-subscribe-btn');
-        
-        if (!subscribeBtn) return;
+    // Modal Management
+    class SubscribeModalManager {
+        constructor() {
+            this.modal = document.getElementById('push-modal');
+            this.overlay = document.getElementById('push-modal-overlay');
+            this.subscribeBtn = document.getElementById('push-subscribe-btn');
+            this.closeBtn = document.getElementById('close-modal-btn');
+            this.floatingBtn = document.getElementById('floating-subscribe-btn');
+            this.init();
+        }
 
-        // Check if manager is available
-        const checkManager = setInterval(function() {
-            if (window.PushNotificationManager) {
-                clearInterval(checkManager);
-                initPushNotifications();
-            }
-        }, 100);
+        init() {
+            // Open modal when floating button is clicked
+            this.floatingBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.openModal();
+            });
 
-        // Timeout after 2 seconds
-        setTimeout(() => clearInterval(checkManager), 2000);
+            // Close modal when close button is clicked
+            this.closeBtn?.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.closeModal();
+            });
 
-        function initPushNotifications() {
+            // Close modal when overlay is clicked
+            this.overlay?.addEventListener('click', (e) => {
+                if (e.target === this.overlay) {
+                    this.closeModal();
+                }
+            });
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && this.modal?.classList.contains('active')) {
+                    this.closeModal();
+                }
+            });
+
+            // Setup subscribe button
+            this.setupSubscribeButton();
+        }
+
+        openModal() {
+            this.modal?.classList.add('active');
+            this.overlay?.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+
+        closeModal() {
+            this.modal?.classList.remove('active');
+            this.overlay?.classList.remove('active');
+            document.body.style.overflow = 'auto';
+        }
+
+        setupSubscribeButton() {
+            if (!this.subscribeBtn) return;
+
+            // Check if manager is available
+            const checkManager = setInterval(() => {
+                if (window.PushNotificationManager) {
+                    clearInterval(checkManager);
+                    this.initPushNotifications();
+                }
+            }, 100);
+
+            // Timeout after 2 seconds
+            setTimeout(() => clearInterval(checkManager), 2000);
+        }
+
+        initPushNotifications() {
             const manager = new PushNotificationManager();
             
             // Check if browser supports push notifications
             if (!manager.isSupported()) {
-                subscribeBtn.innerHTML = '<i class="fas fa-ban"></i> আপনার ব্রাউজার সাপোর্ট করে না';
-                subscribeBtn.disabled = true;
-                subscribeBtn.classList.add('disabled');
+                this.subscribeBtn.innerHTML = '<i class="fas fa-ban"></i> সাপোর্ট করে না';
+                this.subscribeBtn.disabled = true;
+                this.floatingBtn.style.display = 'none';
                 return;
             }
 
             // Check if already subscribed
-            checkIfSubscribed(manager);
+            this.checkIfSubscribed(manager);
 
             // Add click handler
-            subscribeBtn.addEventListener('click', async function(e) {
+            this.subscribeBtn.addEventListener('click', async (e) => {
                 e.preventDefault();
-                subscribeBtn.disabled = true;
-                subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> অপেক্ষা করুন...';
+                this.subscribeBtn.disabled = true;
+                this.subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> অপেক্ষা করুন...';
 
                 try {
                     const result = await manager.subscribe();
                     
                     if (result.success) {
-                        subscribeBtn.innerHTML = '<i class="fas fa-check-circle"></i> ✓ সক্ষম হয়েছে';
-                        subscribeBtn.style.background = '#10b981';
-                        subscribeBtn.style.color = 'white';
-                        subscribeBtn.style.cursor = 'default';
+                        this.subscribeBtn.innerHTML = '<i class="fas fa-check-circle"></i> সক্ষম হয়েছে!';
+                        this.subscribeBtn.style.background = '#10b981';
+                        this.subscribeBtn.style.color = 'white';
+                        this.closeBtn.innerHTML = 'বন্ধ করুন';
+                        
+                        setTimeout(() => this.closeModal(), 2000);
                     } else {
-                        showAlert('error', result.message || 'সাবস্ক্রিপশন ব্যর্থ হয়েছে');
-                        subscribeBtn.disabled = false;
-                        subscribeBtn.innerHTML = 'সাবস্ক্রাইব করুন';
+                        this.showAlert('error', result.message || 'সাবস্ক্রিপশন ব্যর্থ হয়েছে');
+                        this.subscribeBtn.disabled = false;
+                        this.subscribeBtn.innerHTML = 'সাবস্ক্রাইব করুন';
                     }
                 } catch (error) {
                     console.error('Subscribe error:', error);
-                    showAlert('error', 'একটি ত্রুটি ঘটেছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।');
-                    subscribeBtn.disabled = false;
-                    subscribeBtn.innerHTML = 'সাবস্ক্রাইব করুন';
+                    this.showAlert('error', 'একটি ত্রুটি ঘটেছে। অনুগ্রহ করে পুনরায় চেষ্টা করুন।');
+                    this.subscribeBtn.disabled = false;
+                    this.subscribeBtn.innerHTML = 'সাবস্ক্রাইব করুন';
                 }
             });
         }
 
-        function checkIfSubscribed(manager) {
+        checkIfSubscribed(manager) {
             manager.isEnabled().then(enabled => {
                 if (enabled) {
-                    subscribeBtn.innerHTML = '<i class="fas fa-check-circle"></i> ✓ সক্ষম করা আছে';
-                    subscribeBtn.style.background = '#10b981';
-                    subscribeBtn.style.color = 'white';
-                    subscribeBtn.disabled = true;
-                    subscribeBtn.style.cursor = 'default';
+                    this.subscribeBtn.innerHTML = '<i class="fas fa-check-circle"></i> সক্ষম করা আছে';
+                    this.subscribeBtn.style.background = '#10b981';
+                    this.subscribeBtn.style.color = 'white';
+                    this.subscribeBtn.disabled = true;
+                    this.floatingBtn.style.opacity = '0.5';
+                    this.floatingBtn.disabled = true;
                 }
             });
         }
 
-        function showAlert(type, message) {
+        showAlert(type, message) {
             const alertEl = document.createElement('div');
             alertEl.style.cssText = `
                 position: fixed;
@@ -1099,9 +1412,10 @@
                 padding: 16px 24px;
                 border-radius: 8px;
                 box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-                z-index: 1000;
+                z-index: 10000;
                 max-width: 400px;
                 font-size: 14px;
+                animation: slideDown 0.3s ease-out;
             `;
             alertEl.textContent = message;
             document.body.appendChild(alertEl);
@@ -1112,6 +1426,11 @@
                 setTimeout(() => alertEl.remove(), 300);
             }, 5000);
         }
+    }
+
+    // Initialize modal manager when DOM is ready
+    document.addEventListener('DOMContentLoaded', function() {
+        new SubscribeModalManager();
     });
 
     // Live Stream Status Checker for Pulsate
