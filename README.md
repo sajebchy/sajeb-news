@@ -281,7 +281,7 @@ Contributions are welcome! Please follow these steps:
 ---
 
 ## 📄 License
-
+© Sajib Bahadur Shil
 This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
