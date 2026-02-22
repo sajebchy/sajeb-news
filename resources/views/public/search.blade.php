@@ -2,7 +2,7 @@
 
 @section('title', 'Search Results for "' . htmlspecialchars($query) . '" - Sajeb NEWS')
 @section('description', 'Search results for: ' . htmlspecialchars($query) . ' on Sajeb NEWS')
-@section('canonical', route('search') . '?q=' . urlencode($query))
+@section('canonical', route('news.search') . '?q=' . urlencode($query))
 
 @section('schema')
     @php
@@ -13,8 +13,8 @@
         <script type="application/ld+json">
         {!! json_encode(\App\Services\SchemaGeneratorService::breadcrumbSchema([
             ['name' => 'হোম', 'url' => route('home')],
-            ['name' => 'সার্চ', 'url' => route('search') . '?q=' . urlencode($query)],
-            ['name' => htmlspecialchars($query), 'url' => route('search') . '?q=' . urlencode($query)]
+            ['name' => 'সার্চ', 'url' => route('news.search') . '?q=' . urlencode($query)],
+            ['name' => htmlspecialchars($query), 'url' => route('news.search') . '?q=' . urlencode($query)]
         ])) !!}
         </script>
     @endif
@@ -336,7 +336,7 @@
     <div class="search-container">
         <!-- Search Box -->
         <div class="search-box-wrapper">
-            <form method="GET" action="{{ route('search') }}" class="search-box">
+            <form method="GET" action="{{ route('news.search') }}" class="search-box">
                 <div class="search-input-group">
                     <input 
                         type="text" 
