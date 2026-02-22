@@ -40,12 +40,22 @@ class SeoSetting extends Model
         'recaptcha_secret_key',
         'recaptcha_threshold',
         'recaptcha_enabled',
+        'adsense_publisher_id',
+        'adsense_anchor_ad_code',
+        'adsense_sidebar_ad_code',
+        'adsense_between_articles_ad_code',
+        'show_anchor_ads',
+        'show_sidebar_ads',
+        'show_between_articles_ads',
     ];
 
     protected $casts = [
         'enable_sitemap' => 'boolean',
         'enable_robots' => 'boolean',
         'recaptcha_enabled' => 'boolean',
+        'show_anchor_ads' => 'boolean',
+        'show_sidebar_ads' => 'boolean',
+        'show_between_articles_ads' => 'boolean',
     ];
 
     public static function getInstance()

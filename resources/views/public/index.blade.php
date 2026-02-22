@@ -1234,6 +1234,17 @@
                     <button type="submit" class="newsletter-btn">সাবস্ক্রাইব করুন</button>
                 </form>
             </div>
+
+            <!-- Google AdSense Sidebar Ad -->
+            @php
+                $adService = new \App\Services\AdService();
+                $sidebarAdCode = $adService->getSidebarAdCode();
+            @endphp
+            @if($sidebarAdCode && $adService->showSidebarAds())
+            <div class="sidebar-widget" style="background: #f5f5f5; padding: 16px; border-radius: 8px; text-align: center;">
+                {!! $sidebarAdCode !!}
+            </div>
+            @endif
         </aside>
     </div>
 

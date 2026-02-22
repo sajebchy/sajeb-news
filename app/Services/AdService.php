@@ -209,4 +209,126 @@ class AdService
     {
         return $ad->buildTrackedUrl($additionalParams);
     }
+
+    /**
+     * Get SEO Settings singleton
+     */
+    public function getSettings()
+    {
+        return \App\Models\SeoSetting::getInstance();
+    }
+
+    /**
+     * Check if anchor ads are enabled
+     */
+    public function showAnchorAds(): bool
+    {
+        $settings = $this->getSettings();
+        return $settings?->show_anchor_ads ?? true;
+    }
+
+    /**
+     * Check if sidebar ads are enabled
+     */
+    public function showSidebarAds(): bool
+    {
+        $settings = $this->getSettings();
+        return $settings?->show_sidebar_ads ?? true;
+    }
+
+    /**
+     * Check if between articles ads are enabled
+     */
+    public function showBetweenArticlesAds(): bool
+    {
+        $settings = $this->getSettings();
+        return $settings?->show_between_articles_ads ?? true;
+    }
+
+    /**
+     * Get anchor ad code
+     */
+    public function getAnchorAdCode(): ?string
+    {
+        $settings = $this->getSettings();
+        return $settings?->adsense_anchor_ad_code;
+    }
+
+    /**
+     * Get sidebar ad code
+     */
+    public function getSidebarAdCode(): ?string
+    {
+        $settings = $this->getSettings();
+        return $settings?->adsense_sidebar_ad_code;
+    }
+
+    /**
+     * Get between articles ad code
+     */
+    public function getBetweenArticlesAdCode(): ?string
+    {
+        $settings = $this->getSettings();
+        return $settings?->adsense_between_articles_ad_code;
+    }
+
+    /**
+     * Get AdSense publisher ID
+     */
+    public function getPublisherId(): ?string
+    {
+        $settings = $this->getSettings();
+        return $settings?->adsense_publisher_id;
+    }
+
+    /**
+     * Render anchor ad HTML
+     */
+    public function renderAnchorAd(): ?string
+    {
+        if (!$this->showAnchorAds()) {
+            return null;
+        }
+
+        $adCode = $this->getAnchorAdCode();
+        if (!$adCode) {
+            return null;
+        }
+
+        return $adCode;
+    }
+
+    /**
+     * Render sidebar ad HTML
+     */
+    public function renderSidebarAd(): ?string
+    {
+        if (!$this->showSidebarAds()) {
+            return null;
+        }
+
+        $adCode = $this->getSidebarAdCode();
+        if (!$adCode) {
+            return null;
+        }
+
+        return $adCode;
+    }
+
+    /**
+     * Render between articles ad HTML
+     */
+    public function renderBetweenArticlesAd(): ?string
+    {
+        if (!$this->showBetweenArticlesAds()) {
+            return null;
+        }
+
+        $adCode = $this->getBetweenArticlesAdCode();
+        if (!$adCode) {
+            return null;
+        }
+
+        return $adCode;
+    }
 }

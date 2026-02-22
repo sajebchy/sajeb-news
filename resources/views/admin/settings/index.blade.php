@@ -62,6 +62,11 @@
                 <i class="bi bi-bell"></i> Push Notifications
             </button>
         </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link" id="adsense-tab" data-bs-toggle="tab" data-bs-target="#adsenseSettings" type="button" role="tab" aria-controls="adsenseSettings" aria-selected="false">
+                <i class="bi bi-amd"></i> Google AdSense
+            </button>
+        </li>
     </ul>
 
     <!-- Tab Content -->
@@ -715,7 +720,140 @@
             </form>
         </div>
 
-<style>
+        <!-- Google AdSense Settings Tab -->
+        <div class="tab-pane fade" id="adsenseSettings" role="tabpanel" aria-labelledby="adsense-tab">
+            <form action="{{ route('admin.settings.update') }}" method="POST" class="row g-3">
+                @csrf
+
+                <!-- AdSense Publisher ID -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="mb-0"><i class="bi bi-amd"></i> Google AdSense Configuration</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="adsense_publisher_id" class="form-label">AdSense Publisher ID</label>
+                                <input type="text" class="form-control @error('adsense_publisher_id') is-invalid @enderror" id="adsense_publisher_id" name="adsense_publisher_id" 
+                                    value="{{ old('adsense_publisher_id', $seoSettings->adsense_publisher_id ?? '') }}" placeholder="ca-pub-xxxxxxxxxxxxxxxx">
+                                <small class="text-muted">Find this in your AdSense account (Settings > Account > Publisher ID)</small>
+                                @error('adsense_publisher_id')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Anchor Ad (Bottom Fixed) -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="mb-0"><i class="bi bi-box"></i> Anchor Ad (Bottom Fixed - Mobile)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="show_anchor_ads" name="show_anchor_ads" value="1"
+                                        {{ old('show_anchor_ads', $seoSettings->show_anchor_ads ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="show_anchor_ads">
+                                        <strong>Enable Anchor Ads</strong>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="adsense_anchor_ad_code" class="form-label">Anchor Ad Code</label>
+                                <textarea class="form-control @error('adsense_anchor_ad_code') is-invalid @enderror" id="adsense_anchor_ad_code" name="adsense_anchor_ad_code" rows="6" placeholder="Paste your Google AdSense ad code here...">{{ old('adsense_anchor_ad_code', $seoSettings->adsense_anchor_ad_code ?? '') }}</textarea>
+                                <small class="text-muted">320x50 or 300x50 mobile anchor ad code from Google AdSense</small>
+                                @error('adsense_anchor_ad_code')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sidebar Ad -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="mb-0"><i class="bi bi-columns-gap"></i> Sidebar Ad (Desktop)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="show_sidebar_ads" name="show_sidebar_ads" value="1"
+                                        {{ old('show_sidebar_ads', $seoSettings->show_sidebar_ads ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="show_sidebar_ads">
+                                        <strong>Enable Sidebar Ads</strong>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="adsense_sidebar_ad_code" class="form-label">Sidebar Ad Code</label>
+                                <textarea class="form-control @error('adsense_sidebar_ad_code') is-invalid @enderror" id="adsense_sidebar_ad_code" name="adsense_sidebar_ad_code" rows="6" placeholder="Paste your Google AdSense ad code here...">{{ old('adsense_sidebar_ad_code', $seoSettings->adsense_sidebar_ad_code ?? '') }}</textarea>
+                                <small class="text-muted">300x250 or 336x280 sidebar ad code from Google AdSense</small>
+                                @error('adsense_sidebar_ad_code')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Between Articles Ad -->
+                <div class="card shadow mb-4">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0"><i class="bi bi-arrow-down-up"></i> Between Articles Ad</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <div class="form-check form-switch mb-3">
+                                    <input class="form-check-input" type="checkbox" id="show_between_articles_ads" name="show_between_articles_ads" value="1"
+                                        {{ old('show_between_articles_ads', $seoSettings->show_between_articles_ads ?? true) ? 'checked' : '' }}>
+                                    <label class="form-check-label" for="show_between_articles_ads">
+                                        <strong>Enable Between Articles Ads</strong>
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div class="col-12">
+                                <label for="adsense_between_articles_ad_code" class="form-label">Between Articles Ad Code</label>
+                                <textarea class="form-control @error('adsense_between_articles_ad_code') is-invalid @enderror" id="adsense_between_articles_ad_code" name="adsense_between_articles_ad_code" rows="6" placeholder="Paste your Google AdSense ad code here...">{{ old('adsense_between_articles_ad_code', $seoSettings->adsense_between_articles_ad_code ?? '') }}</textarea>
+                                <small class="text-muted">728x90 or other responsive ad code from Google AdSense</small>
+                                @error('adsense_between_articles_ad_code')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Info Box -->
+                <div class="col-12">
+                    <div class="alert alert-info mb-3">
+                        <strong><i class="bi bi-info-circle"></i> AdSense Integration Help:</strong>
+                        <ul class="mb-0 mt-2">
+                            <li>Create a Google AdSense account at <a href="https://www.google.com/adsense/start/" target="_blank">google.com/adsense</a></li>
+                            <li>Generate ad codes in your AdSense dashboard</li>
+                            <li>Copy and paste the complete ad code (including the &lt;script&gt; tag) above</li>
+                            <li>You can mix different ad formats (responsive, fixed-size, etc.)</li>
+                            <li>Recommended: 320x50 (anchor), 300x250 (sidebar), 728x90 (between articles)</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-success">
+                        <i class="bi bi-check-circle"></i> Save AdSense Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+
     .alert-sm {
         padding: 0.375rem 0.75rem;
         font-size: 0.875rem;

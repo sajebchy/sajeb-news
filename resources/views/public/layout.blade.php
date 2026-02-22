@@ -1110,6 +1110,17 @@
     <!-- Custom JS -->
     @yield('scripts')
     
+    <!-- Google AdSense Anchor Ad -->
+    @php
+        $adService = new \App\Services\AdService();
+        $anchorAdCode = $adService->getAnchorAdCode();
+    @endphp
+    @if($anchorAdCode && $adService->showAnchorAds())
+        <div style="position: fixed; bottom: 0; left: 0; right: 0; z-index: 90; background: white; padding: 8px 0; box-shadow: 0 -2px 8px rgba(0,0,0,0.1);">
+            {!! $anchorAdCode !!}
+        </div>
+    @endif
+    
     <!-- Google Tag Manager (noscript) -->
     @if(config('services.google_tag_manager_id'))
     <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ config('services.google_tag_manager_id') }}"

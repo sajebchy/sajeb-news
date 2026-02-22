@@ -702,6 +702,17 @@
                     {!! $news->content !!}
                 </article>
 
+                <!-- Google AdSense Between Articles Ad -->
+                @php
+                    $adService = new \App\Services\AdService();
+                    $betweenArticlesAdCode = $adService->getBetweenArticlesAdCode();
+                @endphp
+                @if($betweenArticlesAdCode && $adService->showBetweenArticlesAds())
+                <div style="my-4; padding: 20px 0; text-align: center; background: #f5f5f5; margin: 30px 0; border-radius: 8px;">
+                    {!! $betweenArticlesAdCode !!}
+                </div>
+                @endif
+
                 <!-- Tags -->
                 @if($news->tags && $news->tags->count() > 0)
                 <div class="tags-section">
