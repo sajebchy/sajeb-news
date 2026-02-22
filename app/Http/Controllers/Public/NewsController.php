@@ -83,8 +83,20 @@ class NewsController extends Controller
      */
     public function search(Request $request)
     {
-        $query = $request->input('q');
-        abort_if(strlen($query) < 2, 422, 'Search query must be at least 2 characters');
+        $request->validate([
+            'q' => 'required|string|min:1|max:255',
+        ], [
+            'q.required' => 'Search query is required',
+            'q.min' => 'Search query must be at least 1 character',
+            'q.max' => 'Search query cannot exceed 255 characters',
+        ]);
+
+        $query = trim($request->input('q'));
+        
+        // If query is empty after trim, show empty results
+        if (empty($query)) {
+            return view('public.search', ['query' => '', 'news' => collect()]);
+        }
 
         $news = $this->newsService->searchNews($query);
 
