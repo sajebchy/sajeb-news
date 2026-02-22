@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
     {
         // Seed roles and permissions first
         $this->call(RoleAndPermissionSeeder::class);
+        
+        // Seed advertisements
+        $this->call(AdvertisementSeeder::class);
 
         // Create test admin user
         $testAdmin = User::create([

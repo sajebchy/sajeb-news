@@ -133,6 +133,13 @@
     <script async defer crossorigin="anonymous" src="https://connect.facebook.net/bn_IN/sdk.js#xfbml=1&version=v18.0" nonce="FACEBOOK_NONCE"></script>
 </head>
 <body>
+    <!-- Header Top Banner Ad -->
+    <div class="ad-header-top" style="background: white; border-bottom: 1px solid #eee; padding: 10px 0;">
+        <div class="container" style="text-align: center;">
+            <x-ad-placement placement="header_top" random="true" class="ad-header" />
+        </div>
+    </div>
+
     <!-- Navigation -->
     <!-- Desktop Navigation -->
     <div class="DHeaderMenu MobileHide d-none d-lg-block sticky-top bg-white shadow-sm">
@@ -286,6 +293,13 @@
         <div class="popup-menu-overlay" id="popupMenuOverlay" style="display: none;" onclick="togglePopupMenu()"></div>
     </div>
 
+    <!-- Navigation Sticky Ad -->
+    <div class="ad-navigation-sticky" style="background: white; border-bottom: 1px solid #eee; padding: 10px 0; display: none;">
+        <div class="container d-none d-lg-block" style="text-align: center;">
+            <x-ad-placement placement="navigation_sticky" random="true" class="ad-navigation" />
+        </div>
+    </div>
+
     <!-- Mobile Navigation -->
     <div class="visible-header d-lg-none">
         <span class="burger" onclick="openNav()">☰</span>
@@ -333,7 +347,7 @@
                         <i class="fa fa-map-marker" aria-hidden="true" style="margin-right: 8px;"></i>
                         <strong>ঢাকা</strong> &nbsp;&nbsp;&nbsp;
                         <i class="fa fa-calendar" aria-hidden="true" style="margin-right: 8px;"></i>
-                        <span id="date-display" style="font-weight: 500;">শনিবার, ১৬ ফেব্রুয়ারি ২০২৬ || ফাল্গুন ৩ ১৪৩২</span>
+                        <span id="date-display" style="font-weight: 500;"></span>
                     </p>
                 </div>
                 <div class="col-sm-6 text-end">
@@ -365,6 +379,13 @@
     <main>
         @yield('content')
     </main>
+
+    <!-- Footer Banner Ad -->
+    <div class="ad-footer-banner" style="background: white; border-top: 1px solid #eee; border-bottom: 1px solid #eee; padding: 20px 0; margin: 40px 0 0 0;">
+        <div class="container" style="text-align: center;">
+            <x-ad-placement placement="footer_banner" random="true" class="ad-footer" />
+        </div>
+    </div>
 
     <!-- Footer -->
     <hr style="margin: 60px 0 0 0; border: none; border-top: 3px solid #e5e5e0;">
@@ -995,6 +1016,95 @@
                 // This can be customized based on your needs
             }
         });
+    </script>
+
+    <!-- Bangla Date Converter Script -->
+    <script>
+        // Convert English numbers to Bangla numerals
+        function enToBn(str) {
+            const englishNumbers = ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
+            const banglaNumbers = ['০', '১', '২', '৩', '৪', '৫', '৬', '৭', '৮', '৯'];
+            let result = String(str);
+            for (let i = 0; i < englishNumbers.length; i++) {
+                result = result.replace(new RegExp(englishNumbers[i], 'g'), banglaNumbers[i]);
+            }
+            return result;
+        }
+
+        // Get Bangla day name
+        function getBanglaDayName(dayIndex) {
+            const banglaDays = ['রবিবার', 'সোমবার', 'মঙ্গলবার', 'বুধবার', 'বৃহস্পতিবার', 'শুক্রবার', 'শনিবার'];
+            return banglaDays[dayIndex];
+        }
+
+        // Get Bangla month name
+        function getBanglaMonthName(monthIndex) {
+            const banglaMonths = [
+                'জানুয়ারি', 'ফেব্রুয়ারি', 'মার্চ', 'এপ্রিল', 'মে', 'জুন',
+                'জুলাই', 'আগস্ট', 'সেপ্টেম্বর', 'অক্টোবর', 'নভেম্বর', 'ডিসেম্বর'
+            ];
+            return banglaMonths[monthIndex];
+        }
+
+        // Get Bengali calendar date from English date
+        function getBeninglCalendarDate(englishDate) {
+            // Simple Bengali calendar calculation
+            // Note: This is a simplified conversion. For accurate Bengali calendar, use a library
+            const adjustementDays = 79; // Approximate difference
+            const bengaliDate = new Date(englishDate.getTime() + adjustementDays * 24 * 60 * 60 * 1000);
+            
+            // Bengali months (they don't align perfectly with English calendar)
+            // This is a simplified version
+            const bengaliMonths = ['বৈশাখ', 'জৈষ্ঠ', 'আষাঢ়', 'শ্রাবণ', 'ভাদ্র', 'আশ্বিন', 
+                                  'কার্তিক', 'অগ্রহায়ণ', 'পৌষ', 'মাঘ', 'ফাল্গুন', 'চৈত্র'];
+            
+            // Month mapping (simplified)
+            let bengaliMonth = bengaliMonths[(bengaliDate.getMonth() + 9) % 12];
+            let bengaliDay = bengaliDate.getDate();
+            let bengaliYear = bengaliDate.getFullYear() - 593; // Approximate Bengali year
+            
+            return {
+                month: bengaliMonth,
+                day: bengaliDay,
+                year: bengaliYear
+            };
+        }
+
+        // Update date display
+        function updateBanglaDate() {
+            const now = new Date();
+            
+            // English date
+            const dayName = getBanglaDayName(now.getDay());
+            const monthName = getBanglaMonthName(now.getMonth());
+            const day = enToBn(now.getDate());
+            const year = enToBn(now.getFullYear());
+            
+            // Bengali calendar date
+            const bengaliDate = getBeninglCalendarDate(now);
+            const bengaliMonthName = bengaliDate.month;
+            const bengaliDay = enToBn(bengaliDate.day);
+            const bengaliYear = enToBn(bengaliDate.year);
+            
+            // Format: দিনবার, তারিখ মাস বছর || বাংলা মাস বাংলা তারিখ বাংলা বছর
+            const dateString = dayName + ', ' + day + ' ' + monthName + ' ' + year + 
+                             ' || ' + bengaliMonthName + ' ' + bengaliDay + ' ' + bengaliYear;
+            
+            const dateDisplay = document.getElementById('date-display');
+            if (dateDisplay) {
+                dateDisplay.textContent = dateString;
+            }
+        }
+
+        // Update date when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', updateBanglaDate);
+        } else {
+            updateBanglaDate();
+        }
+
+        // Update date every minute
+        setInterval(updateBanglaDate, 60000);
     </script>
     
     <!-- Custom JS -->

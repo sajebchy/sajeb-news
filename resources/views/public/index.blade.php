@@ -878,6 +878,13 @@
     </section>
     @endif
 
+    <!-- Homepage Top Ad (After Featured News) -->
+    <div class="container" style="margin: 40px 0;">
+        <div style="background: white; padding: 20px; border-radius: 8px; text-align: center;">
+            <x-ad-placement placement="homepage_top" random="true" class="ad-homepage-top" />
+        </div>
+    </div>
+
     <!-- Main Content with Sidebar -->
     <div class="content-wrapper">
         <!-- News Grid -->

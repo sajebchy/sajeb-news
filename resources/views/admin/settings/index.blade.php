@@ -115,6 +115,16 @@
                 </div>
 
                 <div class="col-12">
+                    <label for="about-editor" class="form-label">About Page Content</label>
+                    <p class="text-muted small mb-2"><i class="bi bi-info-circle"></i> Edit the content that appears on the About page</p>
+                    <div id="about-editor" class="ql-editor-wrapper" style="height: 300px; background-color: white; border: 1px solid #dee2e6; border-radius: 0.375rem;"></div>
+                    <input type="hidden" name="about_page_content" id="about_page_content" value="{{ old('about_page_content', $seoSettings->about_page_content ?? '') }}">
+                    @error('about_page_content')
+                        <div class="invalid-feedback d-block">{{ $message }}</div>
+                    @enderror
+                </div>
+
+                <div class="col-12">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-circle"></i> Save Settings
                     </button>
@@ -728,5 +738,78 @@
             opacity: 1;
         }
     }
+
+    .ql-editor-wrapper {
+        border-radius: 0.375rem;
+    }
+
+    .ql-toolbar {
+        border-top-left-radius: 0.375rem;
+        border-top-right-radius: 0.375rem;
+    }
+
+    .ql-container {
+        border-bottom-left-radius: 0.375rem;
+        border-bottom-right-radius: 0.375rem;
+    }
 </style>
+
+<script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
+<link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize Quill editor for About Page Content
+        const aboutEditor = new Quill('#about-editor', {
+            theme: 'snow',
+            placeholder: 'Enter the about page content here...',
+            modules: {
+                toolbar: [
+                    ['bold', 'italic', 'underline', 'strike'],
+                    ['blockquote', 'code-block'],
+                    [{ 'header': 1 }, { 'header': 2 }],
+                    [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+                    [{ 'script': 'sub'}, { 'script': 'super' }],
+                    [{ 'indent': '-1'}, { 'indent': '+1' }],
+                    [{ 'size': ['small', false, 'large', 'huge'] }],
+                    [{ 'font': [] }],
+                    [{ 'color': [] }, { 'background': [] }],
+                    [{ 'align': [] }],
+                    ['link', 'image', 'video'],
+                    ['clean'],
+                    ['formula']
+                ]
+            }
+        });
+
+        // Set initial content from hidden input
+        const contentInput = document.querySelector('#about_page_content');
+        if (contentInput && contentInput.value) {
+            try {
+                aboutEditor.setContents(JSON.parse(contentInput.value));
+            } catch (e) {
+                aboutEditor.setText(contentInput.value);
+            }
+        }
+
+        // Save content to hidden input before form submission
+        document.querySelector('form').addEventListener('submit', function() {
+            contentInput.value = JSON.stringify(aboutEditor.getContents());
+        });
+
+        // Apply Noto Serif Bengali font
+        const qlEditor = document.querySelector('.ql-editor-wrapper');
+        if (qlEditor) {
+            qlEditor.style.fontFamily = "'Noto Serif Bengali', serif";
+        }
+
+        // Bengali language support
+        const editorContainer = aboutEditor.root;
+        if (editorContainer) {
+            editorContainer.style.fontFamily = "'Noto Serif Bengali', serif";
+            editorContainer.setAttribute('lang', 'bn');
+        }
+    });
+</script>
 @endsection

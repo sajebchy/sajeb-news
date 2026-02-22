@@ -19,6 +19,7 @@ class SeoSetting extends Model
         'mobile_logo',
         'favicon',
         'og_image',
+        'about_page_content',
         'twitter_handle',
         'google_analytics_id',
         'google_tag_manager_id',

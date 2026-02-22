@@ -40,6 +40,7 @@ class SettingController extends Controller
             'site_title' => 'nullable|string|max:255',
             'site_description' => 'nullable|string|max:500',
             'meta_keywords' => 'nullable|string',
+            'about_page_content' => 'nullable|string',
             'logo' => 'nullable|image|max:5120',
             'mobile_logo' => 'nullable|image|max:5120',
             'og_image' => 'nullable|image|max:5120',

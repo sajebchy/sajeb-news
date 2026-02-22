@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Public\NewsController;
+use App\Http\Controllers\Public\PagesController;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
@@ -10,6 +11,16 @@ Route::get('/category/{category:slug}', [NewsController::class, 'category'])->na
 Route::get('/tag/{tag}', [NewsController::class, 'tag'])->name('tag.show');
 Route::get('/author/{author:id}', [NewsController::class, 'author'])->name('author.show');
 Route::get('/search', [NewsController::class, 'search'])->name('news.search');
+
+// Pages Routes
+Route::get('/about', [PagesController::class, 'about'])->name('about');
+Route::get('/contact', [PagesController::class, 'contact'])->name('contact');
+Route::post('/contact', [PagesController::class, 'storeContact'])->name('contact.store');
+Route::get('/privacy-policy', [PagesController::class, 'privacy'])->name('privacy');
+Route::get('/terms-and-conditions', [PagesController::class, 'terms'])->name('terms');
+Route::get('/sitemap', [PagesController::class, 'sitemap'])->name('sitemap');
+Route::get('/sitemap.xml', [PagesController::class, 'sitemapXml'])->name('sitemap.xml');
+Route::get('/llm.txt', [PagesController::class, 'llmTxt'])->name('llm.txt');
 
 // Live Stream Routes (Public)
 Route::get('/live', [\App\Http\Controllers\LiveStreamViewController::class, 'index'])->name('live.index');

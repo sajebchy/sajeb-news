@@ -41,14 +41,20 @@ class AdController extends Controller
     public function create()
     {
         $placements = [
-            'within_news' => 'Within News Article',
-            'homepage_banner' => 'Homepage Banner',
-            'homepage_popup' => 'Homepage Popup',
-            'homepage_header' => 'Homepage Header',
-            'homepage_footer' => 'Homepage Footer',
-            'category_page' => 'Category Page',
-            'sidebar' => 'Sidebar',
-            'between_comments' => 'Between Comments',
+            'header_top' => '1️⃣ Header Top Banner (728x90 / 970x90)',
+            'navigation_sticky' => '2️⃣ Navigation Bar Sticky (728x90)',
+            'homepage_top' => '3️⃣ Homepage Top (728x90 / Responsive)',
+            'sidebar_medium_rectangle' => '4️⃣ Sidebar Medium Rectangle (300x250)',
+            'sidebar_half_page' => '4️⃣ Sidebar Half Page (300x600)',
+            'article_2nd_paragraph' => '5️⃣ Article 2nd Paragraph (300x250)',
+            'article_middle' => '5️⃣ Article Middle (300x250)',
+            'article_conclusion' => '5️⃣ Article Before Conclusion (300x250)',
+            'below_article' => '6️⃣ Below Article Content (728x90 / 300x250)',
+            'footer_banner' => '7️⃣ Footer Banner (728x90)',
+            'between_news_listings' => '8️⃣ Between News Listings (300x250)',
+            'sticky_sidebar_left' => '9️⃣ Sticky Sidebar Left (160x600 / 300x250)',
+            'sticky_sidebar_right' => '9️⃣ Sticky Sidebar Right (160x600 / 300x250)',
+            'popup_interstitial' => '🔟 Popup/Interstitial Ads',
         ];
 
         $types = [
@@ -104,11 +110,11 @@ class AdController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'placement' => 'required|in:within_news,homepage_banner,homepage_popup,homepage_header,homepage_footer,category_page,sidebar,between_comments',
-            'type' => 'required|in:banner,sidebar,inline,featured,header,category_page,search',
+            'placement' => 'required|in:header_top,navigation_sticky,homepage_top,sidebar_medium_rectangle,sidebar_half_page,article_2nd_paragraph,article_middle,article_conclusion,below_article,footer_banner,between_news_listings,sticky_sidebar_left,sticky_sidebar_right,popup_interstitial',
+            'type' => 'required|in:banner,sidebar,inline,featured,header,responsive,sticky,popup',
             'ad_source' => 'required|in:offline,online',
             'ad_type' => 'nullable|in:standard,image,video',
-            'image_file' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
+            'image_file' => 'nullable|file|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
             'image_url' => 'nullable|url',
             'alt_text' => 'nullable|string|max:255',
             'ad_url' => 'required_if:ad_type,standard,image,video|url',
@@ -187,10 +193,16 @@ class AdController extends Controller
         $ad = Advertisement::create($validated);
 
         // Log activity
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($ad)
-            ->log('created');
+        try {
+            if (function_exists('activity')) {
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($ad)
+                    ->log('created');
+            }
+        } catch (\Exception $e) {
+            // Activity logging not available
+        }
 
         return redirect()
             ->route('admin.advertisements.show', $ad)
@@ -213,14 +225,20 @@ class AdController extends Controller
     public function edit(Advertisement $advertisement)
     {
         $placements = [
-            'within_news' => 'Within News Article',
-            'homepage_banner' => 'Homepage Banner',
-            'homepage_popup' => 'Homepage Popup',
-            'homepage_header' => 'Homepage Header',
-            'homepage_footer' => 'Homepage Footer',
-            'category_page' => 'Category Page',
-            'sidebar' => 'Sidebar',
-            'between_comments' => 'Between Comments',
+            'header_top' => '1️⃣ Header Top Banner (728x90 / 970x90)',
+            'navigation_sticky' => '2️⃣ Navigation Bar Sticky (728x90)',
+            'homepage_top' => '3️⃣ Homepage Top (728x90 / Responsive)',
+            'sidebar_medium_rectangle' => '4️⃣ Sidebar Medium Rectangle (300x250)',
+            'sidebar_half_page' => '4️⃣ Sidebar Half Page (300x600)',
+            'article_2nd_paragraph' => '5️⃣ Article 2nd Paragraph (300x250)',
+            'article_middle' => '5️⃣ Article Middle (300x250)',
+            'article_conclusion' => '5️⃣ Article Before Conclusion (300x250)',
+            'below_article' => '6️⃣ Below Article Content (728x90 / 300x250)',
+            'footer_banner' => '7️⃣ Footer Banner (728x90)',
+            'between_news_listings' => '8️⃣ Between News Listings (300x250)',
+            'sticky_sidebar_left' => '9️⃣ Sticky Sidebar Left (160x600 / 300x250)',
+            'sticky_sidebar_right' => '9️⃣ Sticky Sidebar Right (160x600 / 300x250)',
+            'popup_interstitial' => '🔟 Popup/Interstitial Ads',
         ];
 
         $types = [
@@ -229,8 +247,9 @@ class AdController extends Controller
             'inline' => 'Inline',
             'featured' => 'Featured',
             'header' => 'Header',
-            'category_page' => 'Category Page',
-            'search' => 'Search',
+            'responsive' => 'Responsive',
+            'sticky' => 'Sticky',
+            'popup' => 'Popup',
         ];
 
         $adSources = [
@@ -277,11 +296,11 @@ class AdController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'placement' => 'required|in:within_news,homepage_banner,homepage_popup,homepage_header,homepage_footer,category_page,sidebar,between_comments',
-            'type' => 'required|in:banner,sidebar,inline,featured,header,category_page,search',
+            'placement' => 'required|in:header_top,navigation_sticky,homepage_top,sidebar_medium_rectangle,sidebar_half_page,article_2nd_paragraph,article_middle,article_conclusion,below_article,footer_banner,between_news_listings,sticky_sidebar_left,sticky_sidebar_right,popup_interstitial',
+            'type' => 'required|in:banner,sidebar,inline,featured,header,responsive,sticky,popup',
             'ad_source' => 'required|in:offline,online',
             'ad_type' => 'nullable|in:standard,image,video',
-            'image_file' => 'nullable|image|mimes:jpeg,png,gif,webp|max:5120',
+            'image_file' => 'nullable|file|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
             'image_url' => 'nullable|url',
             'alt_text' => 'nullable|string|max:255',
             'ad_url' => 'required_if:ad_type,standard,image,video|url',
@@ -358,10 +377,16 @@ class AdController extends Controller
         $advertisement->update($validated);
 
         // Log activity
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($advertisement)
-            ->log('updated');
+        try {
+            if (function_exists('activity')) {
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($advertisement)
+                    ->log('updated');
+            }
+        } catch (\Exception $e) {
+            // Activity logging not available
+        }
 
         return redirect()
             ->route('admin.advertisements.show', $advertisement)
@@ -374,10 +399,16 @@ class AdController extends Controller
     public function destroy(Advertisement $advertisement)
     {
         // Log activity before deletion
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($advertisement)
-            ->log('deleted');
+        try {
+            if (function_exists('activity')) {
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($advertisement)
+                    ->log('deleted');
+            }
+        } catch (\Exception $e) {
+            // Activity logging not available
+        }
 
         $advertisement->delete();
 
@@ -398,10 +429,16 @@ class AdController extends Controller
         $status = $advertisement->is_active ? 'activated' : 'deactivated';
 
         // Log activity
-        activity()
-            ->causedBy(auth()->user())
-            ->performedOn($advertisement)
-            ->log($status);
+        try {
+            if (function_exists('activity')) {
+                activity()
+                    ->causedBy(auth()->user())
+                    ->performedOn($advertisement)
+                    ->log($status);
+            }
+        } catch (\Exception $e) {
+            // Activity logging not available
+        }
 
         return back()->with('success', 'Advertisement ' . $status . ' successfully!');
     }
@@ -430,7 +467,7 @@ class AdController extends Controller
                 'Placement' => $ad->placement,
                 'Type' => $ad->type,
                 'Status' => $ad->is_active ? 'Active' : 'Inactive',
-                'Start Date' => $ad->start_date->format('Y-m-d'),
+                'Start Date' => $ad->start_date ? $ad->start_date->format('Y-m-d') : 'N/A',
                 'End Date' => $ad->end_date ? $ad->end_date->format('Y-m-d') : 'N/A',
                 'Views' => $ad->views,
                 'Clicks' => $ad->clicks,

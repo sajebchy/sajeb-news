@@ -22,4 +22,74 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+
+    # SEO Optimization - Canonical URLs
+    # Allow direct access to important SEO files
+    RewriteCond %{REQUEST_FILENAME} !^/sitemap\.xml$
+    RewriteCond %{REQUEST_FILENAME} !^/robots\.txt$
+    RewriteCond %{REQUEST_FILENAME} !^/llm\.txt$
+    RewriteCond %{REQUEST_FILENAME} !^/service-worker\.js$
 </IfModule>
+
+# Performance Optimization
+<IfModule mod_headers.c>
+    # Enable GZIP compression
+    <IfModule mod_deflate.c>
+        AddType application/x-font-woff2 .woff2
+        AddEncoding gzip .svgz
+        <FilesMatch "\.(html|css|js|json|xml|txt|svg|svgz|ttf|otf|woff|woff2)$">
+            Header append Vary: Accept-Encoding
+        </FilesMatch>
+    </IfModule>
+
+    # Set Cache-Control headers
+    <FilesMatch "^(photo|video|mp3)\.php$">
+        Header set Cache-Control "max-age=2592000, public"
+    </FilesMatch>
+    <FilesMatch "\.(jpg|jpeg|gif|png|ico|css|js|woff|woff2|ttf|svg|svgz)$">
+        Header set Cache-Control "public, max-age=31536000"
+        Header unset Last-Modified
+    </FilesMatch>
+    <FilesMatch "\.(html|htm|xml|json|php)$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
+    Header set Cache-Control "public, max-age=900"
+</IfModule>
+
+# Expires
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access 2 weeks"
+    ExpiresByType image/jpg "access 2 weeks"
+    ExpiresByType image/jpeg "access 2 weeks"
+    ExpiresByType image/gif "access 2 weeks"
+    ExpiresByType image/png "access 2 weeks"
+    ExpiresByType image/svg+xml "access 2 weeks"
+    ExpiresByType image/x-icon "access 1 year"
+    ExpiresByType text/css "access 1 year"
+    ExpiresByType application/javascript "access 1 year"
+    ExpiresByType font/ttf "access 1 year"
+    ExpiresByType font/otf "access 1 year"
+    ExpiresByType font/woff "access 1 year"
+    ExpiresByType font/woff2 "access 1 year"
+    ExpiresByType application/font-woff "access 1 year"
+    ExpiresByType application/vnd.ms-fontobject "access 1 year"
+</IfModule>
+
+# Security Headers
+<IfModule mod_headers.c>
+    # Prevent XSS attacks
+    Header set X-XSS-Protection "1; mode=block"
+    # Prevent clickjacking
+    Header set X-Frame-Options "SAMEORIGIN"
+    # Prevent MIME sniffing
+    Header set X-Content-Type-Options "nosniff"
+    # Enable HSTS (HTTPS Strict Transport Security)
+    Header set Strict-Transport-Security "max-age=63072000; includeSubDomains"
+</IfModule>
+
+# Block access to sensitive files
+<FilesMatch "^(\.env|\.git|\.htaccess|composer\.|wp-config|config\.php|boot\.php|artisan|database)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>

@@ -11,63 +11,121 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('advertisements', function (Blueprint $table) {
-            // Ad Placement Types
-            $table->enum('placement', [
-                'within_news',           // Within news article content
-                'homepage_banner',       // Homepage banner
-                'homepage_popup',        // Homepage popup
-                'homepage_header',       // Homepage header
-                'homepage_footer',       // Homepage footer
-                'category_page',         // Category page
-                'sidebar',               // Sidebar
-                'between_comments'       // Between comments
-            ])->after('type')->default('sidebar');
+        if (Schema::hasTable('advertisements')) {
+            Schema::table('advertisements', function (Blueprint $table) {
+                // Ad Placement Types
+                if (!Schema::hasColumn('advertisements', 'placement')) {
+                    $table->enum('placement', [
+                        'within_news',           // Within news article content
+                        'homepage_banner',       // Homepage banner
+                        'homepage_popup',        // Homepage popup
+                        'homepage_header',       // Homepage header
+                        'homepage_footer',       // Homepage footer
+                        'category_page',         // Category page
+                        'sidebar',               // Sidebar
+                        'between_comments'       // Between comments
+                    ])->after('type')->default('sidebar');
+                }
 
-            // Image and URL
-            $table->string('image_url')->nullable()->after('placement');
-            $table->string('ad_url')->nullable()->after('image_url');
-            $table->string('alt_text')->nullable()->after('ad_url');
+                // Image and URL
+                if (!Schema::hasColumn('advertisements', 'image_url')) {
+                    $table->string('image_url')->nullable()->after('placement');
+                }
+                if (!Schema::hasColumn('advertisements', 'ad_url')) {
+                    $table->string('ad_url')->nullable()->after('image_url');
+                }
+                if (!Schema::hasColumn('advertisements', 'alt_text')) {
+                    $table->string('alt_text')->nullable()->after('ad_url');
+                }
 
-            // UTM Parameters
-            $table->string('utm_source')->nullable()->after('alt_text');
-            $table->string('utm_medium')->nullable()->after('utm_source');
-            $table->string('utm_campaign')->nullable()->after('utm_medium');
-            $table->string('utm_term')->nullable()->after('utm_campaign');
-            $table->string('utm_content')->nullable()->after('utm_term');
+                // UTM Parameters
+                if (!Schema::hasColumn('advertisements', 'utm_source')) {
+                    $table->string('utm_source')->nullable()->after('alt_text');
+                }
+                if (!Schema::hasColumn('advertisements', 'utm_medium')) {
+                    $table->string('utm_medium')->nullable()->after('utm_source');
+                }
+                if (!Schema::hasColumn('advertisements', 'utm_campaign')) {
+                    $table->string('utm_campaign')->nullable()->after('utm_medium');
+                }
+                if (!Schema::hasColumn('advertisements', 'utm_term')) {
+                    $table->string('utm_term')->nullable()->after('utm_campaign');
+                }
+                if (!Schema::hasColumn('advertisements', 'utm_content')) {
+                    $table->string('utm_content')->nullable()->after('utm_term');
+                }
 
-            // Performance Tracking
-            $table->integer('views')->default(0)->after('utm_content');
-            $table->integer('clicks')->default(0)->after('views');
+                // Performance Tracking
+                if (!Schema::hasColumn('advertisements', 'views')) {
+                    $table->integer('views')->default(0)->after('utm_content');
+                }
+                if (!Schema::hasColumn('advertisements', 'clicks')) {
+                    $table->integer('clicks')->default(0)->after('views');
+                }
 
-            // Targeting Fields
-            $table->json('target_categories')->nullable()->after('clicks');
-            $table->json('target_tags')->nullable()->after('target_categories');
+                // Targeting Fields
+                if (!Schema::hasColumn('advertisements', 'target_categories')) {
+                    $table->json('target_categories')->nullable()->after('clicks');
+                }
+                if (!Schema::hasColumn('advertisements', 'target_tags')) {
+                    $table->json('target_tags')->nullable()->after('target_categories');
+                }
 
-            // Display Settings
-            $table->integer('display_order')->default(0)->after('target_tags');
-            $table->boolean('show_on_mobile')->default(true)->after('display_order');
-            $table->boolean('show_on_desktop')->default(true)->after('show_on_mobile');
+                // Display Settings
+                if (!Schema::hasColumn('advertisements', 'display_order')) {
+                    $table->integer('display_order')->default(0)->after('target_tags');
+                }
+                if (!Schema::hasColumn('advertisements', 'show_on_mobile')) {
+                    $table->boolean('show_on_mobile')->default(true)->after('display_order');
+                }
+                if (!Schema::hasColumn('advertisements', 'show_on_desktop')) {
+                    $table->boolean('show_on_desktop')->default(true)->after('show_on_mobile');
+                }
 
-            // Constraints
-            $table->integer('daily_impression_limit')->nullable()->after('show_on_desktop');
-            $table->integer('max_clicks_per_day')->nullable()->after('daily_impression_limit');
+                // Constraints
+                if (!Schema::hasColumn('advertisements', 'daily_impression_limit')) {
+                    $table->integer('daily_impression_limit')->nullable()->after('show_on_desktop');
+                }
+                if (!Schema::hasColumn('advertisements', 'max_clicks_per_day')) {
+                    $table->integer('max_clicks_per_day')->nullable()->after('daily_impression_limit');
+                }
 
-            // CPC/CPM Settings
-            $table->decimal('cpc_amount', 10, 2)->nullable()->after('max_clicks_per_day')->comment('Cost per click');
-            $table->decimal('cpm_amount', 10, 2)->nullable()->after('cpc_amount')->comment('Cost per thousand impressions');
-            $table->decimal('total_spent', 10, 2)->default(0)->after('cpm_amount');
+                // CPC/CPM Settings
+                if (!Schema::hasColumn('advertisements', 'cpc_amount')) {
+                    $table->decimal('cpc_amount', 10, 2)->nullable()->after('max_clicks_per_day')->comment('Cost per click');
+                }
+                if (!Schema::hasColumn('advertisements', 'cpm_amount')) {
+                    $table->decimal('cpm_amount', 10, 2)->nullable()->after('cpc_amount')->comment('Cost per thousand impressions');
+                }
+                if (!Schema::hasColumn('advertisements', 'total_spent')) {
+                    $table->decimal('total_spent', 10, 2)->default(0)->after('cpm_amount');
+                }
 
-            // Advertiser Info
-            $table->string('advertiser_name')->nullable()->after('total_spent');
-            $table->string('advertiser_email')->nullable()->after('advertiser_name');
-            $table->string('advertiser_phone')->nullable()->after('advertiser_email');
+                // Advertiser Info
+                if (!Schema::hasColumn('advertisements', 'advertiser_name')) {
+                    $table->string('advertiser_name')->nullable()->after('total_spent');
+                }
+                if (!Schema::hasColumn('advertisements', 'advertiser_email')) {
+                    $table->string('advertiser_email')->nullable()->after('advertiser_name');
+                }
+                if (!Schema::hasColumn('advertisements', 'advertiser_phone')) {
+                    $table->string('advertiser_phone')->nullable()->after('advertiser_email');
+                }
 
-            // Status and Notes
-            $table->text('notes')->nullable()->after('advertiser_phone');
-            $table->index('placement');
-            $table->index('display_order');
-        });
+                // Status and Notes
+                if (!Schema::hasColumn('advertisements', 'notes')) {
+                    $table->text('notes')->nullable()->after('advertiser_phone');
+                }
+                
+                // Add indices if they don't exist
+                try {
+                    $table->index('placement');
+                } catch (\Exception $e) {}
+                try {
+                    $table->index('display_order');
+                } catch (\Exception $e) {}
+            });
+        }
     }
 
     /**

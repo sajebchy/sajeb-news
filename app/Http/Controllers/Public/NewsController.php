@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Models\News;
 use App\Models\Category;
+use App\Models\Advertisement;
 use App\Services\NewsService;
 use App\Services\SeoService;
 use Illuminate\Http\Request;
@@ -47,8 +48,19 @@ class NewsController extends Controller
         $related = $this->newsService->getRelatedNews($news, 5);
         $metaTags = $this->seoService->getNewsMetaTags($news);
         $schema = $this->seoService->getNewsSchema($news);
+        
+        // Fetch active ads for within_news placement
+        $ads = Advertisement::where('placement', 'within_news')
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where(function($query) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>=', now());
+            })
+            ->inRandomOrder()
+            ->first();
 
-        return view('public.news.show', compact('news', 'related', 'metaTags', 'schema'));
+        return view('public.news.show-modern', compact('news', 'related', 'metaTags', 'schema', 'ads'));
     }
 
     /**

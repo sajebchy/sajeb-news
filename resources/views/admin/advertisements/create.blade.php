@@ -13,7 +13,7 @@
 
 <div class="row">
     <div class="col-12 col-lg-8">
-        <form action="{{ route('admin.advertisements.store') }}" method="POST" class="needs-validation">
+        <form action="{{ route('admin.advertisements.store') }}" method="POST" enctype="multipart/form-data" class="needs-validation">
             @csrf
 
             <!-- Basic Information -->
