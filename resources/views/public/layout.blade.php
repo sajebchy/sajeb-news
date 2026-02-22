@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="2000">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="vapid-public-key" content="{{ env('VAPID_PUBLIC_KEY', '') }}">
     <title>@yield('title', $settings->site_title ?? 'Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল')</title>
@@ -34,10 +33,14 @@
     <!-- PWA Manifest -->
     <link rel="manifest" href="/manifest.json">
     
-    <!-- Preload Critical Resources -->
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style">
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" as="style">
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" as="style">
+    <!-- Preload Critical Resources with DNS Prefetch -->
+    <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
+    <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" as="style" crossorigin>
     
     <!-- JSON-LD Schema -->
     @php
@@ -61,14 +64,17 @@
     <!-- Additional Schema (page-specific) -->
     @yield('schema')
     
-    <!-- Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap CSS - Load with async to prevent blocking -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" media="print" onload="this.media='all'" crossorigin>
     
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Font Awesome - Defer loading if possible -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" media="print" onload="this.media='all'" crossorigin>
+    <noscript>
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" crossorigin>
+    </noscript>
     
-    <!-- Google Fonts - Shurjo (Bengali Font) -->
-    <link href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Shurjo (Bengali Font) with optimized loading -->
+    <link href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" rel="stylesheet" crossorigin>
     
     <!-- Custom CSS -->
     <style>

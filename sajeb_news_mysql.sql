@@ -1,9 +1,14 @@
 -- Sajeb News - MySQL Database Schema
 -- Compatible with cPanel phpMyAdmin
-
--- Sajeb News - MySQL Database Schema
--- Created for cPanel/phpMyAdmin
--- NOTE: Database must be created first in cPanel
+-- Version 2.0 - Updated February 22, 2026
+-- 
+-- Features Added:
+-- - Live Streaming with Stream Comments
+-- - Push Notifications Support
+-- - Enhanced Schema Settings
+-- - Improved SEO Settings
+-- - Stream Analytics
+-- - Advanced Comment System
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -199,6 +204,28 @@ CREATE TABLE `seo_settings` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
   `value` longtext COLLATE utf8mb4_unicode_ci,
+  `site_name` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `site_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `site_title` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `site_description` text COLLATE utf8mb4_unicode_ci,
+  `meta_keywords` text COLLATE utf8mb4_unicode_ci,
+  `og_image` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `favicon` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `logo` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `mobile_logo` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `ga_tracking_id` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `gtm_tracking_id` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `facebook_pixel_id` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `recaptcha_site_key` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `recaptcha_secret_key` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `recaptcha_score_threshold` decimal(3,2) DEFAULT 0.50,
+  `about_page_content` longtext COLLATE utf8mb4_unicode_ci,
+  `push_notifications_enabled` boolean DEFAULT 0,
+  `vapid_public_key` text COLLATE utf8mb4_unicode_ci,
+  `vapid_private_key` text COLLATE utf8mb4_unicode_ci,
+  `adsense_client_id` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `adsense_slot_id` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `enable_adsense` boolean DEFAULT 0,
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -250,12 +277,19 @@ CREATE TABLE `comments` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `news_id` bigint UNSIGNED NOT NULL,
   `user_id` bigint UNSIGNED,
+  `facebook_user_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `comment_text` text COLLATE utf8mb4_unicode_ci,
   `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `approved` boolean DEFAULT 0,
+  `spam_score` decimal(5,2) DEFAULT 0,
+  `recaptcha_score` decimal(3,2),
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL,
   KEY `comments_news_id_index` (`news_id`),
   KEY `comments_user_id_index` (`user_id`),
+  KEY `comments_approved_index` (`approved`),
+  KEY `comments_created_at_index` (`created_at`),
   FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE,
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -264,13 +298,141 @@ CREATE TABLE `comments` (
 
 CREATE TABLE `live_streams` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` bigint UNSIGNED NOT NULL,
   `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
   `description` text COLLATE utf8mb4_unicode_ci,
-  `stream_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
+  `status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'draft',
   `thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `status` enum('scheduled','live','ended') COLLATE utf8mb4_unicode_ci DEFAULT 'scheduled',
+  `stream_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
+  `stream_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `visibility` enum('public','private','unlisted') COLLATE utf8mb4_unicode_ci DEFAULT 'public',
+  `viewer_count` int DEFAULT 0,
+  `peak_viewers` int DEFAULT 0,
+  `scheduled_at` timestamp NULL,
   `started_at` timestamp NULL,
   `ended_at` timestamp NULL,
+  `duration_seconds` int DEFAULT 0,
+  `stream_tags` text COLLATE utf8mb4_unicode_ci,
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `allow_comments` boolean DEFAULT 1,
+  `allow_chat` boolean DEFAULT 1,
+  `recording_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `is_featured` boolean DEFAULT 0,
+  `view_count` int DEFAULT 0,
+  `like_count` int DEFAULT 0,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  `deleted_at` timestamp NULL,
+  KEY `live_streams_status_index` (`status`),
+  KEY `live_streams_user_id_index` (`user_id`),
+  KEY `live_streams_started_at_index` (`started_at`),
+  KEY `live_streams_is_featured_index` (`is_featured`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Live streams table
+
+CREATE TABLE `live_streams` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `user_id` bigint UNSIGNED NOT NULL,
+  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `description` text COLLATE utf8mb4_unicode_ci,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
+  `status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'draft',
+  `thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `stream_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
+  `stream_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `visibility` enum('public','private','unlisted') COLLATE utf8mb4_unicode_ci DEFAULT 'public',
+  `viewer_count` int DEFAULT 0,
+  `peak_viewers` int DEFAULT 0,
+  `scheduled_at` timestamp NULL,
+  `started_at` timestamp NULL,
+  `ended_at` timestamp NULL,
+  `duration_seconds` int DEFAULT 0,
+  `stream_tags` text COLLATE utf8mb4_unicode_ci,
+  `category` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `allow_comments` boolean DEFAULT 1,
+  `allow_chat` boolean DEFAULT 1,
+  `recording_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `is_featured` boolean DEFAULT 0,
+  `view_count` int DEFAULT 0,
+  `like_count` int DEFAULT 0,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  `deleted_at` timestamp NULL,
+  KEY `live_streams_status_index` (`status`),
+  KEY `live_streams_user_id_index` (`user_id`),
+  KEY `live_streams_started_at_index` (`started_at`),
+  KEY `live_streams_is_featured_index` (`is_featured`),
+  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Stream comments table
+
+CREATE TABLE `stream_comments` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `live_stream_id` bigint UNSIGNED NOT NULL,
+  `commenter_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `commenter_email` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `facebook_id` varchar(255) COLLATE utf8mb4_unicode_ci UNIQUE,
+  `facebook_profile_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `commenter_avatar` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `comment_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `source` enum('facebook','website','anonymous') COLLATE utf8mb4_unicode_ci DEFAULT 'website',
+  `is_verified` boolean DEFAULT 0,
+  `is_pinned` boolean DEFAULT 0,
+  `likes_count` int DEFAULT 0,
+  `is_approved` boolean DEFAULT 1,
+  `admin_notes` text COLLATE utf8mb4_unicode_ci,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  `deleted_at` timestamp NULL,
+  KEY `stream_comments_live_stream_id_index` (`live_stream_id`),
+  KEY `stream_comments_facebook_id_index` (`facebook_id`),
+  KEY `stream_comments_created_at_index` (`created_at`),
+  KEY `stream_comments_is_pinned_index` (`is_pinned`),
+  FOREIGN KEY (`live_stream_id`) REFERENCES `live_streams` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Push subscriptions table
+
+CREATE TABLE `push_subscriptions` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `endpoint` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
+  `public_key` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `auth_token` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `user_ip` varchar(45) COLLATE utf8mb4_unicode_ci,
+  `user_agent` text COLLATE utf8mb4_unicode_ci,
+  `is_active` boolean DEFAULT 1,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  KEY `push_subscriptions_is_active_index` (`is_active`),
+  KEY `push_subscriptions_created_at_index` (`created_at`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Schema settings table
+
+CREATE TABLE `schema_settings` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `enable_news_article_schema` boolean DEFAULT 1,
+  `enable_organization_schema` boolean DEFAULT 1,
+  `enable_website_schema` boolean DEFAULT 1,
+  `enable_breadcrumb_schema` boolean DEFAULT 1,
+  `enable_person_schema` boolean DEFAULT 1,
+  `enable_image_object_schema` boolean DEFAULT 1,
+  `enable_video_object_schema` boolean DEFAULT 0,
+  `enable_live_blog_schema` boolean DEFAULT 0,
+  `enable_faq_schema` boolean DEFAULT 0,
+  `enable_job_posting_schema` boolean DEFAULT 0,
+  `enable_event_schema` boolean DEFAULT 0,
+  `enable_claim_review_schema` boolean DEFAULT 0,
+  `organization_name` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `organization_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `organization_logo` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `organization_contact_type` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `organization_contact_phone` varchar(20) COLLATE utf8mb4_unicode_ci,
+  `organization_contact_email` varchar(255) COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
