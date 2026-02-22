@@ -88,6 +88,55 @@
             font-weight: 400;
             line-height: 1.8;
         }
+
+        /* Live TV Button Styling */
+        .live-tv-btn-public {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem !important;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
+            color: white !important;
+            border-radius: 6px;
+            font-weight: 600;
+            text-decoration: none !important;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            white-space: nowrap;
+            margin-left: 0.5rem;
+        }
+
+        .live-tv-btn-public:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
+            background: linear-gradient(135deg, #c82333 0%, #b01e2a 100%) !important;
+            color: white !important;
+            text-decoration: none;
+        }
+
+        .live-tv-btn-public:active {
+            transform: translateY(0);
+            color: white !important;
+        }
+
+        /* Live dot animation */
+        .live-dot-public {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse-live-public 1.5s infinite;
+        }
+
+        @keyframes pulse-live-public {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
+        }
     </style>
     
     @yield('styles')
@@ -164,6 +213,16 @@
 
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                             <ul class="navbar-nav ms-auto">
+                                @php
+                                    $activeLiveStream = \App\Models\LiveStream::where('status', 'active')
+                                        ->where('start_time', '<=', now())
+                                        ->where(function($query) {
+                                            $query->whereNull('end_time')
+                                                  ->orWhere('end_time', '>', now());
+                                        })
+                                        ->first();
+                                @endphp
+                                
                                 <li class="nav-item">
                                     <a class="nav-link fw-500" href="{{ route('home') }}"><i class="fa fa-home"></i></a>
                                 </li>
@@ -196,6 +255,14 @@
                                     </a>
                                 </li>
                                 @endif
+
+                                <!-- Live TV Button -->
+                                <li class="nav-item ms-2">
+                                    <a href="{{ $activeLiveStream ? route('live.watch', $activeLiveStream->slug) : route('live.index') }}" class="nav-link live-tv-btn-public">
+                                        <span class="live-dot-public"></span>
+                                        <span>লাইভ টিভি</span>
+                                    </a>
+                                </li>
 
                                 <li class="nav-item menu-search">
                                     <a class="nav-link-search" href="javascript:void(0)" onclick="toggleSearch()">
@@ -323,6 +390,21 @@
     <div id="sideNav" class="side-nav">
         <button class="closebtn" onclick="closeNav()">&times;</button>
         <a href="{{ route('home') }}">হোম</a>
+        
+        <!-- Live TV Button for Mobile -->
+        @php
+            $activeLiveStream = \App\Models\LiveStream::where('status', 'active')
+                ->where('start_time', '<=', now())
+                ->where(function($query) {
+                    $query->whereNull('end_time')
+                          ->orWhere('end_time', '>', now());
+                })
+                ->first();
+        @endphp
+        <a href="{{ $activeLiveStream ? route('live.watch', $activeLiveStream->slug) : route('live.index') }}" class="live-tv-mobile-link" onclick="closeNav()">
+            <span class="live-dot-mobile"></span> লাইভ টিভি
+        </a>
+        
         @foreach(\App\Models\Category::limit(10)->get() as $category)
         <a href="{{ route('category.show', $category->slug) }}" onclick="closeNav()">{{ $category->name }}</a>
         @endforeach
@@ -803,6 +885,40 @@
         .side-nav a:hover {
             color: #f1f1f1;
             background-color: #262626;
+        }
+
+        .side-nav .live-tv-mobile-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 12px 32px;
+            background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+            color: white !important;
+            font-weight: 600;
+            border-bottom: 1px solid #333;
+        }
+
+        .side-nav .live-tv-mobile-link:hover {
+            background: linear-gradient(135deg, #c82333 0%, #b01e2a 100%);
+            color: white;
+        }
+
+        .live-dot-mobile {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            animation: pulse-live-mobile 1.5s infinite;
+        }
+
+        @keyframes pulse-live-mobile {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.6;
+            }
         }
 
         .side-nav .closebtn {

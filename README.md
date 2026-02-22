@@ -134,8 +134,11 @@ php artisan key:generate
 # Configure database in .env
 # DATABASE_URL=mysql://user:pass@localhost/sajeb_news
 
-# Run migrations and seeders
+# Option 1: Run migrations and seeders (Recommended for development)
 php artisan migrate --seed
+
+# Option 2: Import existing database dump (For production or quick setup)
+# mysql -u root -p sajeb_news < sajeb_news_mysql.sql
 
 # Compile assets
 npm run build
@@ -151,6 +154,38 @@ http://localhost:8000
 - **Email**: admin@test.com
 - **Password**: 12345
 - **Admin Panel**: http://localhost:8000/admin
+
+---
+
+## 🗄️ Database Setup
+
+### Using Database Migrations (Recommended for Development)
+```bash
+php artisan migrate --seed
+```
+This will create all tables and seed them with sample data.
+
+### Using Database Dump (For Quick Setup or Production)
+The project includes a complete MySQL database dump in `sajeb_news_mysql.sql`.
+
+**Import via Command Line:**
+```bash
+mysql -u root -p sajeb_news < sajeb_news_mysql.sql
+```
+
+**Import via phpMyAdmin (cPanel):**
+1. Create a new database named `sajeb_news`
+2. Select the database and go to **Import**
+3. Choose the file `sajeb_news_mysql.sql`
+4. Click **Import**
+
+**Database includes:**
+- ✅ All tables with proper structure
+- ✅ User roles and permissions
+- ✅ Sample news articles
+- ✅ Categories and tags
+- ✅ Admin user account
+- ✅ Settings configurations
 
 ---
 
