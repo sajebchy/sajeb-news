@@ -1,4 +1,4 @@
-# 📰 Sajeb NEWS - Bangladesh News Portal
+# Sajeb NEWS - Bangladesh News Portal
 
 A complete professional, dynamic, and SEO-optimized news portal platform built for Bangladesh. Built with **Laravel 11**, **Bootstrap 5**, and modern web technologies.
 
@@ -217,18 +217,6 @@ GET  /llm.txt                   → LLM information
 # Live Streaming
 GET  /live                      → Live streams list
 GET  /live/{slug}               → Watch live stream
-```
-
-### Admin Routes
-```
-GET  /admin                     → Dashboard
-GET  /admin/news                → News management
-GET  /admin/categories          → Category management
-GET  /admin/tags                → Tag management
-GET  /admin/users               → User management
-GET  /admin/settings            → Site settings (includes About page editor)
-GET  /admin/analytics           → Analytics & reports
-GET  /admin/activity            → Activity logs
 ```
 
 ---
