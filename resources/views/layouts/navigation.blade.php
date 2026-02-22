@@ -23,7 +23,7 @@
             @endphp
             
             <!-- Navigation Links -->
-            <ul class="navbar-nav mb-2 mb-lg-0">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                 @auth
                     @if (Auth::user()->hasRole('admin') || Auth::user()->can('manage_news'))
                         <li class="nav-item">
@@ -63,11 +63,11 @@
                     @endif
                 @endauth
 
-                <!-- Live TV Button (Desktop) -->
-                <li class="nav-item d-none d-lg-block ms-2">
-                    <a href="{{ $activeLiveStream ? route('live.watch', $activeLiveStream->slug) : route('live.index') }}" class="nav-link btn btn-danger btn-sm" style="display: inline-flex; align-items: center; gap: 0.5rem; font-weight: 600; color: white !important; padding: 0.5rem 1rem !important; border-radius: 6px; text-decoration: none;">
-                        <i class="fas fa-circle" style="font-size: 0.5rem;"></i>
-                        লাইভ টিভি
+                <!-- Live TV Button -->
+                <li class="nav-item ms-2">
+                    <a href="{{ $activeLiveStream ? route('live.watch', $activeLiveStream->slug) : route('live.index') }}" class="live-tv-btn">
+                        <span class="live-dot"></span>
+                        <span>লাইভ টিভি</span>
                     </a>
                 </li>
             </ul>
@@ -107,24 +107,28 @@
                 @endauth
             </ul>
         </div>
-    </div>
+</div>
 </nav>
+
 <style>
     /* Live TV Button Styling */
-    .navbar .nav-link.btn-danger {
+    .navbar .live-tv-btn {
+        display: inline-flex !important;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem !important;
         background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important;
-        border: none !important;
+        color: white !important;
         border-radius: 6px;
         font-weight: 600;
+        text-decoration: none !important;
         transition: all 0.3s ease;
         box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
         white-space: nowrap;
-        color: white !important;
-        text-decoration: none !important;
-        padding: 0.5rem 1rem !important;
+        margin-left: 0.5rem;
     }
 
-    .navbar .nav-link.btn-danger:hover {
+    .navbar .live-tv-btn:hover {
         transform: translateY(-2px);
         box-shadow: 0 4px 12px rgba(220, 53, 69, 0.4);
         background: linear-gradient(135deg, #c82333 0%, #b01e2a 100%) !important;
@@ -132,25 +136,52 @@
         text-decoration: none;
     }
 
-    .navbar .nav-link.btn-danger:active,
-    .navbar .nav-link.btn-danger.active {
+    .navbar .live-tv-btn:active {
         transform: translateY(0);
-        box-shadow: 0 2px 6px rgba(220, 53, 69, 0.3);
         color: white !important;
     }
 
-    /* Animate live dot */
-    .navbar .btn-danger i {
-        animation: pulse-dot 1.5s infinite;
+    /* Live dot animation */
+    .navbar .live-dot {
         display: inline-block;
+        width: 8px;
+        height: 8px;
+        background: white;
+        border-radius: 50%;
+        animation: pulse-live 1.5s infinite;
     }
 
-    @keyframes pulse-dot {
+    @keyframes pulse-live {
         0%, 100% {
             opacity: 1;
         }
         50% {
             opacity: 0.6;
+        }
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 991.98px) {
+        .navbar .live-tv-btn {
+            padding: 0.35rem 0.75rem !important;
+            font-size: 0.85rem;
+        }
+
+        .navbar .live-tv-btn span:last-child {
+            display: none;
+        }
+
+        .navbar .live-tv-btn {
+            width: 48px;
+            justify-content: center;
+            text-align: center;
+        }
+
+        .navbar .live-tv-btn::after {
+            content: 'LIVE';
+            display: inline-block;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
     }
 </style>
