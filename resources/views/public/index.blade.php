@@ -1282,6 +1282,7 @@
             this.subscribeBtn = document.getElementById('push-subscribe-btn');
             this.closeBtn = document.getElementById('close-modal-btn');
             this.floatingBtn = document.getElementById('floating-subscribe-btn');
+            this.modalShownKey = 'sajat_modal_shown_' + new Date().toDateString();
             this.init();
         }
 
@@ -1314,6 +1315,14 @@
 
             // Setup subscribe button
             this.setupSubscribeButton();
+            
+            // Auto-open modal after 2 seconds (only if not shown before in this session)
+            if (!sessionStorage.getItem(this.modalShownKey)) {
+                setTimeout(() => {
+                    this.openModal();
+                    sessionStorage.setItem(this.modalShownKey, 'true');
+                }, 2000);
+            }
         }
 
         openModal() {
