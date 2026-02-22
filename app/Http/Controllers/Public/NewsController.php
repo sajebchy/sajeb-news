@@ -83,22 +83,20 @@ class NewsController extends Controller
      */
     public function search(Request $request)
     {
+        // Make search query optional - allow visiting /search without any query
         $request->validate([
-            'q' => 'required|string|min:1|max:255',
+            'q' => 'nullable|string|max:255',
         ], [
-            'q.required' => 'Search query is required',
-            'q.min' => 'Search query must be at least 1 character',
             'q.max' => 'Search query cannot exceed 255 characters',
         ]);
 
-        $query = trim($request->input('q'));
+        $query = trim($request->input('q', ''));
+        $news = collect();
         
-        // If query is empty after trim, show empty results
-        if (empty($query)) {
-            return view('public.search', ['query' => '', 'news' => collect()]);
+        // Only search if query is not empty
+        if (!empty($query)) {
+            $news = $this->newsService->searchNews($query);
         }
-
-        $news = $this->newsService->searchNews($query);
 
         return view('public.search', compact('query', 'news'));
     }
