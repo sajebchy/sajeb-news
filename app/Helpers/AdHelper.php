@@ -81,8 +81,8 @@ class AdHelper
 
         if ($ad->image_url) {
             $html .= '<div style="margin: 5px 0;">';
-            $html .= '<a href="' . $ad->ad_url . '" target="' . ($ad->link_open_new_tab ? '_blank' : '_self') . '" rel="noopener">';
-            $html .= '<img src="' . $ad->image_url . '" alt="' . ($ad->alt_text ?? $ad->name) . '" style="max-width: 100%; height: auto; border-radius: 4px;">';
+            $html .= '<a href="' . $ad->ad_url . '" target="_blank" rel="noopener">';
+            $html .= '<img src="' . asset($ad->image_url) . '" alt="' . ($ad->alt_text ?? $ad->name) . '" style="max-width: 100%; height: auto; border-radius: 4px;">';
             $html .= '</a></div>';
         } elseif ($ad->code) {
             $html .= '<div style="margin: 10px auto;">';
@@ -90,7 +90,7 @@ class AdHelper
             $html .= '</div>';
         } else {
             $html .= '<div style="background: #f0f0f0; padding: 15px; border-radius: 4px;">';
-            $html .= '<a href="' . $ad->ad_url . '" target="' . ($ad->link_open_new_tab ? '_blank' : '_self') . '" rel="noopener" style="color: #0066cc; text-decoration: none; font-weight: 500;">';
+            $html .= '<a href="' . $ad->ad_url . '" target="_blank" rel="noopener" style="color: #0066cc; text-decoration: none; font-weight: 500;">';
             $html .= $ad->name;
             $html .= '</a></div>';
         }

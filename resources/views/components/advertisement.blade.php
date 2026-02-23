@@ -16,7 +16,7 @@
                        class="ad-link"
                        title="{{ $ad->alt_text ?? $ad->name }}"
                        onclick="recordAdClick({{ $ad->id }}, '{{ $placement }}')">
-                        <img src="{{ $ad->image_url }}" 
+                        <img src="{{ asset($ad->image_url) }}" 
                              alt="{{ $ad->alt_text ?? $ad->name }}"
                              class="ad-image"
                              style="max-width: 100%; height: auto; border-radius: 6px;">

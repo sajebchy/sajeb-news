@@ -1,14 +1,18 @@
 -- Sajeb News - MySQL Database Schema
 -- Compatible with cPanel phpMyAdmin
--- Version 2.0 - Updated February 22, 2026
--- 
--- Features Added:
+-- Version 2.1 - Updated February 23, 2026
+--
+-- Features:
 -- - Live Streaming with Stream Comments
 -- - Push Notifications Support
 -- - Enhanced Schema Settings
--- - Improved SEO Settings
+-- - Improved SEO Settings with AdSense Configuration
 -- - Stream Analytics
 -- - Advanced Comment System
+-- - Advanced Advertisement System (Multi-Network, Placement-Based, CPC/CPM)
+-- - Fact-Checking / ClaimReview Support
+-- - Visitor Analytics
+-- - Permission-Based Access Control (Spatie)
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -92,7 +96,13 @@ CREATE TABLE `categories` (
   `parent_id` bigint UNSIGNED,
   `image` varchar(255) COLLATE utf8mb4_unicode_ci,
   `order` int DEFAULT 0,
+  `featured_order` int COMMENT 'Order for display on homepage (1-5), NULL means not featured',
   `is_active` boolean DEFAULT 1,
+  `is_fact_checker` boolean DEFAULT 0,
+  `claim_review_enabled` boolean DEFAULT 0,
+  `claim_rating_scale` enum('True','Mostly True','Partly False','False','Unproven') COLLATE utf8mb4_unicode_ci,
+  `claim_reviewer_name` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `claim_reviewer_url` varchar(255) COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL,
   KEY `categories_parent_id_index` (`parent_id`),
@@ -124,6 +134,11 @@ CREATE TABLE `news` (
   `excerpt` text COLLATE utf8mb4_unicode_ci,
   `status` enum('draft','published','scheduled','archived') COLLATE utf8mb4_unicode_ci DEFAULT 'draft',
   `is_featured` boolean DEFAULT 0,
+  `is_claim_review` boolean DEFAULT 0,
+  `claim_being_reviewed` text COLLATE utf8mb4_unicode_ci,
+  `claim_rating` enum('True','Mostly True','Partly False','False','Unproven') COLLATE utf8mb4_unicode_ci,
+  `claim_review_evidence` longtext COLLATE utf8mb4_unicode_ci,
+  `claim_review_date` timestamp NULL,
   `is_breaking` boolean DEFAULT 0,
   `is_trending` boolean DEFAULT 0,
   `view_count` int DEFAULT 0,
@@ -149,27 +164,62 @@ CREATE TABLE `news_tag` (
   FOREIGN KEY (`tag_id`) REFERENCES `tags` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Advertisements table
+-- Advertisements table (Multi-Network, Placement-Based, CPC/CPM support)
 
 CREATE TABLE `advertisements` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `type` enum('offline','adsense','network') COLLATE utf8mb4_unicode_ci DEFAULT 'offline',
-  `network` varchar(100) COLLATE utf8mb4_unicode_ci,
-  `position` enum('header','sidebar','footer','inline','modal','banner','sticky','overlay') COLLATE utf8mb4_unicode_ci DEFAULT 'header',
-  `content` longtext COLLATE utf8mb4_unicode_ci,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
+  `code` text COLLATE utf8mb4_unicode_ci,
+  `type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'banner',
+  `ad_type` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'standard',
+  `ad_source` enum('offline','online') COLLATE utf8mb4_unicode_ci DEFAULT 'offline',
+  `ad_network` varchar(255) COLLATE utf8mb4_unicode_ci COMMENT 'Ad network: adsense, media_net, ezoic, propeller_ads, mediavine, raptive, monumetric, adsterra, monetag, infolinks, taboola_outbrain, amazon_associates',
+  `network_config` json COMMENT 'Network-specific configuration (code, zone_id, site_id, etc.)',
+  `placement` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT 'sidebar',
+  `device_target` enum('desktop','mobile','all') COLLATE utf8mb4_unicode_ci DEFAULT 'all',
   `image_url` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `link_url` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `start_date` timestamp NULL,
-  `end_date` timestamp NULL,
-  `device_type` enum('all','desktop','mobile') COLLATE utf8mb4_unicode_ci DEFAULT 'all',
+  `ad_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `alt_text` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `utm_source` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `utm_medium` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `utm_campaign` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `utm_term` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `utm_content` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `start_date` datetime NOT NULL,
+  `end_date` datetime,
   `is_active` boolean DEFAULT 1,
+  `is_adsense_enabled` boolean DEFAULT 0,
+  `disable_page_limit` int DEFAULT 3 COMMENT 'Max ads per page as per AdSense policy',
+  `minimum_content_length` int DEFAULT 300 COMMENT 'Minimum words for AdSense policy',
+  `adsense_code` text COLLATE utf8mb4_unicode_ci,
+  `adsense_slot_id` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `adsense_publisher_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `views` int DEFAULT 0,
   `clicks` int DEFAULT 0,
+  `target_categories` json,
+  `target_tags` json,
+  `display_order` int DEFAULT 0,
+  `show_on_mobile` boolean DEFAULT 1,
+  `show_on_desktop` boolean DEFAULT 1,
+  `daily_impression_limit` int,
+  `max_clicks_per_day` int,
+  `cpc_amount` decimal(10,2) COMMENT 'Cost per click',
+  `cpm_amount` decimal(10,2) COMMENT 'Cost per thousand impressions',
+  `total_spent` decimal(10,2) DEFAULT 0.00,
+  `advertiser_name` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `advertiser_email` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `advertiser_phone` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `notes` text COLLATE utf8mb4_unicode_ci,
+  `created_by` bigint UNSIGNED NOT NULL,
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL,
-  KEY `advertisements_type_index` (`type`),
-  KEY `advertisements_position_index` (`position`)
+  KEY `advertisements_type_index` (`type`(50)),
+  KEY `advertisements_is_active_index` (`is_active`),
+  KEY `advertisements_placement_index` (`placement`(50)),
+  KEY `advertisements_display_order_index` (`display_order`),
+  KEY `advertisements_ad_network_index` (`ad_network`(50)),
+  FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Newsletter subscribers table
@@ -198,34 +248,53 @@ CREATE TABLE `push_notifications` (
   FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- SEO settings table
+-- SEO settings table (with AdSense, Social, Analytics, VAPID config)
 
 CREATE TABLE `seo_settings` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
-  `value` longtext COLLATE utf8mb4_unicode_ci,
+  `site_title` varchar(255) COLLATE utf8mb4_unicode_ci,
   `site_name` varchar(255) COLLATE utf8mb4_unicode_ci,
   `site_url` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `site_title` varchar(255) COLLATE utf8mb4_unicode_ci,
   `site_description` text COLLATE utf8mb4_unicode_ci,
+  `site_keywords` varchar(255) COLLATE utf8mb4_unicode_ci,
   `meta_keywords` text COLLATE utf8mb4_unicode_ci,
-  `og_image` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `favicon` varchar(255) COLLATE utf8mb4_unicode_ci,
   `logo` varchar(255) COLLATE utf8mb4_unicode_ci,
   `mobile_logo` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `favicon` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `og_image` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `about_page_content` longtext COLLATE utf8mb4_unicode_ci,
+  `adsense_publisher_id` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `adsense_anchor_ad_code` longtext COLLATE utf8mb4_unicode_ci,
+  `adsense_sidebar_ad_code` longtext COLLATE utf8mb4_unicode_ci,
+  `adsense_between_articles_ad_code` longtext COLLATE utf8mb4_unicode_ci,
+  `show_anchor_ads` boolean DEFAULT 1,
+  `show_sidebar_ads` boolean DEFAULT 1,
+  `show_between_articles_ads` boolean DEFAULT 1,
+  `twitter_handle` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `google_analytics_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `ga_tracking_id` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `google_tag_manager_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `gtm_tracking_id` varchar(100) COLLATE utf8mb4_unicode_ci,
   `facebook_pixel_id` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `facebook_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `twitter_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `instagram_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `youtube_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `linkedin_url` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `tiktok_url` varchar(255) COLLATE utf8mb4_unicode_ci,
   `recaptcha_site_key` varchar(255) COLLATE utf8mb4_unicode_ci,
   `recaptcha_secret_key` varchar(255) COLLATE utf8mb4_unicode_ci,
   `recaptcha_score_threshold` decimal(3,2) DEFAULT 0.50,
-  `about_page_content` longtext COLLATE utf8mb4_unicode_ci,
-  `push_notifications_enabled` boolean DEFAULT 0,
   `vapid_public_key` text COLLATE utf8mb4_unicode_ci,
   `vapid_private_key` text COLLATE utf8mb4_unicode_ci,
+  `push_notifications_enabled` boolean DEFAULT 0,
   `adsense_client_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `adsense_slot_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `enable_adsense` boolean DEFAULT 0,
+  `robots_txt` text COLLATE utf8mb4_unicode_ci,
+  `enable_sitemap` boolean DEFAULT 1,
+  `enable_robots` boolean DEFAULT 1,
+  `enable_analytics` boolean DEFAULT 1,
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
@@ -276,11 +345,9 @@ CREATE TABLE `visitor_analytics` (
 CREATE TABLE `comments` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `news_id` bigint UNSIGNED NOT NULL,
-  `user_id` bigint UNSIGNED,
+  `user_id` bigint UNSIGNED NOT NULL,
   `facebook_user_id` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `content` text COLLATE utf8mb4_unicode_ci NOT NULL,
-  `comment_text` text COLLATE utf8mb4_unicode_ci,
-  `status` enum('pending','approved','rejected') COLLATE utf8mb4_unicode_ci DEFAULT 'pending',
+  `comment_text` text COLLATE utf8mb4_unicode_ci NOT NULL,
   `approved` boolean DEFAULT 0,
   `spam_score` decimal(5,2) DEFAULT 0,
   `recaptcha_score` decimal(3,2),
@@ -291,43 +358,6 @@ CREATE TABLE `comments` (
   KEY `comments_approved_index` (`approved`),
   KEY `comments_created_at_index` (`created_at`),
   FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE,
-  FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Live streams table
-
-CREATE TABLE `live_streams` (
-  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `user_id` bigint UNSIGNED NOT NULL,
-  `title` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `description` text COLLATE utf8mb4_unicode_ci,
-  `slug` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
-  `status` varchar(50) COLLATE utf8mb4_unicode_ci DEFAULT 'draft',
-  `thumbnail` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `stream_key` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL UNIQUE,
-  `stream_url` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `visibility` enum('public','private','unlisted') COLLATE utf8mb4_unicode_ci DEFAULT 'public',
-  `viewer_count` int DEFAULT 0,
-  `peak_viewers` int DEFAULT 0,
-  `scheduled_at` timestamp NULL,
-  `started_at` timestamp NULL,
-  `ended_at` timestamp NULL,
-  `duration_seconds` int DEFAULT 0,
-  `stream_tags` text COLLATE utf8mb4_unicode_ci,
-  `category` varchar(100) COLLATE utf8mb4_unicode_ci,
-  `allow_comments` boolean DEFAULT 1,
-  `allow_chat` boolean DEFAULT 1,
-  `recording_url` varchar(255) COLLATE utf8mb4_unicode_ci,
-  `is_featured` boolean DEFAULT 0,
-  `view_count` int DEFAULT 0,
-  `like_count` int DEFAULT 0,
-  `created_at` timestamp NULL,
-  `updated_at` timestamp NULL,
-  `deleted_at` timestamp NULL,
-  KEY `live_streams_status_index` (`status`),
-  KEY `live_streams_user_id_index` (`user_id`),
-  KEY `live_streams_started_at_index` (`started_at`),
-  KEY `live_streams_is_featured_index` (`is_featured`),
   FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -435,6 +465,60 @@ CREATE TABLE `schema_settings` (
   `organization_contact_email` varchar(255) COLLATE utf8mb4_unicode_ci,
   `created_at` timestamp NULL,
   `updated_at` timestamp NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Permissions table (Spatie Laravel Permission)
+
+CREATE TABLE `permissions` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  UNIQUE KEY `permissions_name_guard_name_unique` (`name`, `guard_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Roles table (Spatie Laravel Permission)
+
+CREATE TABLE `roles` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `guard_name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  UNIQUE KEY `roles_name_guard_name_unique` (`name`, `guard_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Model has permissions pivot table
+
+CREATE TABLE `model_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL,
+  PRIMARY KEY (`permission_id`, `model_id`, `model_type`),
+  KEY `model_has_permissions_model_id_model_type_index` (`model_id`, `model_type`),
+  FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Model has roles pivot table
+
+CREATE TABLE `model_has_roles` (
+  `role_id` bigint UNSIGNED NOT NULL,
+  `model_type` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `model_id` bigint UNSIGNED NOT NULL,
+  PRIMARY KEY (`role_id`, `model_id`, `model_type`),
+  KEY `model_has_roles_model_id_model_type_index` (`model_id`, `model_type`),
+  FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Role has permissions pivot table
+
+CREATE TABLE `role_has_permissions` (
+  `permission_id` bigint UNSIGNED NOT NULL,
+  `role_id` bigint UNSIGNED NOT NULL,
+  PRIMARY KEY (`permission_id`, `role_id`),
+  FOREIGN KEY (`permission_id`) REFERENCES `permissions` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`role_id`) REFERENCES `roles` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Migrations table

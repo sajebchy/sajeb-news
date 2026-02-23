@@ -43,16 +43,49 @@
             <div class="card-header">
                 <h5 class="mb-0"><i class="bi bi-image"></i> Advertisement Preview</h5>
             </div>
-            <div class="card-body text-center">
-                @if ($ad->image_url)
-                    <a href="{{ $ad->full_url }}" target="_blank" class="d-inline-block" style="max-width: 100%;">
-                        <img src="{{ $ad->image_url }}" alt="{{ $ad->alt_text ?? $ad->name }}" style="max-width: 100%; max-height: 400px; border-radius: 8px;">
-                    </a>
-                    <p class="text-muted mt-3 small">
-                        <i class="bi bi-info-circle"></i> Click the image to visit the ad destination URL
-                    </p>
+            <div class="card-body">
+                <!-- Image Preview Section -->
+                @if (isset($ad) && $ad->image_url && trim($ad->image_url) !== '')
+                    <div class="text-center" style="background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%); padding: 30px 20px; border-radius: 8px; min-height: 280px; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                        @php
+                            $linkUrl = $ad->full_url ?: $ad->ad_url;
+                        @endphp
+                        
+                        @if ($linkUrl)
+                            <a href="{{ $linkUrl }}" target="_blank" rel="noopener noreferrer" class="d-inline-block" style="max-width: 100%; width: 100%; max-width: 700px;">
+                        @endif
+                                <img src="{{ asset($ad->image_url) }}" 
+                                     alt="Advertisement: {{ $ad->name }}"
+                                     title="{{ $ad->name }} - Click to visit"
+                                     class="img-fluid"
+                                     style="max-width: 100%; height: auto; max-height: 550px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e9ecef; display: block; margin: 0 auto;">
+                        @if ($linkUrl)
+                            </a>
+                        @endif
+                        
+                        <p class="text-muted small mt-4 mb-0" style="font-size: 13px;">
+                            <i class="bi bi-link-45deg"></i> 
+                            @if ($linkUrl)
+                                Destination URL: <code style="background: #e9ecef; padding: 2px 6px; border-radius: 3px; font-size: 11px;">{{ parse_url($linkUrl, PHP_URL_HOST) }}</code>
+                            @else
+                                (No destination URL set)
+                            @endif
+                        </p>
+                    </div>
                 @else
-                    <p class="text-muted">No image available</p>
+                    <div class="text-center py-5" style="min-height: 300px; background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                        <i class="bi bi-image" style="font-size: 100px; color: #dee2e6; margin-bottom: 20px;"></i>
+                        <p class="text-muted mb-0" style="font-size: 16px;">
+                            @if (!isset($ad))
+                                Advertisement not found
+                            @else
+                                No image provided for this advertisement
+                            @endif
+                        </p>
+                        @if (isset($ad) && $ad->id)
+                            <small class="text-secondary mt-2">Ad ID: {{ $ad->id }}</small>
+                        @endif
+                    </div>
                 @endif
             </div>
         </div>

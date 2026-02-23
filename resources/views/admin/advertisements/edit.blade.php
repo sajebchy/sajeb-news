@@ -131,15 +131,8 @@
                         <div id="upload-message" class="mt-2"></div>
                     </div>
 
-                    <!-- Image URL (Auto or Manual) -->
-                    <div class="mb-3">
-                        <label for="image_url" class="form-label">Image URL <span class="text-danger">*</span></label>
-                        <input type="url" class="form-control @error('image_url') is-invalid @enderror" id="image_url" name="image_url" value="{{ old('image_url', $ad->image_url) }}" placeholder="https://example.com/ad-image.jpg" required>
-                        @error('image_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        <small class="text-muted d-block mt-1">
-                            <i class="bi bi-lightbulb"></i> Auto-filled after upload or paste URL directly
-                        </small>
-                    </div>
+                    <!-- Hidden Image URL Field (for backend) -->
+                    <input type="hidden" id="image_url" name="image_url" value="{{ old('image_url', $ad->image_url) }}">
 
                     <!-- Image Alt Text -->
                     <div class="mb-3">
@@ -150,9 +143,12 @@
 
                     <!-- Image Preview -->
                     <div id="image-preview" class="mb-3">
-                        <label>Image Preview:</label>
-                        <div class="border rounded p-3" style="max-width: 300px; background: #f8f9fa;">
-                            <img id="preview-img" src="{{ $ad->image_url }}" alt="Preview" style="max-width: 100%; max-height: 200px;">
+                        <label class="form-label fw-bold">📷 Image Preview:</label>
+                        <div class="border-2 rounded p-4" style="background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%); text-align: center; min-height: 250px; display: flex; align-items: center; justify-content: center;">
+                            <div>
+                                <img id="preview-img" src="{{ $ad->image_url ? asset($ad->image_url) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22Arial%22 font-size=%2224%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ENo Image Uploaded%3C/text%3E%3C/svg%3E' }}" alt="Preview" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;">
+                                <p class="text-muted small mt-2 mb-0">Preview will update after upload</p>
+                            </div>
                         </div>
                     </div>
 
@@ -184,12 +180,6 @@
                             <label class="form-check-label" for="link_open_new_tab">
                                 Open link in new tab
                             </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-                        <div class="border rounded p-3" style="max-width: 300px; background: #f8f9fa;">
-                            <img id="preview-img" src="{{ $ad->image_url }}" alt="Preview" style="max-width: 100%; max-height: 200px;">
                         </div>
                     </div>
                 </div>
@@ -459,17 +449,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-    // Image preview
-    const imageUrlInput = document.getElementById('image_url');
-    const previewDiv = document.getElementById('image-preview');
-    const previewImg = document.getElementById('preview-img');
-
-    imageUrlInput.addEventListener('change', function() {
-        if (this.value) {
-            previewImg.src = this.value;
-            previewDiv.style.display = 'block';
-        }
-    });
+    // Note: Image URL field is now hidden. Images are provided through file upload only.
 
     // Handle Ad Source change (Offline vs Online)
     const adSourceSelect = document.getElementById('ad_source');
@@ -553,6 +533,24 @@ document.addEventListener('DOMContentLoaded', function() {
     const imagePreview = document.getElementById('image-preview');
     const imageUrlField = document.getElementById('image_url');
 
+    // Create a fallback placeholder function
+    function showPlaceholder() {
+        previewImg.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22Arial%22 font-size=%2220%22 fill=%22%236c757d%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ENo Image Available%3C/text%3E%3C/svg%3E';
+    }
+
+    // Initialize preview - check if current image exists
+    if (previewImg.src && previewImg.src !== '' && !previewImg.src.includes('data:image')) {
+        const testImg = new Image();
+        testImg.onload = function() {
+            // Image exists, do nothing
+        };
+        testImg.onerror = function() {
+            // Image doesn't exist, show placeholder
+            showPlaceholder();
+        };
+        testImg.src = previewImg.src;
+    }
+
     // Show preview when file is selected
     imageFileInput.addEventListener('change', function(e) {
         const file = e.target.files[0];
@@ -571,14 +569,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Handle image load error - show placeholder
+    previewImg.addEventListener('error', function() {
+        showPlaceholder();
+    });
+
     // Upload image via AJAX
-    uploadBtn.addEventListener('click', function() {
+    uploadBtn.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Upload button clicked');
         const file = imageFileInput.files[0];
         if (!file) {
             uploadMessage.innerHTML = '<div class="alert alert-warning">Please select an image first</div>';
             return;
         }
 
+        console.log('File selected:', file.name, file.size, file.type);
         const formData = new FormData();
         formData.append('image', file);
         formData.append('_token', document.querySelector('input[name="_token"]').value);
@@ -587,6 +595,7 @@ document.addEventListener('DOMContentLoaded', function() {
         uploadBtn.disabled = true;
         uploadMessage.innerHTML = '';
 
+        console.log('Sending upload request to {{ route("admin.upload-advertisement-image") }}');
         fetch('{{ route("admin.upload-advertisement-image") }}', {
             method: 'POST',
             body: formData,
@@ -594,17 +603,27 @@ document.addEventListener('DOMContentLoaded', function() {
                 'X-Requested-With': 'XMLHttpRequest'
             }
         })
-        .then(response => response.json())
+        .then(response => {
+            console.log('Upload response status:', response.status);
+            return response.json();
+        })
         .then(data => {
+            console.log('Upload response data:', data);
             uploadProgress.style.display = 'none';
             
             if (data.success) {
                 imageUrlField.value = data.url;
-                uploadMessage.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Image uploaded successfully!</div>';
+                
+                // Update image preview immediately (prepend / to make it root-relative)
+                previewImg.src = '/' + data.url;
+                imagePreview.style.display = 'block';
+                
+                uploadMessage.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Image uploaded successfully! <strong>Don\'t forget to click the Save button below to save changes.</strong></div>';
                 uploadBtn.classList.remove('btn-primary');
                 uploadBtn.classList.add('btn-outline-secondary');
                 uploadBtn.disabled = false;
             } else {
+                console.error('Upload failed:', data.message);
                 uploadMessage.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> ' + (data.message || 'Upload failed') + '</div>';
                 uploadBtn.disabled = false;
             }
@@ -618,7 +637,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Handle Ad Type change - show/hide Image & URL fields
     const adTypeSelect = document.getElementById('ad_type');
-    const imageUrlField = document.getElementById('image_url');
     const altTextField = document.getElementById('alt_text');
     const adUrlField = document.getElementById('ad_url');
 
@@ -626,17 +644,13 @@ document.addEventListener('DOMContentLoaded', function() {
         const adType = adTypeSelect.value;
         
         if (adType) {
-            // Ad type selected - show image fields
-            imageUrlField.parentElement.style.display = 'block';
+            // Ad type selected - show image fields (image_url is now hidden, only show alt_text and ad_url)
             altTextField.parentElement.parentElement.style.display = 'block';
             adUrlField.parentElement.style.display = 'block';
-            imageUrlField.required = true;
         } else {
             // No ad type selected - hide image fields
-            imageUrlField.parentElement.style.display = 'none';
             altTextField.parentElement.parentElement.style.display = 'none';
             adUrlField.parentElement.style.display = 'none';
-            imageUrlField.required = false;
         }
     }
 
@@ -688,6 +702,14 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     updateUrlPreview();
+
+    // Form submission - filter out SVG placeholders
+    document.querySelector('form').addEventListener('submit', function(e) {
+        // Clear any SVG placeholder in image_url field before submission
+        if (imageUrlField.value && imageUrlField.value.startsWith('data:image/svg')) {
+            imageUrlField.value = '';
+        }
+    });
 });
 </script>
 
