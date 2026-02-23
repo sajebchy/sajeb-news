@@ -85,6 +85,18 @@ class SettingController extends Controller
             'vapid_public_key' => 'nullable|string',
             'vapid_private_key' => 'nullable|string',
             'push_notifications_enabled' => 'nullable|boolean',
+            // Feedify settings
+            'feedify_enabled' => 'nullable|boolean',
+            'feedify_api_key' => 'nullable|string|max:255',
+            'feedify_list_id' => 'nullable|string|max:255',
+            // AdSense settings
+            'adsense_publisher_id' => 'nullable|string|max:255',
+            'adsense_anchor_ad_code' => 'nullable|string',
+            'adsense_sidebar_ad_code' => 'nullable|string',
+            'adsense_between_articles_ad_code' => 'nullable|string',
+            'show_anchor_ads' => 'nullable|boolean',
+            'show_sidebar_ads' => 'nullable|boolean',
+            'show_between_articles_ads' => 'nullable|boolean',
         ]);
 
         // Handle PC logo upload with optimization
@@ -131,11 +143,32 @@ class SettingController extends Controller
         $schemaSettingsData = [];
         $seoSettingsData = [];
         
+        // Fields that belong to Schema settings
+        $schemaFields = [
+            'enable_news_article_schema',
+            'enable_organization_schema',
+            'enable_website_schema',
+            'enable_breadcrumb_schema',
+            'enable_person_schema',
+            'enable_image_object_schema',
+            'enable_video_object_schema',
+            'enable_live_blog_schema',
+            'enable_faq_schema',
+            'enable_job_posting_schema',
+            'enable_event_schema',
+            'enable_claim_review_schema',
+            'organization_name',
+            'organization_description',
+            'contact_email',
+            'contact_phone',
+            'contact_type',
+        ];
+        
         foreach ($validated as $key => $value) {
-            if (strpos($key, 'enable_') === 0 || in_array($key, ['organization_name', 'organization_description', 'contact_email', 'contact_phone', 'contact_type'])) {
+            if (in_array($key, $schemaFields)) {
                 $schemaSettingsData[$key] = $value;
             } else {
-                // Include reCAPTCHA settings in SEO settings
+                // All other fields go to SEO settings
                 $seoSettingsData[$key] = $value;
             }
         }

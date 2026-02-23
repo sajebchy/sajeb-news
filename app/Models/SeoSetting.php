@@ -50,6 +50,9 @@ class SeoSetting extends Model
         'feedify_enabled',
         'feedify_api_key',
         'feedify_list_id',
+        'vapid_public_key',
+        'vapid_private_key',
+        'push_notifications_enabled',
     ];
 
     protected $casts = [
@@ -60,6 +63,7 @@ class SeoSetting extends Model
         'show_sidebar_ads' => 'boolean',
         'show_between_articles_ads' => 'boolean',
         'feedify_enabled' => 'boolean',
+        'push_notifications_enabled' => 'boolean',
     ];
 
     public static function getInstance()
