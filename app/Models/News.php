@@ -113,6 +113,9 @@ class News extends Model
     {
         parent::boot();
         
+        // Register NewsObserver
+        static::observe(\App\Observers\NewsObserver::class);
+        
         static::creating(function ($news) {
             $news->reading_time = ceil(str_word_count(strip_tags($news->content)) / 200);
         });
