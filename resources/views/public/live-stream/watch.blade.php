@@ -8,11 +8,37 @@
         {{-- Main Stream Area --}}
         <div class="col-lg-8">
             {{-- Stream Player --}}
-            <div class="card shadow mb-4" style="background-color: #000;">
-                <div class="ratio ratio-16x9">
+            <div class="card shadow mb-4" style="background-color: #000;" id="player-container">
+                <div class="ratio ratio-16x9" id="stream-wrapper">
                     {{-- HLS Stream Embed (replace with your streaming server) --}}
                     <iframe id="stream-player" src="{{ $stream->stream_url ? 'about:blank' : '' }}" 
                             allow="autoplay" allowfullscreen style="border: none;"></iframe>
+                </div>
+
+                {{-- Player Controls Bar --}}
+                <div class="bg-dark p-2 border-top border-secondary d-flex align-items-center justify-content-between flex-wrap gap-2">
+                    {{-- Left Controls (Volume) --}}
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-light" id="volume-decrease" title="Decrease Volume">
+                            <i class="fas fa-volume-minus"></i>
+                        </button>
+                        
+                        <input type="range" id="volume-slider" class="form-range" min="0" max="100" value="100" 
+                               style="width: 120px; height: 5px;" title="Volume Control">
+                        
+                        <button type="button" class="btn btn-sm btn-outline-light" id="volume-increase" title="Increase Volume">
+                            <i class="fas fa-volume-up"></i>
+                        </button>
+                        
+                        <span id="volume-label" class="text-light small ms-2" style="min-width: 35px;">100%</span>
+                    </div>
+
+                    {{-- Right Controls (Fullscreen) --}}
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-light" id="fullscreen-btn" title="Fullscreen">
+                            <i class="fas fa-expand"></i> Fullscreen
+                        </button>
+                    </div>
                 </div>
 
                 {{-- Status Indicator --}}
@@ -466,6 +492,129 @@
             console.error('Failed to copy: ', err);
         });
     }
+
+    // Player Controls
+    document.addEventListener('DOMContentLoaded', function() {
+        const volumeSlider = document.getElementById('volume-slider');
+        const volumeLabel = document.getElementById('volume-label');
+        const volumeDecreaseBtn = document.getElementById('volume-decrease');
+        const volumeIncreaseBtn = document.getElementById('volume-increase');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const playerContainer = document.getElementById('player-container');
+        const streamWrapper = document.getElementById('stream-wrapper');
+
+        // Store volume in localStorage for persistence
+        const savedVolume = localStorage.getItem('stream-volume');
+        if (savedVolume) {
+            volumeSlider.value = savedVolume;
+            updateVolumeLabel();
+        }
+
+        // Volume Slider Change
+        volumeSlider.addEventListener('input', function() {
+            updateVolume();
+            updateVolumeLabel();
+            localStorage.setItem('stream-volume', this.value);
+        });
+
+        // Volume Decrease Button
+        volumeDecreaseBtn.addEventListener('click', function() {
+            volumeSlider.value = Math.max(0, parseInt(volumeSlider.value) - 10);
+            updateVolume();
+            updateVolumeLabel();
+            localStorage.setItem('stream-volume', volumeSlider.value);
+        });
+
+        // Volume Increase Button
+        volumeIncreaseBtn.addEventListener('click', function() {
+            volumeSlider.value = Math.min(100, parseInt(volumeSlider.value) + 10);
+            updateVolume();
+            updateVolumeLabel();
+            localStorage.setItem('stream-volume', volumeSlider.value);
+        });
+
+        // Update Volume Display
+        function updateVolumeLabel() {
+            volumeLabel.textContent = volumeSlider.value + '%';
+        }
+
+        // Apply Volume (via postMessage to iframe if needed)
+        function updateVolume() {
+            const volume = volumeSlider.value / 100;
+            try {
+                const iframe = document.getElementById('stream-player');
+                // Try to apply volume if the iframe supports postMessage (HLS.js, Video.js, etc)
+                if (iframe && iframe.contentWindow) {
+                    iframe.contentWindow.postMessage({
+                        type: 'set-volume',
+                        volume: volume
+                    }, '*');
+                }
+            } catch (e) {
+                console.log('Volume control message sent');
+            }
+        }
+
+        // Fullscreen Button
+        fullscreenBtn.addEventListener('click', function() {
+            if (!document.fullscreenElement) {
+                // Enter fullscreen
+                if (playerContainer.requestFullscreen) {
+                    playerContainer.requestFullscreen();
+                } else if (playerContainer.webkitRequestFullscreen) {
+                    playerContainer.webkitRequestFullscreen();
+                } else if (playerContainer.msRequestFullscreen) {
+                    playerContainer.msRequestFullscreen();
+                }
+            } else {
+                // Exit fullscreen
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                } else if (document.webkitExitFullscreen) {
+                    document.webkitExitFullscreen();
+                } else if (document.msExitFullscreen) {
+                    document.msExitFullscreen();
+                }
+            }
+        });
+
+        // Update fullscreen button icon when fullscreen state changes
+        document.addEventListener('fullscreenchange', updateFullscreenIcon);
+        document.addEventListener('webkitfullscreenchange', updateFullscreenIcon);
+        document.addEventListener('msfullscreenchange', updateFullscreenIcon);
+
+        function updateFullscreenIcon() {
+            const icon = fullscreenBtn.querySelector('i');
+            if (document.fullscreenElement) {
+                icon.classList.remove('fa-expand');
+                icon.classList.add('fa-compress');
+                fullscreenBtn.innerHTML = '<i class="fas fa-compress"></i> Exit Fullscreen';
+            } else {
+                icon.classList.remove('fa-compress');
+                icon.classList.add('fa-expand');
+                fullscreenBtn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+            }
+        }
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            // Check if the active element is not an input field
+            if (document.activeElement.tagName !== 'INPUT' && document.activeElement.tagName !== 'TEXTAREA') {
+                if (e.key === 'f' || e.key === 'F') {
+                    // F for fullscreen
+                    fullscreenBtn.click();
+                } else if (e.key === 'ArrowUp') {
+                    // Arrow up to increase volume
+                    volumeIncreaseBtn.click();
+                    e.preventDefault();
+                } else if (e.key === 'ArrowDown') {
+                    // Arrow down to decrease volume
+                    volumeDecreaseBtn.click();
+                    e.preventDefault();
+                }
+            }
+        });
+    });
 </script>
 
 <style>
@@ -479,6 +628,75 @@
         }
         50% {
             opacity: 0.5;
+        }
+    }
+
+    /* Player Controls Styling */
+    #player-container {
+        position: relative;
+    }
+
+    #player-container .form-range {
+        accent-color: #0d6efd;
+        cursor: pointer;
+    }
+
+    #player-container .form-range::-webkit-slider-thumb {
+        background: #0d6efd;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    #player-container .form-range::-moz-range-thumb {
+        background: #0d6efd;
+        border: 2px solid #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    #player-container .btn-outline-light:hover {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    #player-container .btn-outline-light:focus {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+    }
+
+    /* Fullscreen mode styling */
+    #player-container:-webkit-full-screen {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    #player-container:-moz-full-screen {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    #player-container:fullscreen {
+        width: 100vw;
+        height: 100vh;
+    }
+
+    /* Mobile responsive */
+    @media (max-width: 576px) {
+        #player-container .d-flex {
+            flex-direction: column !important;
+        }
+
+        #volume-slider {
+            width: 100px !important;
+        }
+
+        #player-container .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.75rem;
+        }
+
+        #player-container .btn-sm i {
+            margin-right: 0.25rem;
         }
     }
 </style>

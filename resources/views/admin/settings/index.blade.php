@@ -63,6 +63,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="feedify-tab" data-bs-toggle="tab" data-bs-target="#feedifySettings" type="button" role="tab" aria-controls="feedifySettings" aria-selected="false">
+                <i class="bi bi-lightning"></i> Feedify Integration
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="adsense-tab" data-bs-toggle="tab" data-bs-target="#adsenseSettings" type="button" role="tab" aria-controls="adsenseSettings" aria-selected="false">
                 <i class="bi bi-amd"></i> Google AdSense
             </button>
@@ -720,7 +725,114 @@
             </form>
         </div>
 
-        <!-- Google AdSense Settings Tab -->
+        <!-- Feedify Integration Tab -->
+        <div class="tab-pane fade" id="feedifySettings" role="tabpanel" aria-labelledby="feedify-tab">
+            <form action="{{ route('admin.settings.update') }}" method="POST" enctype="multipart/form-data" class="row g-3">
+                @csrf
+
+                <!-- Feedify Configuration -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary bg-opacity-10">
+                            <h5 class="mb-0"><i class="bi bi-lightning"></i> Feedify Configuration</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted mb-3">
+                                <i class="bi bi-info-circle"></i> Feedify allows you to send newsletters and bulk notifications to your subscribers. 
+                                <a href="https://feedify.io" target="_blank" class="text-primary">Learn more about Feedify</a>
+                            </p>
+
+                            <!-- Enable Feedify -->
+                            <div class="form-check form-switch mb-4">
+                                <input class="form-check-input" type="checkbox" id="feedify_enabled" 
+                                       name="feedify_enabled" value="1" 
+                                       {{ old('feedify_enabled', optional($seoSettings)->feedify_enabled ?? false) ? 'checked' : '' }}>
+                                <label class="form-check-label" for="feedify_enabled">
+                                    <strong>Enable Feedify Integration</strong>
+                                    <small class="d-block text-muted">Allow automatic subscriber syncing and notifications via Feedify</small>
+                                </label>
+                            </div>
+
+                            <!-- Feedify API Key -->
+                            <div class="mb-3">
+                                <label for="feedify_api_key" class="form-label">Feedify API Key</label>
+                                <input type="text" class="form-control @error('feedify_api_key') is-invalid @enderror" 
+                                       id="feedify_api_key" name="feedify_api_key" 
+                                       value="{{ old('feedify_api_key', $seoSettings->feedify_api_key ?? '') }}" 
+                                       placeholder="Enter your Feedify API key">
+                                <small class="text-muted">
+                                    <i class="bi bi-key"></i> Get this from your 
+                                    <a href="https://app.feedify.io/settings/api" target="_blank" class="text-primary">Feedify Dashboard</a>
+                                </small>
+                                @error('feedify_api_key')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <!-- Feedify List ID -->
+                            <div class="mb-3">
+                                <label for="feedify_list_id" class="form-label">Feedify List ID</label>
+                                <input type="text" class="form-control @error('feedify_list_id') is-invalid @enderror" 
+                                       id="feedify_list_id" name="feedify_list_id" 
+                                       value="{{ old('feedify_list_id', $seoSettings->feedify_list_id ?? '') }}" 
+                                       placeholder="Enter your Feedify List ID">
+                                <small class="text-muted">
+                                    <i class="bi bi-list"></i> The unique identifier for your subscriber list in Feedify
+                                </small>
+                                @error('feedify_list_id')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Setup Guide -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-info bg-opacity-10">
+                            <h6 class="mb-0"><i class="bi bi-question-circle"></i> Setup Instructions</h6>
+                        </div>
+                        <div class="card-body">
+                            <ol class="mb-0">
+                                <li>Create an account at <a href="https://feedify.io" target="_blank" class="text-primary fw-bold">Feedify.io</a></li>
+                                <li>Go to <a href="https://app.feedify.io/settings/api" target="_blank" class="text-primary">Settings → API Keys</a> to get your API key</li>
+                                <li>Create or select a mailing list and copy its ID</li>
+                                <li>Paste the API key and List ID in the fields above</li>
+                                <li>Enable the integration by checking the box above</li>
+                                <li>Save the settings - subscribers will now be automatically added to your Feedify list</li>
+                            </ol>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Integration Status -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-success bg-opacity-10">
+                            <h6 class="mb-0"><i class="bi bi-check-circle"></i> Integration Status</h6>
+                        </div>
+                        <div class="card-body">
+                            @if($seoSettings->feedify_enabled && $seoSettings->feedify_api_key && $seoSettings->feedify_list_id)
+                                <div class="alert alert-success" role="alert">
+                                    <i class="bi bi-check-circle-fill"></i> Feedify is currently <strong>ENABLED</strong>
+                                </div>
+                            @else
+                                <div class="alert alert-warning" role="alert">
+                                    <i class="bi bi-exclamation-circle-fill"></i> Feedify is currently <strong>DISABLED</strong> or unconfigured
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> Save Feedify Settings
+                    </button>
+                </div>
+            </form>
+        </div>
         <div class="tab-pane fade" id="adsenseSettings" role="tabpanel" aria-labelledby="adsense-tab">
             <form action="{{ route('admin.settings.update') }}" method="POST" class="row g-3">
                 @csrf

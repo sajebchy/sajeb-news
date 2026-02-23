@@ -47,6 +47,9 @@ class SeoSetting extends Model
         'show_anchor_ads',
         'show_sidebar_ads',
         'show_between_articles_ads',
+        'feedify_enabled',
+        'feedify_api_key',
+        'feedify_list_id',
     ];
 
     protected $casts = [
@@ -56,6 +59,7 @@ class SeoSetting extends Model
         'show_anchor_ads' => 'boolean',
         'show_sidebar_ads' => 'boolean',
         'show_between_articles_ads' => 'boolean',
+        'feedify_enabled' => 'boolean',
     ];
 
     public static function getInstance()

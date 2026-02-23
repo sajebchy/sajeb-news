@@ -58,11 +58,11 @@
                             @enderror
                         </div>
 
-                        <!-- Tags -->
+                        <!-- Topics -->
                         <div class="mb-3">
-                            <label for="tags" class="form-label">Tags</label>
+                            <label for="tags" class="form-label">Topics</label>
                             <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" value="{{ old('tags', $news->tags->pluck('name')->implode(', ') ?? '') }}">
-                            <small class="text-muted">Separate tags with commas</small>
+                            <small class="text-muted">Separate topics with commas</small>
                             @error('tags')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror
