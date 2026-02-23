@@ -38,6 +38,9 @@ Route::post('/api/push/subscribe', [\App\Http\Controllers\PushNotificationContro
 Route::post('/api/push/unsubscribe', [\App\Http\Controllers\PushNotificationController::class, 'unsubscribe'])->name('push.unsubscribe');
 Route::post('/api/push/check', [\App\Http\Controllers\PushNotificationController::class, 'checkSubscription'])->name('push.check');
 Route::get('/api/push/stats', [\App\Http\Controllers\PushNotificationController::class, 'getStats'])->name('push.stats');
+Route::get('/push-diagnostics', function () {
+    return view('public.push-diagnostics');
+})->name('push.diagnostics');
 
 // Live Stream Status Check (Public API)
 Route::get('/api/live/active', function () {
