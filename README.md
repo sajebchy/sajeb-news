@@ -305,9 +305,27 @@ Need help? Check these resources:
 
 ---
 
-## 🎉 Latest Updates
+## 🎉 Changelog
+
+### Version 2.1 (February 25, 2026)
+**Fixes:**
+- 🔧 **Fixed CSRF Token 419 Error** - Resolved token mismatch issue by:
+  - Switched session driver from `database` to `cookie` for better reliability
+  - Enabled session encryption (`SESSION_ENCRYPT=true`) for enhanced security
+  - Configured `SESSION_SAME_SITE=lax` for proper CSRF protection
+  - Set `SESSION_SECURE_COOKIE=false` for HTTP local development
+  - Updated `APP_URL` to `http://localhost:8000` for correct domain matching
+  - Removed database session dependency to avoid session validation failures
+
+**Improvements:**
+- ⚡ Improved session management reliability
+- 🔒 Enhanced security with encrypted cookies
+- 🚀 Better performance with cookie-based sessions
+
+---
 
 ### Version 2.0 (February 22, 2026)
+**Features Added:**
 - ✅ Complete admin dashboard with 12+ modules
 - ✅ Dynamic content pages (About, Contact, Privacy, Terms, Sitemap)
 - ✅ Full SEO optimization (XML sitemaps, meta tags, schema)
@@ -321,7 +339,8 @@ Need help? Check these resources:
 
 ---
 
-**Last Updated**: February 22, 2026  
+**Last Updated**: February 25, 2026  
+**Current Version**: 2.1  
 **Status**: ✅ Production Ready  
 **Maintained By**: Sajeb Bahadur Shil
 

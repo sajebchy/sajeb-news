@@ -1,6 +1,6 @@
 -- Sajeb News - MySQL Database Schema
 -- Compatible with cPanel phpMyAdmin
--- Version 2.1 - Updated February 23, 2026
+-- Version 2.1 - Updated February 25, 2026
 --
 -- Features:
 -- - Live Streaming with Stream Comments
