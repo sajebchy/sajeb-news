@@ -534,6 +534,48 @@
         color: #706f6c;
     }
 
+    /* 70-30 Grid Section */
+    .grid-70-30-section {
+        margin-bottom: 48px;
+    }
+
+    .grid-70-30-wrapper {
+        display: grid;
+        grid-template-columns: 70% 30%;
+        gap: 24px;
+    }
+
+    .grid-70-col {
+        width: 100%;
+    }
+
+    .grid-30-col {
+        width: 100%;
+    }
+
+    .grid-70-content {
+        background: white;
+        border-radius: 8px;
+        padding: 24px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .grid-30-content {
+        background: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .grid-70-placeholder {
+        min-height: 300px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #f8f8f7;
+        border-radius: 8px;
+    }
+
     /* Main Content Area */
     .content-wrapper {
         display: grid;
@@ -879,6 +921,21 @@
             font-size: 13px;
             padding: 0 10px;
         }
+
+        /* 70-30 Grid Responsive */
+        .grid-70-30-wrapper {
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+
+        .grid-70-col,
+        .grid-30-col {
+            width: 100%;
+        }
+
+        .grid-70-placeholder {
+            min-height: 200px;
+        }
     }
 </style>
 
@@ -981,6 +1038,55 @@
         </div>
     </section>
     @endif
+
+    <!-- 70-30 Grid Section -->
+    <section class="grid-70-30-section">
+        <div class="grid-70-30-wrapper">
+            <!-- 70% Left Column -->
+            <div class="grid-70-col">
+                <div class="grid-70-content">
+                    <h2 class="section-title">📌 বিশেষ বিভাগ</h2>
+                    <p style="color: #706f6c; font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+                        এই বিভাগে আমরা আপনার জন্য সবচেয়ে গুরুত্বপূর্ণ এবং প্রাসঙ্গিক খবরগুলি নিয়ে আসি। 
+                        সর্বশেষ আপডেট এবং বিশ্লেষণ পেতে আমাদের সাথে থাকুন।
+                    </p>
+                    <div class="grid-70-placeholder" style="background: white; border-radius: 8px; padding: 40px; text-align: center; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+                        <p style="color: #706f6c; font-size: 14px;">এই স্থানে আপনার কন্টেন্ট যোগ করা হবে</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 30% Right Column -->
+            <div class="grid-30-col">
+                <div class="grid-30-content">
+                    <h2 class="section-title">🔥 জনপ্রিয়</h2>
+                    <div style="background: white; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); overflow: hidden;">
+                        @php
+                            $popularNews = \App\Models\News::where('status', 'published')
+                                ->orderBy('views', 'desc')
+                                ->limit(5)
+                                ->get();
+                        @endphp
+                        @forelse($popularNews as $index => $news)
+                        <a href="{{ route('news.show', $news->slug) }}" style="display: block; padding: 16px; border-bottom: 1px solid #e5e5e0; text-decoration: none; transition: all 0.3s; color: #1b1b18;">
+                            <div style="display: flex; gap: 12px; align-items: flex-start;">
+                                <div style="background: #3b82f6; color: white; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0;">{{ $index + 1 }}</div>
+                                <div style="flex: 1;">
+                                    <h4 style="font-size: 13px; font-weight: 600; line-height: 1.4; margin-bottom: 4px;">{{ $news->title }}</h4>
+                                    <span style="font-size: 11px; color: #706f6c;">👁️ {{ $news->views ?? 0 }} ভিউ</span>
+                                </div>
+                            </div>
+                        </a>
+                        @empty
+                        <div style="padding: 20px; text-align: center; color: #706f6c;">
+                            <p>কোনো খবর পাওয়া যাচ্ছে না</p>
+                        </div>
+                        @endforelse
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Homepage Top Ad (After Featured News) -->
     <div class="container" style="margin: 40px 0;">
