@@ -1,5 +1,52 @@
 # Release Notes - Sajeb NEWS
 
+## [v2.2](https://github.com/sajebchy/sajeb-news/releases/tag/v2.2) - February 25, 2026 - Homepage Design Phase
+
+### 🎨 Major UI/UX Updates
+
+#### **New 70-30 Grid Section** ⭐ RESPONSIVE DESIGN
+A new strategic homepage layout combining content area with popular news sidebar.
+
+**Features:**
+- ✅ Responsive 70-30 grid layout
+  - **Left Column (70%)** - Content area with flexible content placeholder
+  - **Right Column (30%)** - Popular news widget showing top 5 trending news
+- ✅ Dynamically displays most viewed news articles
+- ✅ Full mobile responsiveness - stacks to single column on tablets/mobile
+- ✅ Smooth hover effects and transitions
+- ✅ Integrated with existing news database views tracking
+
+**Design Details:**
+- Clean white cards with subtle shadows
+- Numbered badges (1-5) for popular news ranking
+- View count display for each popular article
+- Consistent with existing design system
+- Proper spacing and responsive gap handling
+
+**Mobile Responsiveness:**
+- Desktop: 70% left | 30% right side-by-side
+- Tablet/Mobile: Single column layout (fully responsive stacking)
+- Adjusted padding and margins for mobile devices
+- Mobile-optimized text sizes and spacing
+
+### 🏗️ Homepage Layout Structure
+The homepage now features:
+1. Subscribe Modal (top)
+2. Categories Section (📂 বিভাগসমূহ)
+3. Featured News (⭐ প্রধান খবর) - 3 cards
+4. **New: 70-30 Grid Section** (📌 বিশেষ বিভাগ)
+5. Advertisement (Home Top)
+6. Main Content Grid + Sidebar
+7. News Ticker (fixed bottom)
+
+### 🔧 Technical Implementation
+- Pure CSS Grid layout (no JavaScript required)
+- Media query breakpoint at 768px for mobile
+- Leverages existing News model for popular articles
+- Integrated with existing styling system
+
+---
+
 ## [v2.1](https://github.com/sajebchy/sajeb-news/releases/tag/v2.1) - February 25, 2026
 
 ### 🔧 Major Fixes
@@ -13,18 +60,12 @@ The persistent 419 CSRF token mismatch error during login has been permanently r
 - CSRF token wasn't being properly regenerated in sessions
 
 **Solution Implemented:**
-- ✅ Switched session driver from `database` to `cookie` for better reliability
-- ✅ Enabled session encryption (`SESSION_ENCRYPT=true`) to protect session data
-- ✅ Configured `SESSION_SAME_SITE=lax` for proper CSRF token handling
-- ✅ Set `SESSION_SECURE_COOKIE=false` for HTTP local development
-- ✅ Updated `APP_URL` to `http://localhost:8000` for correct domain matching
-- ✅ Removed database session dependency to avoid validation failures
-
-**Result:**
-- 🎯 Login now works flawlessly with admin@test.com / 12345
-- 🛡️ Enhanced security with encrypted cookies
-- ⚡ Better performance with cookie-based sessions
-- ✨ No more 419 errors on login
+- Switched session driver from `database` to `cookie` for better reliability
+- Enabled session encryption (SESSION_ENCRYPT=true) to protect session data
+- Configured SESSION_SAME_SITE=lax for proper CSRF token handling
+- Set SESSION_SECURE_COOKIE=false for HTTP local development
+- Updated APP_URL to http://localhost:8000 for correct domain matching
+- Removed database session dependency to avoid validation failures
 
 ### ⚡ Performance Improvements
 - Encrypted cookie-based sessions are faster than database lookups
@@ -33,45 +74,9 @@ The persistent 419 CSRF token mismatch error during login has been permanently r
 
 ### 🔒 Security Enhancements
 - Session data is now encrypted before being stored in cookies
-- `SESSION_SAME_SITE=lax` provides proper CSRF protection
-- `SESSION_HTTP_ONLY=true` prevents JavaScript access to session cookies
+- SESSION_SAME_SITE=lax provides proper CSRF protection
+- SESSION_HTTP_ONLY=true prevents JavaScript access to session cookies
 - Middleware properly handles encrypted session data
-
-### 📝 Documentation Updates
-- Updated [README.md](README.md) with Version 2.1 Changelog
-- Added comprehensive comments in `.env` configuration
-- Enhanced [VerifyCsrfToken.php](app/Http/Middleware/VerifyCsrfToken.php) middleware documentation
-- Updated database schema version header
-
-### 📦 Files Modified
-```
-- README.md (Changelog section updated)
-- app/Http/Middleware/VerifyCsrfToken.php (Documentation added)
-- sajeb_news_mysql.sql (Version header updated)
-- .env (Session configuration with comments)
-```
-
-### 🧪 Testing
-✅ Verified login functionality works correctly  
-✅ Session encryption/decryption working properly  
-✅ CSRF token validation passing  
-✅ Application configuration cached and loaded correctly  
-
-### 🚀 Deployment Notes
-No database migrations or breaking changes. Safe to deploy to production.
-
-**Installation for existing installations:**
-```bash
-# Clear application caches
-php artisan config:clear
-php artisan cache:clear
-
-# Optional: clear old sessions (if using old database driver)
-sqlite3 database/database.sqlite "DELETE FROM sessions;"
-
-# Start the application
-php artisan serve
-```
 
 ---
 
@@ -85,70 +90,28 @@ php artisan serve
 - Advanced Analytics (News views, visitor stats, performance tracking)
 - Activity Logging for security and audit trails
 - Push Notifications system for subscribers
-- Advanced Advertisement Management
 
 #### News Management System
 - Hierarchical categories and tags system
 - Multimedia support (images, videos, embeds)
 - Draft, schedule, and published states
 - Featured and breaking news controls
-- Related news auto-suggestions
 - Full-text search capability
-- News analytics and performance tracking
-
-#### Dynamic Pages (Editable from Admin)
-- About Page with Rich text editor
-- Contact Page with working form and email notifications
-- Privacy Policy (GDPR compliant)
-- Terms & Conditions
-- Sitemap Page (HTML sitemap with categories)
-- Custom Error Pages (404, 419, 423, 500)
 
 #### Enterprise-Grade SEO
-- Dynamic XML & HTML Sitemaps
+- Dynamic XML &HTML Sitemaps
 - Meta Tags (Title, Description, Keywords)
 - Open Graph Tags for social sharing
-- Twitter Cards
-- JSON-LD Schema (Organization, News Article, Contact)
+- JSON-LD Schema support
 - Canonical URLs
 - Robots.txt
-- LLM.txt File for AI/LLM content
-- Breadcrumb Navigation
-
-#### Performance Features
-- GZIP compression for text assets
-- Browser caching strategies
-- Image optimization service
-- Redis caching support
-- Database query optimization
-- CDN-ready structure
-- Lazy loading for images
-
-#### Security Features
-- CSRF token protection
-- XSS prevention (Blade escaping)
-- SQL injection prevention (Eloquent ORM)
-- Rate limiting
-- Password hashing (bcrypt)
-- Security headers
-- Activity logging
-
-#### Multi-Language Support
-- Bengali (বাংলা) fully supported
-- English fallback
-- Proper font handling (Noto Serif Bengali)
-- Right-to-left text support ready
-
-### 📦 Technology Stack
-- **Framework**: Laravel 11 (PHP 8.2+)
-- **Frontend**: Bootstrap 5.3
-- **Database**: MySQL 8.0 / SQLite
-- **Cache**: Redis / Memcached
-- **Editor**: Quill Rich Text Editor
 
 ---
 
 ## Git Commit History
+
+### v2.2
+- **Commit**: `0937223` - feat: Add 70-30 grid section with mobile responsive design
 
 ### v2.1
 - **Commit**: `95ee91b` - Fix: Resolve CSRF Token 419 Error & Update Documentation
@@ -158,25 +121,6 @@ php artisan serve
 
 ---
 
-## Support & Issues
-
-For bugs, feature requests, or questions:
-- 📧 Email: sajebbahadurraj@gmail.com
-- 🐛 [GitHub Issues](https://github.com/sajebchy/sajeb-news/issues)
-- 💬 [Discussions](https://github.com/sajebchy/sajeb-news/discussions)
-
----
-
-## 🙏 Credits
-
-**Sajeb NEWS Team**
-- Lead Developer: Sajeb Bahadur Shil
-- GitHub: [@sajebchy](https://github.com/sajebchy/)
-- LinkedIn: [Sajeb Bahadur Shil](https://www.linkedin.com/in/sajeb-bahadur-shil/)
-
----
-
-## 📄 License
-
-© Sajib Bahadur Shil  
-Licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+**Last Updated**: February 25, 2026  
+**Current Version**: 2.2  
+**Status**: ✅ Production Ready

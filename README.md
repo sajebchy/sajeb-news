@@ -307,6 +307,21 @@ Need help? Check these resources:
 
 ## 🎉 Changelog
 
+### Version 2.2 (February 25, 2026) - Homepage Design Phase
+**New Features:**
+- 🎨 **Responsive 70-30 Grid Section** - Added new grid layout on homepage:
+  - Left column (70%): Content area with flexible placeholder
+  - Right column (30%): Popular news widget showing top 5 news by views
+  - Fully mobile responsive - stacks to single column on mobile devices
+  - Clean card-based design with hover effects
+
+**UI/UX Improvements:**
+- ✨ Enhanced homepage layout with strategic content positioning
+- 📱 Complete mobile responsiveness for all new sections
+- 🎯 Better content organization with 70-30 split layout
+
+---
+
 ### Version 2.1 (February 25, 2026)
 **Fixes:**
 - 🔧 **Fixed CSRF Token 419 Error** - Resolved token mismatch issue by:
