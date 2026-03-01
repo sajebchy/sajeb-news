@@ -88,6 +88,11 @@ class SendNewsNotification implements ShouldQueue
      */
     private function sendPushToSubscriber(PushSubscription $subscription, News $news): void
     {
+        $settings = SeoSetting::first();
+        if (!$settings?->vapid_private_key || !$settings?->vapid_public_key) {
+            throw new \Exception("VAPID keys not configured");
+        }
+
         $title = 'নতুন নিউজ: ' . substr($news->title, 0, 50);
         $body = substr(strip_tags($news->content ?? $news->excerpt), 0, 100);
         $icon = $news->featured_image 
@@ -108,26 +113,86 @@ class SendNewsNotification implements ShouldQueue
             ],
         ];
 
-        $response = Http::timeout(10)
-            ->asJson()
-            ->withHeaders([
-                'TTL' => '24',
-                'Urgency' => 'high',
-                'Content-Type' => 'application/octet-stream',
-                'Content-Encoding' => 'aes128gcm',
-            ])
-            ->post($subscription->endpoint, $payload);
+        try {
+            // Parse endpoint
+            $endpoint = $subscription->endpoint;
+            $urlParts = parse_url($endpoint);
+            $host = $urlParts['host'] ?? 'push.example.com';
 
-        if (!$response->successful()) {
-            $status = $response->status();
+            // Generate VAPID JWT token
+            $now = time();
+            $orgDomain = parse_url(config('app.url'), PHP_URL_HOST) ?? 'localhost';
             
-            if ($status === 410 || $status === 404) {
-                $subscription->deactivate();
-                throw new \Exception("Endpoint invalid (status {$status})");
+            $header = [
+                'typ' => 'JWT',
+                'alg' => 'ES256',
+            ];
+
+            $claims = [
+                'aud' => "https://{$host}",
+                'exp' => $now + 43200, // 12 hours
+                'sub' => 'mailto:admin@' . $orgDomain,
+            ];
+
+            // Create JWT (this uses VAPID Elliptic Curve signing)
+            $jwt = $this->createVapidJwt($header, $claims, $settings->vapid_private_key);
+            $publicKey = $settings->vapid_public_key;
+
+            // Send with Web Push Protocol (RFC 8188)
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'Authorization' => 'vapid t=' . $jwt . ', k=' . $publicKey,
+                    'TTL' => '86400', // 24 hours
+                    'Urgency' => 'high',
+                    'Content-Encoding' => 'aes128gcm',
+                ])
+                ->post($endpoint, json_encode($payload));
+
+            if (!$response->successful()) {
+                $status = $response->status();
+                
+                if ($status === 410 || $status === 404) {
+                    $subscription->deactivate();
+                    throw new \Exception("Endpoint invalid (HTTP {$status})");
+                }
+                
+                throw new \Exception("Push request failed (HTTP {$status})");
             }
-            
-            throw new \Exception("Push failed with status {$status}");
+
+        } catch (\Exception $e) {
+            Log::error("Push send error for subscription {$subscription->id}: {$e->getMessage()}");
+            throw $e;
         }
+    }
+
+    /**
+     * Create VAPID JWT token
+     * Works with private keys in PKCS8 format
+     */
+    private function createVapidJwt(array $header, array $claims, string $privateKeyPem): string
+    {
+        // Prepare segments
+        $headerEncoded = rtrim(strtr(base64_encode(json_encode($header)), '+/', '-_'), '=');
+        $claimsEncoded = rtrim(strtr(base64_encode(json_encode($claims)), '+/', '-_'), '=');
+        $signingInput = $headerEncoded . '.' . $claimsEncoded;
+
+        // Sign with OpenSSL (supports EC keys)
+        $signature = '';
+        $success = openssl_sign(
+            $signingInput,
+            $signature,
+            $privateKeyPem,
+            'sha256'
+        );
+
+        if (!$success) {
+            throw new \Exception('Failed to sign JWT with VAPID private key');
+        }
+
+        // URL-safe base64 encode signature
+        $signatureEncoded = rtrim(strtr(base64_encode($signature), '+/', '-_'), '=');
+
+        return $signingInput . '.' . $signatureEncoded;
     }
 
     /**

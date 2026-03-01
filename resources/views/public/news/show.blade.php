@@ -956,74 +956,14 @@
                     <i class="fas fa-bell"></i> পুশ নোটিফিকেশন চালু করুন
                 </h4>
                 <p style="margin: 0; opacity: 0.95;">
-                    "{{ $news->category->name }}" ক্যাটেগরির সব নতুন খবর সরাসরি আপনার ডিভাইসে পান। কখনও কোনো গুরুত্বপূর্ণ খবর মিস করবেন না।
+                    নতুন খবর প্রকাশিত হওয়ার সাথে সাথে আপনার ব্রাউজার এবং ডিভাইসে সরাসরি বিজ্ঞপ্তি পান।
                 </p>
             </div>
-            <button class="push-subscribe-btn push-btn" style="background: white; color: #667eea; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s;">
+            <button class="push-subscribe-btn" data-push-subscribe-btn data-subscribed="false" style="background: white; color: #667eea; border: none; padding: 12px 25px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: all 0.3s; white-space: nowrap;">
                 <i class="fas fa-bell"></i> চালু করুন
             </button>
         </div>
     </div>
 </div>
-
-<script>
-    function copyToClipboard(text) {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('লিঙ্ক কপি হয়েছে!');
-        }).catch(err => {
-            console.error('কপি করতে ব্যর্থ:', err);
-        });
-    }
-
-    // Push Notification Handler
-    document.addEventListener('DOMContentLoaded', function() {
-        const subscribeBtn = document.querySelector('.push-subscribe-btn');
-        if (subscribeBtn) {
-            const checkManager = setInterval(function() {
-                if (window.PushNotificationManager) {
-                    clearInterval(checkManager);
-                    const manager = new PushNotificationManager();
-                    
-                    if (!manager.isSupported()) {
-                        subscribeBtn.textContent = '⛔ সাপোর্ট নেই';
-                        subscribeBtn.disabled = true;
-                        return;
-                    }
-
-                    manager.isEnabled().then(enabled => {
-                        if (enabled) {
-                            subscribeBtn.innerHTML = '<i class="fas fa-check-circle"></i> ✓ সক্ষম';
-                            subscribeBtn.style.background = '#4caf50';
-                            subscribeBtn.disabled = true;
-                        }
-                    });
-
-                    subscribeBtn.addEventListener('click', async function() {
-                        subscribeBtn.disabled = true;
-                        subscribeBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> অপেক্ষা...';
-
-                        try {
-                            const result = await manager.subscribe();
-                            if (result.success) {
-                                subscribeBtn.innerHTML = '<i class="fas fa-check-circle"></i> ✓ সক্ষম';
-                                subscribeBtn.style.background = '#4caf50';
-                            } else {
-                                alert(result.message || 'সাবস্ক্রিপশন ব্যর্থ');
-                                subscribeBtn.disabled = false;
-                                subscribeBtn.innerHTML = '<i class="fas fa-bell"></i> চালু করুন';
-                            }
-                        } catch (error) {
-                            console.error('Error:', error);
-                            subscribeBtn.disabled = false;
-                            subscribeBtn.innerHTML = '<i class="fas fa-bell"></i> চালু করুন';
-                        }
-                    });
-                }
-            }, 100);
-
-            setTimeout(() => clearInterval(checkManager), 2000);
-        }
-    });
-</script>
 
 @endsection

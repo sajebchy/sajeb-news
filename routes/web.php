@@ -42,6 +42,12 @@ Route::get('/push-diagnostics', function () {
     return view('public.push-diagnostics');
 })->name('push.diagnostics');
 
+Route::get('/test-push', function () {
+    return view('public.test-push', [
+        'vapidPublicKey' => config('app.vapid_public_key') ?? env('VAPID_PUBLIC_KEY', '')
+    ]);
+})->name('test.push');
+
 // Live Stream Status Check (Public API)
 Route::get('/api/live/active', function () {
     $activeLiveStream = \App\Models\LiveStream::where('status', 'active')
