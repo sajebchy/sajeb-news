@@ -107,25 +107,63 @@ class PushNotificationManager {
      */
     async sendSubscriptionToServer(subscription) {
         try {
+            // Get Keys safely
+            let publicKey = null;
+            let authToken = null;
+
+            try {
+                const p256dhKey = subscription.getKey('p256dh');
+                if (p256dhKey) {
+                    publicKey = this.arrayBufferToBase64(p256dhKey);
+                }
+            } catch (e) {
+                console.warn('Could not get p256dh key:', e);
+            }
+
+            try {
+                const authKey = subscription.getKey('auth');
+                if (authKey) {
+                    authToken = this.arrayBufferToBase64(authKey);
+                }
+            } catch (e) {
+                console.warn('Could not get auth key:', e);
+            }
+
+            const payload = {
+                endpoint: subscription.endpoint,
+            };
+
+            if (publicKey) {
+                payload.publicKey = publicKey;
+            }
+            if (authToken) {
+                payload.authToken = authToken;
+            }
+
             const response = await fetch('/api/push/subscribe', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content,
+                    'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || '',
                 },
-                body: JSON.stringify({
-                    endpoint: subscription.endpoint,
-                    publicKey: this.arrayBufferToBase64(subscription.getKey('p256dh')),
-                    authToken: this.arrayBufferToBase64(subscription.getKey('auth')),
-                }),
+                body: JSON.stringify(payload),
             });
+
+            if (!response.ok) {
+                const errorData = await response.json().catch(() => ({}));
+                console.error('Server response error:', response.status, errorData);
+                throw new Error(`Server error: ${response.status}`);
+            }
 
             const data = await response.json();
             return data;
 
         } catch (error) {
             console.error('Server communication error:', error);
-            throw error;
+            return {
+                success: false,
+                message: 'সার্ভার সংযোগ ব্যর্থ: ' + error.message,
+            };
         }
     }
 

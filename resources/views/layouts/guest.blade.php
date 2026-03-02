@@ -14,8 +14,14 @@
         <link rel="manifest" href="/manifest.json">
 
         <!-- Fonts - Optimized for fast loading -->
+        <!-- English Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+        
+        <!-- Bengali Fonts from Google Fonts - Optimized for Bangla Script -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet" />
         
         <!-- DNS Prefetch for CDN -->
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">

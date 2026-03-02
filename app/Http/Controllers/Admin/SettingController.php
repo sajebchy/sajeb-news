@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\SeoSetting;
 use App\Services\ImageOptimizer;
+use App\Services\EnvironmentService;
 use Illuminate\Http\Request;
 
 class SettingController extends Controller
@@ -179,9 +180,26 @@ class SettingController extends Controller
             'site_name' => config('app.name', 'Sajeb NEWS'),
             'site_description' => 'Bengali News Portal',
         ]);
-        
+
         $seoSettings->update($seoSettingsData);
-        
+
+        // Update .env file if VAPID keys are provided
+        if (!empty($seoSettingsData['vapid_public_key'])) {
+            try {
+                EnvironmentService::updateEnvFile('VAPID_PUBLIC_KEY', $seoSettingsData['vapid_public_key']);
+            } catch (\Exception $e) {
+                \Log::warning("Failed to update VAPID_PUBLIC_KEY in .env: " . $e->getMessage());
+            }
+        }
+
+        if (!empty($seoSettingsData['vapid_private_key'])) {
+            try {
+                EnvironmentService::updateEnvFile('VAPID_PRIVATE_KEY', $seoSettingsData['vapid_private_key']);
+            } catch (\Exception $e) {
+                \Log::warning("Failed to update VAPID_PRIVATE_KEY in .env: " . $e->getMessage());
+            }
+        }
+
         // Update Schema Settings
         $schemaSettings = \App\Models\SchemaSetting::getInstance();
         $schemaSettings->update($schemaSettingsData);

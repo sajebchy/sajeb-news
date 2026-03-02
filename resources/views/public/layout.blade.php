@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <meta name="vapid-public-key" content="{{ env('VAPID_PUBLIC_KEY', '') }}">
+    @php
+        $seoSettings = \App\Models\SeoSetting::first();
+        $vapidKey = $seoSettings?->vapid_public_key ?? env('VAPID_PUBLIC_KEY', '');
+    @endphp
+    <meta name="vapid-public-key" content="{{ $vapidKey }}">
     <title>@yield('title', $settings->site_title ?? 'Sajeb NEWS - বাংলাদেশী নিউজ পোর্টাল')</title>
     <meta name="description" content="@yield('description', $settings->site_description ?? 'বাংলাদেশের সর্বশেষ খবর, রাজনীতি, খেলাধুলা এবং আরও অনেক কিছু।')">
     <meta name="keywords" content="@yield('keywords', $settings->meta_keywords ?? 'বাংলাদেশ, খবর, নিউজ, বাংলা সংবাদ')">
@@ -37,10 +41,14 @@
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
     <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" crossorigin>
-    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" as="style" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" as="style" crossorigin>
+    
+    <!-- Bengali Fonts from Google Fonts - For Newspaper/News Portal -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&family=Noto+Sans+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- JSON-LD Schema -->
     @php
@@ -1229,8 +1237,95 @@
         setInterval(updateBanglaDate, 60000);
     </script>
     
+    
     <!-- Custom JS -->
     @yield('scripts')
+    
+    <!-- Push Notification Manager Script -->
+    <script src="/js/push-notification-manager.js"></script>
+    
+    <!-- Push Notification Client Script (handles UI & subscription) -->
+    <script src="/js/push-notification-client.js"></script>
+    
+    <!-- Push Notification Toast Styles -->
+    <style>
+        .push-notification-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 16px 20px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            z-index: 10000;
+            max-width: 300px;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 500;
+        }
+
+        .push-notification-toast.show {
+            opacity: 1;
+        }
+
+        .push-notification-toast-success {
+            border-left: 4px solid #4caf50;
+            color: #2e7d32;
+        }
+
+        .push-notification-toast-success i {
+            color: #4caf50;
+        }
+
+        .push-notification-toast-error {
+            border-left: 4px solid #f44336;
+            color: #c62828;
+        }
+
+        .push-notification-toast-error i {
+            color: #f44336;
+        }
+
+        .push-notification-toast-info {
+            border-left: 4px solid #2196f3;
+            color: #1565c0;
+        }
+
+        .push-notification-toast-info i {
+            color: #2196f3;
+        }
+
+        .push-notification-toast-content {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+        }
+
+        @media (max-width: 576px) {
+            .push-notification-toast {
+                bottom: 10px;
+                right: 10px;
+                left: 10px;
+            }
+        }
+    </style>
+    
+    <!-- Register Service Worker for Push Notifications -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+                .then(registration => {
+                    console.log('✓ Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.warn('Service Worker registration failed:', error);
+                });
+        }
+    </script>
     
     <!-- Google AdSense Anchor Ad -->
     @php

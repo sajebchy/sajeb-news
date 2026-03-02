@@ -4,13 +4,80 @@
 /* কাস্টম Bootstrap স্টাইল */
 @import './bootstrap-custom.css';
 
-/* কাস্টম স্টাইল */
+/* ================================ */
+/* 🇧🇩 বাংলা ফন্ট কনফিগারেশন */
+/* ================================ */
+
+/* বাংলা এবং ইংরেজি উভয় ভাষার জন্য ফন্ট স্ট্যাক */
 :root {
+    /* English Fonts */
     --bs-body-font-family: 'Figtree', sans-serif;
+    
+    /* Bengali Fonts - সেরিফ (শিরোনাম এবং বডি টেক্সটের জন্য) */
+    --bengali-serif: 'Noto Serif Bengali', 'Noto Serif', serif;
+    
+    /* Bengali Fonts - স্যান্স সেরিফ (ক্লিনার লুক) */
+    --bengali-sans: 'Noto Sans Bengali', 'Noto Sans', sans-serif;
 }
 
+/* সব ধরনের টেক্সটের জন্য ডিফল্ট ফন্ট */
 body {
-    font-family: 'Figtree', sans-serif;
+    font-family: 'Figtree', 'Noto Sans Bengali', sans-serif;
+    line-height: 1.6;
+}
+
+/* বাংলা শিরোনামের জন্য */
+h1, h2, h3, h4, h5, h6 {
+    font-family: 'Noto Sans Bengali', 'Noto Serif Bengali', 'Figtree', sans-serif;
+    font-weight: 600;
+}
+
+/* বাংলা প্যারাগ্রাফ টেক্সটের জন্য */
+p, li, td, th, span, label, .paragraph {
+    font-family: 'Noto Serif Bengali', 'Noto Sans Bengali', 'Figtree', sans-serif;
+}
+
+/* নিউজ শিরোনাম - বাংলা অপ্টিমাইজড */
+.news-title, .article-title, .post-title {
+    font-family: 'Noto Serif Bengali', serif;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+/* নিউজ বিষয়বস্তু - বাংলা অপ্টিমাইজড */
+.news-content, .article-content, .post-content {
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 1.1rem;
+    line-height: 1.8;
+}
+
+/* নেভিগেশন মেনু - পরিষ্কার */
+nav, .navbar, .menu {
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-weight: 500;
+}
+
+/* বাটন এবং ছোট টেক্সট */
+button, .btn, input[type="button"], input[type="submit"] {
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-weight: 600;
+}
+
+/* ফর্ম এলিমেন্ট */
+input, textarea, select, .form-control, .form-select {
+    font-family: 'Noto Sans Bengali', 'Figtree', sans-serif;
+}
+
+/* মেটা টেক্সট এবং ছোট তথ্য */
+.meta, .small, small, .caption {
+    font-family: 'Noto Sans Bengali', sans-serif;
+    font-size: 0.875rem;
+}
+
+/* কমেন্ট এবং ডিসকাশন */
+.comment, .reply, .discussion {
+    font-family: 'Noto Serif Bengali', serif;
+    line-height: 1.7;
 }
 
 /* স্ট্যাটিক কার্ড স্টাইলিং */
@@ -99,13 +166,6 @@ body {
 
 .card:hover {
     box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
-}
-
-/* প্রিন্ট স্টাইল */
-@media print {
-    .navbar {
-        display: none;
-    }
 }
 
 /* প্রিন্ট স্টাইল */
