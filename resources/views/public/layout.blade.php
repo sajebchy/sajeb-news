@@ -40,22 +40,15 @@
     <!-- Preload Critical Resources with DNS Prefetch -->
     <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://cdnjs.cloudflare.com">
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     
     <link rel="preload" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" as="style" crossorigin>
-    <link rel="preload" href="https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff2" as="font" type="font/woff2" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" as="style" crossorigin>
     
-    <!-- Bengali Font - Kalpurush from jsDelivr CDN (proper Bengali font for news) -->
-    <style>
-        @font-face {
-            font-family: 'Kalpurush';
-            src: url('https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff2') format('woff2'),
-                 url('https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff') format('woff');
-            font-weight: normal;
-            font-style: normal;
-            font-display: swap;
-        }
-    </style>
+    <!-- Bengali Font - Noto Serif Bengali from Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <!-- JSON-LD Schema -->
     @php

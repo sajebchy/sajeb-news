@@ -18,18 +18,10 @@
         <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         
-        <!-- Bengali Font - Kalpurush from jsDelivr CDN (proper Bengali font for news) -->
-        <link rel="preload" href="https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff2" as="font" type="font/woff2" crossorigin>
-        <style>
-            @font-face {
-                font-family: 'Kalpurush';
-                src: url('https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff2') format('woff2'),
-                     url('https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff') format('woff');
-                font-weight: normal;
-                font-style: normal;
-                font-display: swap;
-            }
-        </style>
+        <!-- Bengali Font - Noto Serif Bengali from Google Fonts -->
+        <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;600;700&display=swap" rel="stylesheet" />
         
         <!-- DNS Prefetch for CDN -->
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">

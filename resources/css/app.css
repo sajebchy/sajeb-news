@@ -8,82 +8,72 @@
 /* 🇧🇩 বাংলা ফন্ট কনফিগারেশন */
 /* ================================ */
 
-/* Kalpurush Bengali Font - jsDelivr CDN */
-@font-face {
-    font-family: 'Kalpurush';
-    src: url('https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff2') format('woff2'),
-         url('https://cdn.jsdelivr.net/npm/kalpurush@1.0.0/Kalpurush.woff') format('woff');
-    font-weight: normal;
-    font-style: normal;
-    font-display: swap;
-}
-
 /* বাংলা এবং ইংরেজি উভয় ভাষার জন্য ফন্ট স্ট্যাক */
 :root {
     /* English Fonts */
     --bs-body-font-family: 'Figtree', sans-serif;
     
-    /* Bengali Font - Kalpurush (Bengali Newspaper Standard) */
-    --bengali-font: 'Kalpurush', sans-serif;
+    /* Bengali Font - Noto Serif Bengali (সব বাংলা লেখার জন্য) */
+    --bengali-serif: 'Noto Serif Bengali', 'Noto Serif', serif;
 }
 
 /* সব ধরনের টেক্সটের জন্য ডিফল্ট ফন্ট */
 body {
-    font-family: 'Kalpurush', 'Figtree', sans-serif;
+    font-family: 'Figtree', 'Noto Serif Bengali', serif;
     line-height: 1.6;
 }
 
 /* বাংলা শিরোনামের জন্য */
 h1, h2, h3, h4, h5, h6 {
-    font-family: 'Kalpurush', 'Figtree', sans-serif;
+    font-family: 'Noto Serif Bengali', 'Noto Serif', serif;
     font-weight: 600;
 }
 
 /* বাংলা প্যারাগ্রাফ টেক্সটের জন্য */
 p, li, td, th, span, label, .paragraph {
-    font-family: 'Kalpurush', 'Figtree', sans-serif;
+    font-family: 'Noto Serif Bengali', 'Noto Serif', serif;
 }
 
 /* নিউজ শিরোনাম - বাংলা অপ্টিমাইজড */
 .news-title, .article-title, .post-title {
-    font-family: 'Kalpurush', sans-serif;
+    font-family: 'Noto Serif Bengali', serif;
     font-weight: 700;
     letter-spacing: -0.5px;
 }
 
 /* নিউজ বিষয়বস্তু - বাংলা অপ্টিমাইজড */
 .news-content, .article-content, .post-content {
-    font-family: 'Kalpurush', sans-serif;
+    font-family: 'Noto Serif Bengali', serif;
     font-size: 1.1rem;
     line-height: 1.8;
 }
 
-/* নেভিগেশন মেনু - পরিষ্কার */
+/* নেভিগেশন মেনু */
 nav, .navbar, .menu {
-    font-family: 'Kalpurush', sans-serif;
+    font-family: 'Noto Serif Bengali', serif;
     font-weight: 500;
 }
 
 /* বাটন এবং ছোট টেক্সট */
 button, .btn, input[type="button"], input[type="submit"] {
-    font-family: 'Kalpurush', sans-serif;
+    font-family: 'Noto Serif Bengali', serif;
     font-weight: 600;
 }
 
 /* ফর্ম এলিমেন্ট */
 input, textarea, select, .form-control, .form-select {
-    font-family: 'Kalpurush', 'Figtree', sans-serif;
+    font-family: 'Noto Serif Bengali', 'Figtree', serif;
 }
 
 /* মেটা টেক্সট এবং ছোট তথ্য */
 .meta, .small, small, .caption {
-    font-family: 'Kalpurush', sans-serif;
+    font-family: 'Noto Serif Bengali', serif;
     font-size: 0.875rem;
 }
 
 /* কমেন্ট এবং ডিসকাশন */
 .comment, .reply, .discussion {
-    font-family: 'Kalpurush', sans-serif;
+    font-family: 'Noto Serif Bengali', serif;
     line-height: 1.7;
 }
 
