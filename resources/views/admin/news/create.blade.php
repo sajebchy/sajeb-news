@@ -104,22 +104,26 @@
                         <!-- Status -->
                         <div class="mb-3">
                             <label for="status" class="form-label">Status *</label>
-                            <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required>
-                                <option value="draft" @selected(old('status', $news->status ?? '') == 'draft')>Draft</option>
-                                <option value="published" @selected(old('status', $news->status ?? '') == 'published')>Published</option>
-                                <option value="scheduled" @selected(old('status', $news->status ?? '') == 'scheduled')>Scheduled</option>
-                            </select>
+                            <div class="input-group">
+                                <select class="form-select @error('status') is-invalid @enderror" id="status" name="status" required onchange="updatePublishDateField()">
+                                    <option value="draft" @selected(old('status', $news->status ?? 'published') == 'draft')>📝 Draft (Not Visible)</option>
+                                    <option value="published" @selected(old('status', $news->status ?? 'published') == 'published')>✓ Published (Visible Now)</option>
+                                    <option value="scheduled" @selected(old('status', $news->status ?? 'published') == 'scheduled')>📅 Scheduled (Later)</option>
+                                </select>
+                            </div>
+                            <small class="text-muted d-block mt-1">Select "Published" to make news visible on homepage and category pages</small>
                             @error('status')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback" style="display: block;">{{ $message }}</div>
                             @enderror
                         </div>
 
                         <!-- Publish Date -->
                         <div class="mb-3">
-                            <label for="published_at" class="form-label">Publish Date</label>
-                            <input type="datetime-local" class="form-control @error('published_at') is-invalid @enderror" id="published_at" name="published_at" value="{{ old('published_at', $news->published_at?->format('Y-m-d H:i') ?? '') }}">
+                            <label for="published_at" class="form-label" id="publish_date_label">Publish Date <span class="text-danger" id="required_indicator">*</span></label>
+                            <input type="datetime-local" class="form-control @error('published_at') is-invalid @enderror" id="published_at" name="published_at" value="{{ old('published_at', $news->published_at?->format('Y-m-d H:i') ?? now()->format('Y-m-d H:i')) }}" required>
+                            <small class="text-muted d-block mt-1" id="date_help_text">Required for published news. News will appear immediately if set to now or past time.</small>
                             @error('published_at')
-                                <div class="invalid-feedback">{{ $message }}</div>
+                                <div class="invalid-feedback" style="display: block;">{{ $message }}</div>
                             @enderror
                         </div>
 
@@ -225,6 +229,55 @@
 
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
+
+<script>
+    // Update publish date field based on status selection
+    function updatePublishDateField() {
+        const status = document.getElementById('status').value;
+        const publishDateInput = document.getElementById('published_at');
+        const dateHelpText = document.getElementById('date_help_text');
+        const requiredIndicator = document.getElementById('required_indicator');
+        
+        if (status === 'draft') {
+            publishDateInput.required = false;
+            publishDateInput.disabled = true;
+            requiredIndicator.textContent = '';
+            dateHelpText.textContent = 'Not needed for drafts. You can set this later when publishing.';
+        } else if (status === 'published') {
+            publishDateInput.required = true;
+            publishDateInput.disabled = false;
+            requiredIndicator.textContent = '*';
+            dateHelpText.textContent = 'Required for published news. News will appear immediately if set to now or past time.';
+            // Set to current time if empty
+            if (!publishDateInput.value) {
+                publishDateInput.value = new Date().toISOString().slice(0, 16);
+            }
+        } else if (status === 'scheduled') {
+            publishDateInput.required = true;
+            publishDateInput.disabled = false;
+            requiredIndicator.textContent = '*';
+            dateHelpText.textContent = 'Required for scheduled news. News will automatically publish at this date and time.';
+        }
+    }
+    
+    // Initialize on page load
+    document.addEventListener('DOMContentLoaded', function() {
+        updatePublishDateField();
+    });
+    
+    // Prevent form submission if published without date
+    document.querySelector('form').addEventListener('submit', function(e) {
+        const status = document.getElementById('status').value;
+        const publishDate = document.getElementById('published_at').value;
+        
+        if ((status === 'published' || status === 'scheduled') && !publishDate) {
+            e.preventDefault();
+            alert('⚠️ Please set a publish date for ' + status + ' news!');
+            document.getElementById('published_at').focus();
+            return false;
+        }
+    });
+</script>
 
 <style>
     #title {

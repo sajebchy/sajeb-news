@@ -52,7 +52,7 @@ class NewsController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'featured_image' => 'nullable|image|max:5120',
             'status' => 'required|in:draft,published,scheduled',
-            'published_at' => 'nullable|date',
+            'published_at' => 'required_if:status,published,scheduled|date|nullable',
             'is_featured' => 'boolean',
             'is_breaking' => 'boolean',
             'is_claim_review' => 'nullable|boolean',
@@ -76,6 +76,11 @@ class NewsController extends Controller
                 'featured_image',
                 'news'
             );
+        }
+
+        // Set published_at to now if status is published and date not set
+        if ($validated['status'] === 'published' && empty($validated['published_at'])) {
+            $validated['published_at'] = now();
         }
 
         // Create news post
@@ -125,7 +130,7 @@ class NewsController extends Controller
             'excerpt' => 'nullable|string|max:500',
             'featured_image' => 'nullable|image|max:5120',
             'status' => 'required|in:draft,published,scheduled',
-            'published_at' => 'nullable|date',
+            'published_at' => 'required_if:status,published,scheduled|date|nullable',
             'is_featured' => 'boolean',
             'is_breaking' => 'boolean',
             'is_claim_review' => 'nullable|boolean',
