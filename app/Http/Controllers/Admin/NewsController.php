@@ -44,64 +44,72 @@ class NewsController extends Controller
      */
     public function store(Request $request)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255|unique:news',
-            'slug' => 'nullable|string|unique:news',
-            'category_id' => 'required|exists:categories,id',
-            'content' => 'required|string',
-            'excerpt' => 'nullable|string|max:500',
-            'featured_image' => 'nullable|image|max:5120',
-            'status' => 'required|in:draft,published,scheduled',
-            'published_at' => 'required_if:status,published,scheduled|date|nullable',
-            'is_featured' => 'boolean',
-            'is_breaking' => 'boolean',
-            'is_claim_review' => 'nullable|boolean',
-            'claim_being_reviewed' => 'nullable|required_if:is_claim_review,1|string|max:1000',
-            'claim_rating' => 'nullable|required_if:is_claim_review,1|in:True,Mostly True,Partly False,False,Unproven',
-            'claim_review_evidence' => 'nullable|required_if:is_claim_review,1|string',
-            'claim_review_date' => 'nullable|date',
-            'tags' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255|unique:news',
+                'slug' => 'nullable|string|unique:news',
+                'category_id' => 'required|exists:categories,id',
+                'content' => 'required|string',
+                'excerpt' => 'nullable|string|max:500',
+                'featured_image' => 'nullable|image|max:5120',
+                'status' => 'required|in:draft,published,scheduled',
+                'published_at' => 'required_if:status,published,scheduled|date|nullable',
+                'is_featured' => 'boolean',
+                'is_breaking' => 'boolean',
+                'is_claim_review' => 'nullable|boolean',
+                'claim_being_reviewed' => 'nullable|required_if:is_claim_review,1|string|max:1000',
+                'claim_rating' => 'nullable|required_if:is_claim_review,1|in:True,Mostly True,Partly False,False,Unproven',
+                'claim_review_evidence' => 'nullable|required_if:is_claim_review,1|string',
+                'claim_review_date' => 'nullable|date',
+                'tags' => 'nullable|string',
+            ]);
 
-        // Generate slug if not provided
-        if (!$validated['slug']) {
-            $validated['slug'] = \Str::slug($validated['title']);
+            // Generate slug if not provided
+            if (!$validated['slug']) {
+                $validated['slug'] = \Str::slug($validated['title']);
+            }
+
+            // Handle featured image upload with optimization
+            if ($request->hasFile('featured_image')) {
+                $optimizer = new ImageOptimizer();
+                $validated['featured_image'] = $optimizer->optimize(
+                    $request->file('featured_image'),
+                    'featured_image',
+                    'news'
+                );
+            }
+
+            // Set published_at to now if status is published and date not set
+            if ($validated['status'] === 'published' && empty($validated['published_at'])) {
+                $validated['published_at'] = now();
+            }
+
+            // Create news post
+            $news = auth()->user()->newsArticles()->create($validated);
+
+            // Attach tags
+            if (!empty($validated['tags'])) {
+                $tags = array_map('trim', explode(',', $validated['tags']));
+                $news->attachTags($tags);
+            }
+
+            // Log the activity
+            $this->logActivity('created', 'News', $news->id, [
+                'title' => $news->title,
+                'category' => $news->category->name ?? 'N/A',
+                'status' => $news->status,
+            ]);
+
+            return redirect()
+                ->route('admin.news.edit', $news)
+                ->with('success', 'নিউজ সফলভাবে প্রকাশ করা হয়েছে! (News post created successfully!) - ' . $news->title);
+        } catch (\Exception $e) {
+            \Log::error('News creation error: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'নিউজ প্রকাশ করতে ত্রুটি হয়েছে: ' . $e->getMessage());
         }
-
-        // Handle featured image upload with optimization
-        if ($request->hasFile('featured_image')) {
-            $optimizer = new ImageOptimizer();
-            $validated['featured_image'] = $optimizer->optimize(
-                $request->file('featured_image'),
-                'featured_image',
-                'news'
-            );
-        }
-
-        // Set published_at to now if status is published and date not set
-        if ($validated['status'] === 'published' && empty($validated['published_at'])) {
-            $validated['published_at'] = now();
-        }
-
-        // Create news post
-        $news = auth()->user()->newsArticles()->create($validated);
-
-        // Attach tags
-        if (!empty($validated['tags'])) {
-            $tags = array_map('trim', explode(',', $validated['tags']));
-            $news->attachTags($tags);
-        }
-
-        // Log the activity
-        $this->logActivity('created', 'News', $news->id, [
-            'title' => $news->title,
-            'category' => $news->category->name ?? 'N/A',
-            'status' => $news->status,
-        ]);
-
-        return redirect()
-            ->route('admin.news.edit', $news)
-            ->with('success', 'News post created successfully!');
     }
 
     /**
@@ -122,63 +130,76 @@ class NewsController extends Controller
      */
     public function update(Request $request, News $news)
     {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255|unique:news,title,' . $news->id,
-            'slug' => 'nullable|string|unique:news,slug,' . $news->id,
-            'category_id' => 'required|exists:categories,id',
-            'content' => 'required|string',
-            'excerpt' => 'nullable|string|max:500',
-            'featured_image' => 'nullable|image|max:5120',
-            'status' => 'required|in:draft,published,scheduled',
-            'published_at' => 'required_if:status,published,scheduled|date|nullable',
-            'is_featured' => 'boolean',
-            'is_breaking' => 'boolean',
-            'is_claim_review' => 'nullable|boolean',
-            'claim_being_reviewed' => 'nullable|required_if:is_claim_review,1|string|max:1000',
-            'claim_rating' => 'nullable|required_if:is_claim_review,1|in:True,Mostly True,Partly False,False,Unproven',
-            'claim_review_evidence' => 'nullable|required_if:is_claim_review,1|string',
-            'claim_review_date' => 'nullable|date',
-            'tags' => 'nullable|string',
-        ]);
+        try {
+            $validated = $request->validate([
+                'title' => 'required|string|max:255|unique:news,title,' . $news->id,
+                'slug' => 'nullable|string|unique:news,slug,' . $news->id,
+                'category_id' => 'required|exists:categories,id',
+                'content' => 'required|string',
+                'excerpt' => 'nullable|string|max:500',
+                'featured_image' => 'nullable|image|max:5120',
+                'status' => 'required|in:draft,published,scheduled',
+                'published_at' => 'required_if:status,published,scheduled|date|nullable',
+                'is_featured' => 'boolean',
+                'is_breaking' => 'boolean',
+                'is_claim_review' => 'nullable|boolean',
+                'claim_being_reviewed' => 'nullable|required_if:is_claim_review,1|string|max:1000',
+                'claim_rating' => 'nullable|required_if:is_claim_review,1|in:True,Mostly True,Partly False,False,Unproven',
+                'claim_review_evidence' => 'nullable|required_if:is_claim_review,1|string',
+                'claim_review_date' => 'nullable|date',
+                'tags' => 'nullable|string',
+            ]);
 
-        // Generate slug if not provided
-        if (!$validated['slug']) {
-            $validated['slug'] = \Str::slug($validated['title']);
-        }
-
-        // Handle featured image upload with optimization
-        if ($request->hasFile('featured_image')) {
-            // Delete old image
-            if ($news->featured_image) {
-                \Storage::disk('public')->delete($news->featured_image);
+            // Generate slug if not provided
+            if (!$validated['slug']) {
+                $validated['slug'] = \Str::slug($validated['title']);
             }
-            $optimizer = new ImageOptimizer();
-            $validated['featured_image'] = $optimizer->optimize(
-                $request->file('featured_image'),
-                'featured_image',
-                'news'
-            );
+
+            // Set published_at to now if status is published and date not set
+            if ($validated['status'] === 'published' && empty($validated['published_at'])) {
+                $validated['published_at'] = now();
+            }
+
+            // Handle featured image upload with optimization
+            if ($request->hasFile('featured_image')) {
+                // Delete old image
+                if ($news->featured_image) {
+                    \Storage::disk('public')->delete($news->featured_image);
+                }
+                $optimizer = new ImageOptimizer();
+                $validated['featured_image'] = $optimizer->optimize(
+                    $request->file('featured_image'),
+                    'featured_image',
+                    'news'
+                );
+            }
+
+            // Store old data for comparison
+            $oldData = $news->getOriginal();
+
+            // Update news post
+            $news->update($validated);
+
+            // Update tags
+            if (isset($validated['tags'])) {
+                $tags = array_map('trim', explode(',', $validated['tags']));
+                $news->syncTags($tags);
+            }
+
+            // Log the activity with changes
+            $changes = $this->getChanges($oldData, $news->fresh()->toArray(), ['updated_at', 'created_at']);
+            $this->logActivity('updated', 'News', $news->id, $changes);
+
+            return redirect()
+                ->route('admin.news.edit', $news)
+                ->with('success', 'নিউজ সফলভাবে আপডেট করা হয়েছে! (News post updated successfully!)');
+        } catch (\Exception $e) {
+            \Log::error('News update error: ' . $e->getMessage());
+            return redirect()
+                ->back()
+                ->withInput()
+                ->with('error', 'নিউজ আপডেট করতে ত্রুটি হয়েছে: ' . $e->getMessage());
         }
-
-        // Store old data for comparison
-        $oldData = $news->getOriginal();
-
-        // Update news post
-        $news->update($validated);
-
-        // Update tags
-        if (isset($validated['tags'])) {
-            $tags = array_map('trim', explode(',', $validated['tags']));
-            $news->syncTags($tags);
-        }
-
-        // Log the activity with changes
-        $changes = $this->getChanges($oldData, $news->fresh()->toArray(), ['updated_at', 'created_at']);
-        $this->logActivity('updated', 'News', $news->id, $changes);
-
-        return redirect()
-            ->route('admin.news.edit', $news)
-            ->with('success', 'News post updated successfully!');
     }
 
     /**

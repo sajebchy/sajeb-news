@@ -3,6 +3,30 @@
 @section('page-title', $news->id ? 'Edit News' : 'Create News')
 
 @section('content')
+
+<!-- Success Alert -->
+@if (session('success'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <i class="fas fa-check-circle"></i>
+        <strong>✓ সাফল্য!</strong> {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
+<!-- Error Alerts -->
+@if ($errors->any())
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <i class="fas fa-exclamation-circle"></i>
+        <strong>❌ সমস্যা হয়েছে!</strong>
+        <ul class="mb-0 mt-2">
+            @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+@endif
+
 <div class="row">
     <div class="col-12">
         <div class="table-wrapper">
@@ -514,8 +538,11 @@
     (function() {
         const form = document.querySelector('form');
         if (form) {
-            // Add onsubmit handler as fallback
+            // Add onsubmit handler with comprehensive validation and feedback
             form.onsubmit = function(e) {
+                const submitBtn = form.querySelector('button[type="submit"]');
+                const originalBtnText = submitBtn.innerHTML;
+                
                 // Get content from Quill and copy to hidden textarea
                 const content = quill.root.innerHTML;
                 const contentTextarea = document.querySelector('textarea[name="content"]');
@@ -524,12 +551,44 @@
                     contentTextarea.value = content;
                 }
                 
-                // Validate that content is not empty
-                if (!quill.getText().trim()) {
+                // Validate required fields
+                const title = document.getElementById('title').value.trim();
+                const categorySelect = document.getElementById('category_id');
+                const status = document.getElementById('status').value;
+                const publishDate = document.getElementById('published_at').value;
+                
+                // Validation checks
+                if (!title) {
                     e.preventDefault();
-                    alert('সামগ্রী খালি থাকতে পারে না। (Content cannot be empty.)');
+                    alert('❌ শিরোনাম আবশ্যক। (Title is required.)');
+                    document.getElementById('title').focus();
                     return false;
                 }
+                
+                if (!categorySelect.value) {
+                    e.preventDefault();
+                    alert('❌ ক্যাটাগরি নির্বাচন করুন। (Please select a category.)');
+                    categorySelect.focus();
+                    return false;
+                }
+                
+                if (!quill.getText().trim()) {
+                    e.preventDefault();
+                    alert('❌ সামগ্রী খালি থাকতে পারে না। (Content cannot be empty.)');
+                    return false;
+                }
+                
+                if ((status === 'published' || status === 'scheduled') && !publishDate) {
+                    e.preventDefault();
+                    alert('❌ প্রকাশনার তারিখ প্রয়োজন। (Publish date is required.)');
+                    document.getElementById('published_at').focus();
+                    return false;
+                }
+                
+                // Show loading indicator
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ক্ষণ অপেক্ষা করুন... (Saving...)';
+                
                 return true;
             };
         }
