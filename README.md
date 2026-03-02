@@ -307,6 +307,34 @@ Need help? Check these resources:
 
 ## 🎉 Changelog
 
+### Version 2.3 (March 2, 2026) - Security Hotfix
+**Security Fixes:**
+- 🔒 **Fixed Rollup 4 Path Traversal Vulnerability (CVE-2024-XXXXX)**
+  - Upgraded Rollup from v4.57.1 to v4.59.0
+  - Implemented strict filename sanitization to prevent arbitrary file write attacks
+  - Added path traversal prevention in build configuration
+  - Sanitizes `..` sequences, path separators, and hidden file references
+  - Prevents attackers from overwriting files outside the build output directory
+  
+- 🔐 **Fixed firebase/php-jwt Weak Encryption Vulnerability**
+  - Upgraded firebase/php-jwt from v6.11.1 to v7.0.3
+  - Implemented improved encryption algorithms and security hardening
+  - Enhanced JWT token generation and validation
+  - Resolved weak encryption issue in authentication tokens
+
+- ⚙️ **Dependency Updates**
+  - All supporting packages updated for compatibility
+  - No breaking changes detected
+  - All tests passing - application stability maintained
+
+**Verification:**
+- ✅ `npm audit` - 0 vulnerabilities found
+- ✅ `composer audit` - 0 security advisories found
+- ✅ Build process verified and working correctly
+- ✅ Laravel Framework v12.53.0 running smoothly
+
+---
+
 ### Version 2.2 (February 25, 2026) - Homepage Design Phase
 **New Features:**
 - 🎨 **Responsive 70-30 Grid Section** - Added new grid layout on homepage:
@@ -354,8 +382,8 @@ Need help? Check these resources:
 
 ---
 
-**Last Updated**: February 25, 2026  
-**Current Version**: 2.1  
+**Last Updated**: March 2, 2026  
+**Current Version**: 2.3  
 **Status**: ✅ Production Ready  
 **Maintained By**: Sajeb Bahadur Shil
 

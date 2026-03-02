@@ -8,6 +8,7 @@
     "require": {
         "php": "^8.3",
         "doctrine/dbal": "^4.4",
+        "firebase/php-jwt": "^7.0",
         "guzzlehttp/guzzle": "^7.10",
         "inertiajs/inertia-laravel": "^2.0",
         "intervention/image": "^3.11",
