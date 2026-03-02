@@ -18,10 +18,10 @@
         <link rel="preconnect" href="https://fonts.bunny.net" crossorigin>
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
         
-        <!-- Bengali Font - Shurjo (Prothom Alo) from Google Fonts -->
+        <!-- Bengali Font - Hind Siliguri from Google Fonts (for Bengali newspapers) -->
         <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-        <link href="https://fonts.googleapis.com/css2?family=Shurjo:wght@400;700&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
         
         <!-- DNS Prefetch for CDN -->
         <link rel="dns-prefetch" href="https://cdn.jsdelivr.net">
