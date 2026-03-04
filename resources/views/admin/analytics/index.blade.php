@@ -130,35 +130,52 @@
     </div>
 </div>
 
-<!-- Recent Activities -->
+<!-- Real Time Visitor Activity -->
 <div class="row mt-3">
     <div class="col-12">
         <div class="card">
             <div class="card-header bg-light">
-                <h6 class="mb-0"><i class="bi bi-clock-history"></i> Recent Activities</h6>
+                <h6 class="mb-0"><i class="bi bi-geo-alt"></i> Real Time Visitor Activity</h6>
             </div>
             <div class="table-responsive">
-                <table class="table table-hover mb-0">
+                <table class="table table-hover mb-0 table-sm">
                     <thead class="table-light">
                         <tr>
-                            <th>User</th>
+                            <th>IP Address</th>
+                            <th>Location & Device</th>
                             <th>Action</th>
-                            <th>Description</th>
                             <th>Time</th>
                         </tr>
                     </thead>
                     <tbody>
-                        @forelse ($recentActivities ?? [] as $activity)
+                        @forelse ($recentVisitors ?? [] as $visitor)
                             <tr>
-                                <td>{{ $activity->user->name ?? 'System' }}</td>
-                                <td><span class="badge bg-info">{{ $activity->action ?? 'Unknown' }}</span></td>
-                                <td>{{ $activity->description ?? '-' }}</td>
-                                <td><small class="text-muted">{{ $activity->created_at?->diffForHumans() ?? '-' }}</small></td>
+                                <td>
+                                    <code class="text-primary">{{ $visitor->visitor_ip }}</code>
+                                </td>
+                                <td>
+                                    <div>
+                                        <small class="text-muted">
+                                            <i class="bi bi-geo-alt"></i> {{ $visitor->visitor_city }}, {{ $visitor->visitor_country }}
+                                        </small>
+                                    </div>
+                                    <small class="text-secondary">
+                                        <i class="bi bi-phone"></i> {{ $visitor->visitor_device }} - {{ $visitor->browser }}
+                                    </small>
+                                </td>
+                                <td>
+                                    <span class="badge bg-info">
+                                        <i class="{{ $visitor->source_icon }}"></i> {{ ucfirst($visitor->referrer_source) }}
+                                    </span>
+                                </td>
+                                <td>
+                                    <small class="text-muted">{{ $visitor->visit_date?->diffForHumans() ?? '-' }}</small>
+                                </td>
                             </tr>
                         @empty
                             <tr>
                                 <td colspan="4" class="text-center py-4">
-                                    <p class="text-muted mb-0"><i class="bi bi-inbox"></i> No activities found</p>
+                                    <p class="text-muted mb-0"><i class="bi bi-inbox"></i> No visitor activity found</p>
                                 </td>
                             </tr>
                         @endforelse

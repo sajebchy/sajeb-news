@@ -36,6 +36,12 @@ class AnalyticsController extends Controller
             ->limit(10)
             ->get();
 
+        // Recent visitor activity
+        $recentVisitors = VisitorAnalytic::with('news')
+            ->latest('visit_date')
+            ->limit(10)
+            ->get();
+
         return view('admin.analytics.index', [
             'totalViews' => $totalViews,
             'totalEngagement' => $totalEngagement,
@@ -43,6 +49,7 @@ class AnalyticsController extends Controller
             'totalClicks' => $totalClicks,
             'topNews' => $topNews,
             'categoryAnalytics' => $categoryAnalytics,
+            'recentVisitors' => $recentVisitors,
         ]);
     }
 
