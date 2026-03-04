@@ -79,132 +79,147 @@
     </div>
 </div>
 
-<!-- Visitors Table -->
-<div class="card shadow-sm">
-    <div class="table-wrapper">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0">
-                <thead class="table-light sticky-top">
-                    <tr>
-                        <th style="width: 15%;">Visitor Info</th>
-                        <th style="width: 12%;">Location</th>
-                        <th style="width: 15%;">Device</th>
-                        <th style="width: 15%;">Referrer Source</th>
-                        <th style="width: 12%;">Reading Time</th>
-                        <th style="width: 15%;">Visit Details</th>
-                        <th style="width: 16%;">Date & Time</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse ($visitors as $visitor)
-                        <tr>
-                            <td>
-                                <div>
-                                    <strong><i class="bi bi-globe"></i> {{ $visitor->visitor_ip ?? 'Unknown' }}</strong>
-                                    @if($visitor->browser)
-                                        <br><small class="text-muted">{{ $visitor->browser }}</small>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    @if($visitor->visitor_country)
-                                        <strong>{{ $visitor->visitor_country }}</strong>
-                                    @else
-                                        <span class="text-muted">Unknown</span>
-                                    @endif
-                                    @if($visitor->visitor_city)
-                                        <br><small class="text-muted">{{ $visitor->visitor_city }}</small>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    @if($visitor->visitor_device)
-                                        @if(str_contains($visitor->visitor_device, 'Mobile'))
-                                            <span class="badge bg-info"><i class="bi bi-phone"></i> Mobile</span>
-                                        @elseif(str_contains($visitor->visitor_device, 'Tablet'))
-                                            <span class="badge bg-info"><i class="bi bi-tablet"></i> Tablet</span>
-                                        @else
-                                            <span class="badge bg-secondary"><i class="bi bi-laptop"></i> Desktop</span>
-                                        @endif
-                                    @else
-                                        <span class="badge bg-secondary">Unknown</span>
-                                    @endif
-                                    @if($visitor->os)
-                                        <br><small class="text-muted">{{ $visitor->os }}</small>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    @php
-                                        $sourceColors = [
-                                            'google' => 'primary',
-                                            'facebook' => 'info',
-                                            'twitter' => 'info',
-                                            'linkedin' => 'primary',
-                                            'whatsapp' => 'success',
-                                            'bing' => 'primary',
-                                            'chatgpt' => 'warning',
-                                            'direct' => 'secondary',
-                                        ];
-                                    @endphp
-                                    <span class="badge bg-{{ $sourceColors[$visitor->referrer_source] ?? 'secondary' }}">
-                                        <i class="bi {{ $visitor->sourceIcon }}"></i>
-                                        {{ ucfirst($visitor->referrer_source ?? 'Direct') }}
-                                    </span>
-                                    @if($visitor->referrer_url)
-                                        <br><small class="text-muted" style="word-break: break-word;">{{ substr($visitor->referrer_url, 0, 40) }}...</small>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
-                                <div>
-                                    <strong>{{ $visitor->readingTime }}</strong>
-                                    <br>
-                                    <small class="text-muted">{{ $visitor->scroll_percentage }}% scroll</small>
-                                    @if($visitor->completed_reading)
-                                        <br><span class="badge bg-success"><i class="bi bi-check-circle"></i> Completed</span>
-                                    @endif
-                                </div>
-                            </td>
-                            <td>
-                                <div style="font-size: 12px;">
-                                    <small class="text-muted">
-                                        <i class="bi bi-eye"></i> Views: <strong>1</strong><br>
-                                        <i class="bi bi-clock"></i> Duration: <strong>{{ $visitor->time_spent_seconds }}s</strong><br>
-                                        <i class="bi bi-arrow-up"></i> Scroll: <strong>{{ $visitor->scroll_percentage }}%</strong>
-                                    </small>
-                                </div>
-                            </td>
-                            <td>
-                                <div style="font-size: 12px;">
-                                    <small><i class="bi bi-calendar-event"></i> {{ $visitor->visit_date?->format('M d, Y') ?? '-' }}</small><br>
-                                    <small><i class="bi bi-clock"></i> {{ $visitor->visit_date?->format('H:i:s') ?? '-' }}</small><br>
-                                    <small class="text-primary">{{ $visitor->visit_date?->diffForHumans() ?? '-' }}</small>
-                                </div>
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="7" class="text-center py-5">
-                                <i class="bi bi-inbox" style="font-size: 48px; color: #ddd;"></i>
-                                <p class="text-muted mt-3">No visitor data found.</p>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
-        </div>
+<!-- Visitors List - Card View -->
+<div class="card shadow-sm mb-4">
+    <div class="card-header bg-light">
+        <h6 class="mb-0"><i class="bi bi-people"></i> Visitor Details</h6>
+    </div>
+    <div class="card-body p-0">
+        @forelse ($visitors as $visitor)
+            <div class="visitor-card shadow-sm mb-3 p-4" style="border-left: 4px solid #667eea; background: #f9f9f9;">
+                <div class="row">
+                    <!-- Visitor Info -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-info">
+                            <label class="form-label text-muted small"><i class="bi bi-person-badge"></i> Visitor Info</label>
+                            <div>
+                                <strong class="d-block"><i class="bi bi-globe"></i> {{ $visitor->visitor_ip ?? 'Unknown' }}</strong>
+                                <small class="text-muted d-block">{{ $visitor->browser ?? 'Unknown Browser' }}</small>
+                            </div>
+                        </div>
+                    </div>
 
-        @if ($visitors instanceof \Illuminate\Pagination\Paginator && $visitors->hasPages())
-            <div class="card-footer">
-                {{ $visitors->links() }}
+                    <!-- Location -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-location">
+                            <label class="form-label text-muted small"><i class="bi bi-geo-alt"></i> Location</label>
+                            <div>
+                                <strong class="d-block">{{ $visitor->visitor_country ?? 'Unknown' }}</strong>
+                                <small class="text-muted d-block">{{ $visitor->visitor_city ?? '-' }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Device -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-device">
+                            <label class="form-label text-muted small"><i class="bi bi-phone"></i> Device</label>
+                            <div>
+                                @if($visitor->visitor_device)
+                                    @if(str_contains($visitor->visitor_device, 'Mobile'))
+                                        <span class="badge bg-info" style="font-size: 0.85rem;"><i class="bi bi-phone"></i> Mobile</span>
+                                    @elseif(str_contains($visitor->visitor_device, 'Tablet'))
+                                        <span class="badge bg-info" style="font-size: 0.85rem;"><i class="bi bi-tablet"></i> Tablet</span>
+                                    @else
+                                        <span class="badge bg-secondary" style="font-size: 0.85rem;"><i class="bi bi-laptop"></i> Desktop</span>
+                                    @endif
+                                @else
+                                    <span class="badge bg-secondary">Unknown</span>
+                                @endif
+                                <small class="text-muted d-block">{{ $visitor->os ?? '-' }}</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Referrer Source -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-referrer">
+                            <label class="form-label text-muted small"><i class="bi bi-link"></i> Referrer Source</label>
+                            <div>
+                                @php
+                                    $sourceColors = [
+                                        'google' => 'primary',
+                                        'facebook' => 'info',
+                                        'twitter' => 'info',
+                                        'linkedin' => 'primary',
+                                        'whatsapp' => 'success',
+                                        'bing' => 'primary',
+                                        'chatgpt' => 'warning',
+                                        'direct' => 'secondary',
+                                    ];
+                                @endphp
+                                <span class="badge bg-{{ $sourceColors[$visitor->referrer_source] ?? 'secondary' }}" style="font-size: 0.85rem;">
+                                    {{ ucfirst($visitor->referrer_source ?? 'Direct') }}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reading Time -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-reading">
+                            <label class="form-label text-muted small"><i class="bi bi-clock"></i> Reading Time</label>
+                            <div>
+                                <strong class="d-block">{{ $visitor->readingTime }}</strong>
+                                <small class="text-muted d-block">{{ $visitor->scroll_percentage }}% scroll</small>
+                                @if($visitor->completed_reading)
+                                    <span class="badge bg-success" style="font-size: 0.75rem;"><i class="bi bi-check-circle"></i> Completed</span>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Visit Details -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-details">
+                            <label class="form-label text-muted small"><i class="bi bi-info-circle"></i> Visit Details</label>
+                            <div style="font-size: 0.85rem;">
+                                <small class="text-muted d-block"><i class="bi bi-clock"></i> {{ $visitor->time_spent_seconds }}s</small>
+                                <small class="text-muted d-block"><i class="bi bi-arrow-up"></i> {{ $visitor->scroll_percentage }}%</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Date & Time -->
+                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
+                        <div class="visitor-date">
+                            <label class="form-label text-muted small"><i class="bi bi-calendar-event"></i> Date & Time</label>
+                            <div style="font-size: 0.85rem;">
+                                <small class="text-muted d-block">{{ $visitor->visit_date?->format('M d, Y') ?? '-' }}</small>
+                                <small class="text-muted d-block">{{ $visitor->visit_date?->format('H:i:s') ?? '-' }}</small>
+                                <small class="text-primary">{{ $visitor->visit_date?->diffForHumans() ?? '-' }}</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <hr class="my-3">
+
+                <!-- Action -->
+                <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted">
+                        <i class="bi bi-fingerprint"></i> ID: {{ $visitor->id }}
+                    </small>
+                    <a href="{{ route('admin.analytics.visitor-detail', [$news->id, $visitor->id]) }}" class="btn btn-sm btn-primary">
+                        <i class="bi bi-eye"></i> View Detailed Info
+                    </a>
+                </div>
             </div>
-        @endif
+        @empty
+            <div class="text-center py-5">
+                <i class="bi bi-inbox" style="font-size: 48px; color: #ddd;"></i>
+                <p class="text-muted mt-3">No visitor data found.</p>
+            </div>
+        @endforelse
     </div>
 </div>
+
+<!-- Pagination -->
+@if ($visitors instanceof \Illuminate\Pagination\Paginator && $visitors->hasPages())
+    <nav aria-label="Page navigation" class="mt-4">
+        {{ $visitors->links() }}
+    </nav>
+@endif
 
 <style>
     .stat-card {
@@ -253,6 +268,37 @@
         font-size: 14px;
     }
 
+    /* Visitor Card Styles */
+    .visitor-card {
+        border-radius: 8px;
+        border: 1px solid #e0e0e0;
+        transition: all 0.3s ease;
+    }
+
+    .visitor-card:hover {
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
+        border-left-color: #0056b3 !important;
+    }
+
+    .visitor-card label {
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .visitor-info, 
+    .visitor-location, 
+    .visitor-device, 
+    .visitor-referrer, 
+    .visitor-reading,
+    .visitor-details,
+    .visitor-date {
+        padding: 10px 0;
+    }
+
+    .visitor-card .badge {
+        display: inline-block;
+    }
+
     .table th {
         font-weight: 600;
         background-color: #f8f9fa;
@@ -266,8 +312,24 @@
     }
 
     @media (max-width: 768px) {
-        .table th {
-            font-size: 12px;
+        .visitor-card {
+            padding: 20px !important;
+        }
+
+        .visitor-info, 
+        .visitor-location, 
+        .visitor-device, 
+        .visitor-referrer, 
+        .visitor-reading,
+        .visitor-details,
+        .visitor-date {
+            margin-bottom: 15px !important;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .visitor-date {
+            border-bottom: none;
         }
 
         .table td {

@@ -86,10 +86,6 @@ class SettingController extends Controller
             'vapid_public_key' => 'nullable|string',
             'vapid_private_key' => 'nullable|string',
             'push_notifications_enabled' => 'nullable|boolean',
-            // Feedify settings
-            'feedify_enabled' => 'nullable|boolean',
-            'feedify_api_key' => 'nullable|string|max:255',
-            'feedify_list_id' => 'nullable|string|max:255',
             // AdSense settings
             'adsense_publisher_id' => 'nullable|string|max:255',
             'adsense_anchor_ad_code' => 'nullable|string',

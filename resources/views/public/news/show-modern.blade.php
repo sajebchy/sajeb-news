@@ -758,7 +758,7 @@
     </div>
 
     <!-- Article Body -->
-    <article class="article-body" id="articleContent">
+    <article class="article-body" id="articleContent" data-news-id="{{ $news->id }}">
         {!! $news->content !!}
     </article>
 
@@ -943,5 +943,8 @@
     @endif
 
 </div>
+
+<!-- Visitor Analytics Tracking -->
+<script src="{{ asset('js/visitor-analytics.js') }}"></script>
 
 @endsection

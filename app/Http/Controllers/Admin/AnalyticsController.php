@@ -54,7 +54,7 @@ class AnalyticsController extends Controller
         $news = News::findOrFail($newsId);
         
         $query = VisitorAnalytic::where('news_id', $newsId)
-            ->with('news')
+            ->with(['news', 'nextNews'])
             ->latest('visit_date');
 
         // Search by IP or country
@@ -92,6 +92,29 @@ class AnalyticsController extends Controller
             'avgReadingTime' => $avgReadingTime,
             'completedReading' => $completedReading,
             'topSource' => $topSource,
+        ]);
+    }
+
+    /**
+     * Display detailed information for a specific visitor
+     */
+    public function visitorDetail($newsId, $visitorId)
+    {
+        $visitor = VisitorAnalytic::with(['news', 'nextNews'])
+            ->findOrFail($visitorId);
+
+        $news = News::findOrFail($newsId);
+
+        // Get visitor's other visits and journey
+        $visitorJourney = VisitorAnalytic::where('visitor_ip', $visitor->visitor_ip)
+            ->with('news')
+            ->orderBy('visit_date', 'asc')
+            ->get();
+
+        return view('admin.analytics.visitor-detail', [
+            'news' => $news,
+            'visitor' => $visitor,
+            'visitorJourney' => $visitorJourney,
         ]);
     }
 }

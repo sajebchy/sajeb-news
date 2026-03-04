@@ -21,6 +21,9 @@ class DatabaseSeeder extends Seeder
         // Seed advertisements
         $this->call(AdvertisementSeeder::class);
 
+        // Seed visitor analytics
+        $this->call(VisitorAnalyticsSeeder::class);
+
         // Create test admin user
         $testAdmin = User::create([
             'name' => 'Test Admin',

@@ -54,6 +54,24 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 - ✅ CDN-ready structure
 - ✅ Lazy loading for images
 
+### 📊 Visitor Tracking & Analytics
+- ✅ **Real-time Visitor Tracking** - Track every visitor's activity on news articles
+- ✅ **Destination Tracking** - Monitor where visitors go after reading an article
+- ✅ **Detailed Analytics** - Comprehensive data collection:
+  - IP address tracking with proxy/Cloudflare support
+  - Geographic location (country and city)
+  - Device type detection (Mobile, Tablet, Desktop)
+  - Browser and operating system information
+  - Time spent on articles (in seconds)
+  - Scroll depth percentage
+  - Reading completion status
+  - Referrer source tracking (Google, Facebook, Twitter, LinkedIn, WhatsApp, Bing, ChatGPT, etc.)
+  - Screen resolution capture
+  - Language preference detection
+- ✅ **Advanced Visitor Dashboard** - Detailed analytics view in admin panel
+- ✅ **Traffic Source Analysis** - Understand where your visitors come from
+- ✅ **User Behavior Metrics** - Track engagement and reading patterns
+
 ### 🔒 Security Features
 - ✅ CSRF token protection
 - ✅ XSS prevention (Blade escaping)
@@ -307,6 +325,53 @@ Need help? Check these resources:
 
 ## 🎉 Changelog
 
+### Version 2.4 (March 4, 2026) - Visitor Tracking & Advanced Analytics
+**New Features:**
+- 📊 **Real-time Visitor Tracking System**
+  - Track every visitor's activity on news articles with comprehensive data collection
+  - Captures IP addresses with proxy and Cloudflare support
+  - Geographic location detection (country and city via IP geolocation)
+  - Device type detection (Mobile, Tablet, Desktop)
+  - Browser and operating system identification
+
+- 🎯 **Advanced Analytics Metrics**
+  - Time spent on articles (measured in seconds)
+  - Scroll depth tracking (percentage of page scrolled)
+  - Reading completion status
+  - Referrer source analysis (Google, Facebook, Twitter, LinkedIn, WhatsApp, Bing, ChatGPT, etc.)
+  - Screen resolution capture for device optimization insights
+  - Language preference detection from browser headers
+
+- 🗺️ **Destination Tracking**
+  - Monitor visitor journey after reading articles
+  - Track next article visited by readers
+  - Exit page tracking for bounce analysis
+  - Exit time recording
+
+- 📈 **Visitor Analytics Dashboard**
+  - New admin dashboard for detailed visitor analytics
+  - Visitor detail view with comprehensive statistics
+  - Traffic source breakdown and analysis
+  - User behavior patterns and engagement metrics
+  - Exportable analytics data for business intelligence
+
+**Technical Updates:**
+- ✅ New VisitorTrackingService for centralized tracking logic
+- ✅ New TrackingController with validated API endpoints
+- ✅ Enhanced VisitorAnalytic model with destination fields
+- ✅ New database migration for destination tracking
+- ✅ Client-side visitor tracking JavaScript library
+- ✅ Comprehensive analytics views in admin panel
+
+**Benefits:**
+- 🔍 Deep insights into reader behavior and engagement
+- 📊 Data-driven decision making for content strategy
+- 🎯 Understand traffic sources and optimize marketing channels
+- 📱 Device and browser insights for technical optimization
+- 🌍 Geographic analytics for audience understanding
+
+---
+
 ### Version 2.3 (March 2, 2026) - Security Hotfix
 **Security Fixes:**
 - 🔒 **Fixed Rollup 4 Path Traversal Vulnerability (CVE-2024-XXXXX)**
@@ -315,7 +380,7 @@ Need help? Check these resources:
   - Added path traversal prevention in build configuration
   - Sanitizes `..` sequences, path separators, and hidden file references
   - Prevents attackers from overwriting files outside the build output directory
-  
+
 - 🔐 **Fixed firebase/php-jwt Weak Encryption Vulnerability**
   - Upgraded firebase/php-jwt from v6.11.1 to v7.0.3
   - Implemented improved encryption algorithms and security hardening
@@ -382,8 +447,8 @@ Need help? Check these resources:
 
 ---
 
-**Last Updated**: March 2, 2026  
-**Current Version**: 2.3  
-**Status**: ✅ Production Ready  
+**Last Updated**: March 4, 2026
+**Current Version**: 2.4
+**Status**: ✅ Production Ready
 **Maintained By**: Sajeb Bahadur Shil
 

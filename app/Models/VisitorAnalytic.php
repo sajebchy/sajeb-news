@@ -22,16 +22,28 @@ class VisitorAnalytic extends Model
         'browser',
         'os',
         'visit_date',
+        'next_news_id',
+        'exit_time',
+        'exit_page',
+        'user_agent',
+        'language',
+        'screen_resolution',
     ];
 
     protected $casts = [
         'visit_date' => 'datetime',
+        'exit_time' => 'datetime',
         'completed_reading' => 'boolean',
     ];
 
     public function news()
     {
         return $this->belongsTo(News::class);
+    }
+
+    public function nextNews()
+    {
+        return $this->belongsTo(News::class, 'next_news_id');
     }
 
     public function getReadingTimeAttribute()

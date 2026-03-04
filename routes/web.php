@@ -528,6 +528,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     // Analytics
     Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
     Route::get('/analytics/{news}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'show'])->name('analytics.show');
+    Route::get('/analytics/{news}/visitor/{visitor}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'visitorDetail'])->name('analytics.visitor-detail');
     
     // Settings
     Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings');

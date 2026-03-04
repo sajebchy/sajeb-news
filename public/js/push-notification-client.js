@@ -41,12 +41,52 @@ class PushNotificationClient {
             // Update UI based on status
             this.updateAllButtons(isSubscribed ? 'subscribed' : 'ready');
             
+            // Request auto-subscription if permission not already requested
+            if (Notification.permission === 'default' && !sessionStorage.getItem('push_permission_requested')) {
+                this.requestAutoSubscription();
+            }
+            
             // Attach click handlers
             this.setupButtonHandlers();
             
         } catch (error) {
             console.error('Push notification initialization failed:', error);
             this.updateAllButtons('error');
+        }
+    }
+
+    /**
+     * Automatically request push notification permission on page load
+     */
+    async requestAutoSubscription() {
+        try {
+            console.log('Requesting automatic push notification permission...');
+            sessionStorage.setItem('push_permission_requested', 'true');
+            
+            // Request permission
+            const permission = await Notification.requestPermission();
+            
+            if (permission === 'granted') {
+                console.log('✓ User granted push notification permission');
+                
+                // Wait a moment for service worker to be ready
+                await new Promise(resolve => setTimeout(resolve, 500));
+                
+                // Auto-subscribe
+                const result = await this.manager.subscribe();
+                
+                if (result.success) {
+                    console.log('✓ Auto-subscribed to push notifications');
+                    this.updateAllButtons('subscribed');
+                    this.showToast('সাবস্ক্রাইবড! আপনি এখন সর্বশেষ খবর পাবেন।', 'success');
+                } else {
+                    console.warn('Auto-subscription failed:', result.message);
+                }
+            } else if (permission === 'denied') {
+                console.log('User denied push notification permission');
+            }
+        } catch (error) {
+            console.error('Auto-subscription error:', error);
         }
     }
 

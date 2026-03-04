@@ -3,8 +3,14 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\AdController;
+use App\Http\Controllers\Public\TrackingController;
 
 Route::middleware('api')->group(function () {
+    // Visitor Analytics Tracking (Public)
+    Route::prefix('tracking')->name('tracking.')->group(function () {
+        Route::post('/visitor', [TrackingController::class, 'trackVisitor'])->name('visitor');
+    });
+
     // Advertisement APIs (Public)
     Route::prefix('ads')->name('ads.')->group(function () {
         Route::get('/placement/{placement}', [AdController::class, 'getByPlacement'])->name('by-placement');

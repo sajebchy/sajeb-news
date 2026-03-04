@@ -688,7 +688,7 @@
             <!-- Main Content -->
             <main>
                 <!-- Article Content with Featured Image -->
-                <article class="article-content">
+                <article class="article-content" data-news-id="{{ $news->id }}">
                     <!-- Featured Image (Left Side) -->
                     @if($news->featured_image)
                     <div class="article-featured-image">
@@ -965,5 +965,8 @@
         </div>
     </div>
 </div>
+
+<!-- Visitor Analytics Tracking -->
+<script src="{{ asset('js/visitor-analytics.js') }}"></script>
 
 @endsection
