@@ -1,5 +1,61 @@
 # Release Notes - Sajeb NEWS
 
+## [v2.5](https://github.com/sajebchy/sajeb-news/releases/tag/v2.5) - March 7, 2026 - Database Schema Enhancement
+
+### 🗄️ Database Schema Updates
+
+#### **Comprehensive visitor_analytics Table Restructure** ⭐
+Major overhaul of the visitor analytics table with enhanced tracking and destination analysis.
+
+**New Fields Added:**
+- ✅ `next_news_id` - Track next article visited by visitor (foreign key to news table)
+- ✅ `exit_time` - Timestamp of when visitor left the article
+- ✅ `exit_page` - URL of the exit page for bounce analysis
+- ✅ `user_agent` - Full user agent string for advanced device profiling
+- ✅ `language` - Browser language preference from headers
+- ✅ `screen_resolution` - Device screen resolution (WIDTHxHEIGHT format)
+
+**Enhanced Indexes:**
+- 🔍 `visitor_ip_index` - For IP-based visitor lookup
+- 🔍 `next_news_id_index` - For destination tracking analysis
+- 🔍 `referrer_source_index` - For traffic source analysis
+- 🔍 `news_id_visit_date_index` - Composite index for date-range queries
+
+**Field Documentation:**
+- All tracking fields now include descriptive comments in database schema
+- Clear documentation for analytics interpretation
+
+#### **Email Marketing Integration (Feedify)**
+New fields added to `seo_settings` table for email list building:
+- ✅ `feedify_enabled` (boolean) - Enable/disable Feedify integration
+- ✅ `feedify_api_key` (varchar) - API key for authentication
+- ✅ `feedify_list_id` (varchar) - Email list ID for subscriber management
+
+**Benefits:**
+- Enable email marketing campaigns
+- Build and manage subscriber lists
+- Integrate with Feedify API for email automation
+
+### 🔧 Technical Implementation
+- ✅ Database migration: `2026_03_03_add_destination_tracking`
+- ✅ Updated SQL schema file with complete table definitions
+- ✅ Proper foreign key relationships and constraints
+- ✅ Optimized indexes for analytics dashboard queries
+- ✅ Backward compatible with existing data
+
+### 📊 Impact on Analytics
+- Enhanced visitor journey tracking (know where visitors go next)
+- Better exit analysis for bounce rate calculation
+- Improved device profiling for technical optimization
+- Email marketing foundation for subscriber engagement
+
+### 📁 Updated Files
+- `sajeb_news_mysql.sql` - Complete schema with all updates
+- Database migrations - v2.5 migration included
+- Model documentation - Updated VisitorAnalytic model
+
+---
+
 ## [v2.2](https://github.com/sajebchy/sajeb-news/releases/tag/v2.2) - February 25, 2026 - Homepage Design Phase
 
 ### 🎨 Major UI/UX Updates
@@ -110,6 +166,9 @@ The persistent 419 CSRF token mismatch error during login has been permanently r
 
 ## Git Commit History
 
+### v2.5
+- **Commit**: `0637917` - feat: Update database schema with visitor tracking and advanced analytics
+
 ### v2.2
 - **Commit**: `0937223` - feat: Add 70-30 grid section with mobile responsive design
 
@@ -121,6 +180,6 @@ The persistent 419 CSRF token mismatch error during login has been permanently r
 
 ---
 
-**Last Updated**: February 25, 2026  
-**Current Version**: 2.2  
+**Last Updated**: March 7, 2026  
+**Current Version**: 2.5  
 **Status**: ✅ Production Ready

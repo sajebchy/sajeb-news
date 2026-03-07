@@ -370,6 +370,37 @@ Need help? Check these resources:
 
 ---
 
+### Version 2.5 (March 7, 2026) - Database Schema Enhancement
+**Database Updates:**
+- 🗄️ **Comprehensive visitor_analytics Table Restructure**
+  - Enhanced with destination tracking capabilities
+  - Added next_news_id for tracking visitor journey after reading
+  - Added exit_time and exit_page for exit analysis
+  - Added user_agent, language, screen_resolution for detailed device profiling
+  - Optimized indexes for better query performance (visitor_ip, next_news_id, referrer_source)
+  - Added proper foreign key constraints
+  - Comprehensive documentation for all tracking fields
+
+- 📧 **Email Marketing Integration (Feedify)**
+  - Added feedify_enabled flag to seo_settings
+  - Added feedify_api_key for API authentication
+  - Added feedify_list_id for email list management
+  - Enables seamless subscriber list building
+
+**Technical Improvements:**
+- ✅ Updated database migration (2026_03_03_add_destination_tracking)
+- ✅ Enhanced VisitorAnalytic model with new relationships
+- ✅ Proper field constraints and documentation in SQL schema
+- ✅ Improved database performance with strategic indexes
+
+**Benefits:**
+- 🔍 Better understanding of visitor behavior flow
+- 📊 More granular analytics data for insights
+- 💼 Email marketing capabilities for subscriber management
+- ⚡ Optimized database queries for analytics dashboard
+
+---
+
 ### Version 2.4 (March 4, 2026) - Visitor Tracking & Advanced Analytics
 **New Features:**
 - 📊 **Real-time Visitor Tracking System**
@@ -492,8 +523,8 @@ Need help? Check these resources:
 
 ---
 
-**Last Updated**: March 4, 2026
-**Current Version**: 2.4
+**Last Updated**: March 7, 2026
+**Current Version**: 2.5
 **Status**: ✅ Production Ready
 **Maintained By**: Sajeb Bahadur Shil
 
