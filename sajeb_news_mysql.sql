@@ -270,6 +270,9 @@ CREATE TABLE `seo_settings` (
   `show_anchor_ads` boolean DEFAULT 1,
   `show_sidebar_ads` boolean DEFAULT 1,
   `show_between_articles_ads` boolean DEFAULT 1,
+  `feedify_enabled` boolean DEFAULT 0 COMMENT 'Email list building with Feedify',
+  `feedify_api_key` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `feedify_list_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `twitter_handle` varchar(255) COLLATE utf8mb4_unicode_ci,
   `google_analytics_id` varchar(255) COLLATE utf8mb4_unicode_ci,
   `ga_tracking_id` varchar(100) COLLATE utf8mb4_unicode_ci,
@@ -328,16 +331,38 @@ CREATE TABLE `sessions` (
   KEY `sessions_last_activity_index` (`last_activity`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Visitor analytics table
+-- Visitor analytics table (with advanced destination tracking)
 
 CREATE TABLE `visitor_analytics` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
-  `ip_address` varchar(45) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `page_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
-  `referrer` varchar(255) COLLATE utf8mb4_unicode_ci,
+  `news_id` bigint UNSIGNED NOT NULL,
+  `visitor_ip` varchar(45) COLLATE utf8mb4_unicode_ci,
+  `visitor_country` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `visitor_city` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `visitor_device` varchar(100) COLLATE utf8mb4_unicode_ci COMMENT 'Mobile, Tablet, Desktop',
+  `referrer_source` varchar(100) COLLATE utf8mb4_unicode_ci COMMENT 'google, facebook, twitter, bing, chatgpt, direct, linkedin, whatsapp, etc',
+  `referrer_url` varchar(500) COLLATE utf8mb4_unicode_ci,
+  `time_spent_seconds` int DEFAULT 0 COMMENT 'Time spent on article in seconds',
+  `scroll_percentage` int DEFAULT 0 COMMENT 'Percentage of page scrolled (0-100)',
+  `completed_reading` boolean DEFAULT 0 COMMENT 'Whether visitor completed reading the article',
+  `browser` varchar(100) COLLATE utf8mb4_unicode_ci,
+  `os` varchar(100) COLLATE utf8mb4_unicode_ci COMMENT 'Operating System',
+  `next_news_id` bigint UNSIGNED COMMENT 'Next article clicked by visitor',
+  `exit_time` timestamp NULL COMMENT 'Time when visitor left the article',
+  `exit_page` varchar(255) COLLATE utf8mb4_unicode_ci COMMENT 'Exit page URL',
   `user_agent` text COLLATE utf8mb4_unicode_ci,
-  `visited_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `created_at` timestamp NULL
+  `language` varchar(10) COLLATE utf8mb4_unicode_ci COMMENT 'Browser language preference',
+  `screen_resolution` varchar(20) COLLATE utf8mb4_unicode_ci COMMENT 'Device screen resolution',
+  `visit_date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `created_at` timestamp NULL,
+  `updated_at` timestamp NULL,
+  KEY `visitor_analytics_news_id_index` (`news_id`),
+  KEY `visitor_analytics_visitor_ip_index` (`visitor_ip`),
+  KEY `visitor_analytics_next_news_id_index` (`next_news_id`),
+  KEY `visitor_analytics_referrer_source_index` (`referrer_source`),
+  KEY `visitor_analytics_news_id_visit_date_index` (`news_id`, `visit_date`),
+  FOREIGN KEY (`news_id`) REFERENCES `news` (`id`) ON DELETE CASCADE,
+  FOREIGN KEY (`next_news_id`) REFERENCES `news` (`id`) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Comments table
