@@ -325,6 +325,34 @@ Need help? Check these resources:
 
 ## 🎉 Changelog
 
+### Version 2.4.2 (March 7, 2026) - Bug Fixes & Cleanup
+**Bug Fixes:**
+- 🎨 **Fixed Favicon Not Showing in Admin Panel**
+  - Added favicon link to admin layout template (`resources/views/layouts/admin.blade.php`)
+  - Now displays custom favicon from SeoSettings if available
+  - Falls back to default `/favicon.ico` if no custom favicon is set
+  - Applied same favicon logic as public layout for consistency
+
+**Code Cleanup:**
+- 🧹 **Removed Unnecessary Test Files**
+  - Removed unused test directory following fresh Laravel Breeze template update
+  - Deleted test files: `tests/Feature/Auth/*`, `tests/Feature/ExampleTest.php`, `tests/Unit/ExampleTest.php`
+  - Tests will be re-added when custom test cases are needed for project
+
+- 🖼️ **Removed Demo Screenshots**
+  - Deleted outdated demo screenshot files from `/demo` folder to reduce repository size
+  - Helps maintain a cleaner Git history
+
+**Updates:**
+- 📝 Updated `.gitignore` for better project organization
+
+**Verification:**
+- ✅ Admin panel favicon now displays correctly
+- ✅ All existing features working as expected
+- ✅ Repository cleanup complete
+
+---
+
 ### Version 2.4.1 (March 7, 2026) - Security Hotfix
 **Security Fixes:**
 - 🔒 **Fixed league/commonmark DisallowedRawHtml Extension Bypass (XSS Vulnerability)**
