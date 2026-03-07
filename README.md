@@ -325,6 +325,23 @@ Need help? Check these resources:
 
 ## 🎉 Changelog
 
+### Version 2.4.1 (March 7, 2026) - Security Hotfix
+**Security Fixes:**
+- 🔒 **Fixed league/commonmark DisallowedRawHtml Extension Bypass (XSS Vulnerability)**
+  - Upgraded league/commonmark from v2.8.0 to v2.8.1
+  - Fixed whitespace bypass vulnerability in HTML tag name validation
+  - Issue: DisallowedRawHtml extension could be bypassed by inserting newline, tab, or ASCII whitespace between disallowed HTML tag name and closing `>` (e.g., `<script\n>`)
+  - Solution: Changed regex character class `[ \/>]` to `[\s\/>]` to match all whitespace characters that browsers accept as valid tag name terminators
+  - Impact: Prevents XSS attacks via markdown input processing in untrusted user content
+  - All applications using DisallowedRawHtml extension to process untrusted markdown are now protected
+
+**Verification:**
+- ✅ `composer audit` - 0 security advisories found
+- ✅ Composer lock file updated successfully
+- ✅ All dependencies compatible - no breaking changes
+
+---
+
 ### Version 2.4 (March 4, 2026) - Visitor Tracking & Advanced Analytics
 **New Features:**
 - 📊 **Real-time Visitor Tracking System**
