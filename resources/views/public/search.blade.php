@@ -42,7 +42,7 @@
           @if($article->featured_image)
           <div class="md:w-48 flex-shrink-0">
             <img class="w-full h-32 object-cover rounded-md"
-                 src="{{ $article->featured_image }}" alt="{{ $article->title }}"/>
+                 src="{{ \Storage::url($article->featured_image) }}" alt="{{ $article->title }}"/>
           </div>
           @endif
           <div class="flex-1 flex flex-col">

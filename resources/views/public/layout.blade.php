@@ -1,10 +1,11 @@
 <!DOCTYPE html>
+@php $__layoutSeo = \App\Models\SeoSetting::first(); @endphp
 <html class="light" lang="bn">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
-<title>@yield('title', 'সজীব নিউজ | নির্ভরযোগ্য খবরের ঠিকানা')</title>
-<meta name="description" content="@yield('meta_description', 'সজীব নিউজ - বাংলাদেশের নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')">
+<title>@yield('title', ($__layoutSeo?->site_name ?: 'সজীব নিউজ') . ' | নির্ভরযোগ্য খবরের ঠিকানা')</title>
+<meta name="description" content="@yield('meta_description', $__layoutSeo?->site_description ?: 'বাংলাদেশের নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')">
 <link rel="canonical" href="@yield('canonical', url()->current())">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Google Fonts -->
@@ -91,6 +92,11 @@ tailwind.config = {
 @php
   $navCategories = \App\Models\Category::where('is_active', true)->orderByRaw('featured_order IS NULL, featured_order ASC')->orderBy('name')->limit(8)->get();
   $currentRouteName = optional(request()->route())->getName() ?? '';
+  $globalSeo = $globalSeo ?? \App\Models\SeoSetting::first();
+  $siteName = $globalSeo?->site_name ?: 'সজীব নিউজ';
+  $siteNameEn = $globalSeo?->site_title ?: 'Sajeb News';
+  $siteDesc  = $globalSeo?->site_description ?: '';
+  $siteLogo  = $globalSeo?->logo ? \Storage::url($globalSeo->logo) : null;
 @endphp
 
 <!-- ═══════════════════════════════════════════════════════════
@@ -110,8 +116,12 @@ tailwind.config = {
   {{-- Drawer Header --}}
   <div class="flex items-center justify-between px-5 py-4 border-b border-subtle flex-shrink-0">
     <a href="{{ route('home') }}" onclick="closeDrawer()">
-      <span class="font-headline-lg text-primary text-2xl tracking-tight leading-none">সজীব নিউজ</span>
-      <span class="block font-meta-data text-[10px] text-outline tracking-[0.25em] uppercase mt-0.5">Sajeb News</span>
+      @if($siteLogo)
+        <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="h-10 object-contain"/>
+      @else
+        <span class="font-headline-lg text-primary text-2xl tracking-tight leading-none">{{ $siteName }}</span>
+        <span class="block font-meta-data text-[10px] text-outline tracking-[0.25em] uppercase mt-0.5">{{ $siteNameEn }}</span>
+      @endif
     </a>
     <button onclick="closeDrawer()"
             class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container transition-colors text-on-surface-variant">
@@ -240,8 +250,12 @@ tailwind.config = {
     {{-- CENTER: Logo --}}
     <div class="flex-1 text-center">
       <a href="{{ route('home') }}" class="inline-block group">
-        <span class="font-headline-lg text-primary text-2xl md:text-4xl tracking-tight leading-none group-hover:text-secondary transition-colors">সজীব নিউজ</span>
-        <span class="hidden md:block font-meta-data text-[10px] text-outline tracking-[0.3em] uppercase mt-0.5">Sajeb News</span>
+        @if($siteLogo)
+          <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="h-10 md:h-14 object-contain mx-auto group-hover:opacity-80 transition-opacity"/>
+        @else
+          <span class="font-headline-lg text-primary text-2xl md:text-4xl tracking-tight leading-none group-hover:text-secondary transition-colors">{{ $siteName }}</span>
+          <span class="hidden md:block font-meta-data text-[10px] text-outline tracking-[0.3em] uppercase mt-0.5">{{ $siteNameEn }}</span>
+        @endif
       </a>
     </div>
 
@@ -281,8 +295,12 @@ tailwind.config = {
 <footer class="bg-surface-container-lowest text-on-surface pt-section-padding border-t border-subtle mt-12">
   <div class="max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-stack-lg pb-stack-lg">
     <div class="md:col-span-1">
-      <h2 class="font-headline-lg text-primary text-3xl mb-4">সজীব নিউজ</h2>
-      <p class="text-body-sm text-on-surface-variant mb-6">সঠিক ও নিরপেক্ষ খবর সবার আগে পৌঁছে দিতে আমরা দায়বদ্ধ। সত্যের সন্ধানে নির্ভীক সজীব নিউজ।</p>
+      @if($siteLogo)
+        <a href="{{ route('home') }}"><img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="h-12 object-contain mb-4"/></a>
+      @else
+        <h2 class="font-headline-lg text-primary text-3xl mb-4">{{ $siteName }}</h2>
+      @endif
+      <p class="text-body-sm text-on-surface-variant mb-6">{{ $siteDesc ?: 'সঠিক ও নিরপেক্ষ খবর সবার আগে পৌঁছে দিতে আমরা দায়বদ্ধ।' }}</p>
       <div class="flex gap-3">
         <a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-secondary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[18px]">face_nod</span></a>
         <a class="w-10 h-10 rounded-full bg-surface-container flex items-center justify-center hover:bg-secondary hover:text-white transition-all" href="#"><span class="material-symbols-outlined text-[18px]">brand_family</span></a>
@@ -325,7 +343,7 @@ tailwind.config = {
   </div>
   <div class="border-t border-subtle py-6 bg-surface-container-low">
     <div class="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center text-meta-data text-outline gap-4">
-      <p>© {{ date('Y') }} সজীব নিউজ। সকল স্বত্ব সংরক্ষিত।</p>
+      <p>© {{ date('Y') }} {{ $siteName }}। সকল স্বত্ব সংরক্ষিত।</p>
       <p>সম্পাদক ও প্রকাশক: সজীব রহমান</p>
     </div>
   </div>

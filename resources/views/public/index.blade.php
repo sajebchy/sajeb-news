@@ -42,7 +42,7 @@
         <a href="{{ route('news.show', $heroNews->slug) }}">
           <div class="relative overflow-hidden rounded-xl aspect-[16/9] mb-stack-md">
             <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                 src="{{ $heroNews->featured_image ?: 'https://picsum.photos/seed/'.($heroNews->id ?? 1).'/800/450' }}"
+                 src="{{ $heroNews->featured_image ? \Storage::url($heroNews->featured_image) : 'https://picsum.photos/seed/'.($heroNews->id ?? 1).'/800/450' }}"
                  alt="{{ $heroNews->title }}"/>
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/90 to-transparent p-6 pt-20">
               @if($heroNews->category)
@@ -74,7 +74,7 @@
         <a href="{{ route('news.show', $sn->slug) }}" class="flex gap-4 group cursor-pointer">
           <div class="flex-shrink-0 w-32 h-24 overflow-hidden rounded-lg">
             <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                 src="{{ $sn->featured_image ?: 'https://picsum.photos/seed/'.($sn->id ?? rand()).'/300/200' }}"
+                 src="{{ $sn->featured_image ? \Storage::url($sn->featured_image) : 'https://picsum.photos/seed/'.($sn->id ?? rand()).'/300/200' }}"
                  alt="{{ $sn->title }}"/>
           </div>
           <div>
@@ -105,7 +105,7 @@
           <a href="{{ route('news.show', $cn->slug) }}" class="space-y-3 group cursor-pointer">
             <div class="aspect-video overflow-hidden rounded-lg">
               <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                   src="{{ $cn->featured_image ?: 'https://picsum.photos/seed/'.($cn->id ?? rand()).'/400/225' }}"
+                   src="{{ $cn->featured_image ? \Storage::url($cn->featured_image) : 'https://picsum.photos/seed/'.($cn->id ?? rand()).'/400/225' }}"
                    alt="{{ $cn->title }}"/>
             </div>
             <h4 class="font-headline-md group-hover:text-secondary transition-colors line-clamp-2">{{ $cn->title }}</h4>
@@ -211,7 +211,7 @@
             <a href="{{ route('news.show', $bcNews->first()->slug) }}">
               <div class="relative rounded-xl overflow-hidden aspect-video">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
-                     src="{{ $bcNews->first()->featured_image ?: 'https://picsum.photos/seed/'.$bcNews->first()->id.'/600/338' }}"
+                     src="{{ $bcNews->first()->featured_image ? \Storage::url($bcNews->first()->featured_image) : 'https://picsum.photos/seed/'.$bcNews->first()->id.'/600/338' }}"
                      alt="{{ $bcNews->first()->title }}"/>
                 <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
                   <h3 class="font-headline-md text-white text-xl leading-tight">{{ $bcNews->first()->title }}</h3>
@@ -245,7 +245,7 @@
     <a href="{{ route('news.show', $ln->slug) }}" class="group block">
       <div class="aspect-video overflow-hidden rounded-lg mb-3">
         <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-             src="{{ $ln->featured_image ?: 'https://picsum.photos/seed/'.$ln->id.'/400/225' }}"
+             src="{{ $ln->featured_image ? \Storage::url($ln->featured_image) : 'https://picsum.photos/seed/'.$ln->id.'/400/225' }}"
              alt="{{ $ln->title }}"/>
       </div>
       @if($ln->category)

@@ -130,6 +130,49 @@
     </div>
 </div>
 
+<!-- Traffic Sources Breakdown -->
+<div class="row mt-3 mb-3">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0"><i class="bi bi-diagram-3"></i> ট্র্যাফিক সোর্স — কোথা থেকে পাঠক আসছে</h6>
+                <span class="badge bg-secondary">মোট: {{ number_format($totalVisitors) }} ভিজিট</span>
+            </div>
+            <div class="card-body">
+                @if($sourceBreakdown->count() > 0)
+                <div class="row g-3 mb-4">
+                    @foreach($sourceBreakdown as $src)
+                    @php $pct = round(($src->total / $totalVisitors) * 100, 1); @endphp
+                    <div class="col-12 col-sm-6 col-lg-4">
+                        <div class="d-flex align-items-center gap-3 p-3 border rounded-3 bg-white shadow-sm">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center flex-shrink-0"
+                                 style="width:48px;height:48px;background:{{ $src->color }}22;color:{{ $src->color }};font-size:22px;">
+                                <i class="bi {{ $src->icon }}"></i>
+                            </div>
+                            <div class="flex-grow-1 min-w-0">
+                                <div class="fw-semibold text-dark">{{ $src->label }}</div>
+                                <div class="d-flex align-items-center gap-2 mt-1">
+                                    <div class="progress flex-grow-1" style="height:6px;border-radius:3px;">
+                                        <div class="progress-bar" style="width:{{ $pct }}%;background:{{ $src->color }};"></div>
+                                    </div>
+                                    <small class="text-muted fw-semibold text-nowrap">{{ number_format($src->total) }} ({{ $pct }}%)</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+                @else
+                <div class="text-center py-4 text-muted">
+                    <i class="bi bi-inbox fs-3 d-block mb-2"></i>
+                    এখনো কোনো ভিজিটর ডেটা নেই। নিউজ পেজে ভিজিটর আসলে এখানে দেখা যাবে।
+                </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- Real Time Visitor Activity -->
 <div class="row mt-3">
     <div class="col-12">

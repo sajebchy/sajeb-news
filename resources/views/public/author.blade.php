@@ -89,7 +89,7 @@
          class="flex flex-col md:flex-row gap-5 py-6 border-b border-subtle group hover:bg-surface-container-low px-3 -mx-3 rounded transition-colors">
         <div class="md:w-48 flex-shrink-0 overflow-hidden rounded aspect-video md:aspect-auto md:h-32">
           <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-               src="{{ $item->featured_image ?: 'https://picsum.photos/seed/'.$item->id.'/300/200' }}"
+               src="{{ $item->featured_image ? \Storage::url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/300/200' }}"
                alt="{{ $item->title }}"/>
         </div>
         <div class="flex-1 flex flex-col">

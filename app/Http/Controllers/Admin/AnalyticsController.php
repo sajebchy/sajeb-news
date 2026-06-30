@@ -42,6 +42,32 @@ class AnalyticsController extends Controller
             ->limit(10)
             ->get();
 
+        // Traffic source breakdown
+        $sourceBreakdown = VisitorAnalytic::selectRaw('referrer_source, COUNT(*) as total')
+            ->groupBy('referrer_source')
+            ->orderByDesc('total')
+            ->get()
+            ->map(function ($row) {
+                $labels = [
+                    'google'   => ['label' => 'Google', 'icon' => 'bi-google', 'color' => '#4285F4'],
+                    'facebook' => ['label' => 'Facebook', 'icon' => 'bi-facebook', 'color' => '#1877F2'],
+                    'twitter'  => ['label' => 'Twitter/X', 'icon' => 'bi-twitter-x', 'color' => '#000'],
+                    'bing'     => ['label' => 'Bing', 'icon' => 'bi-search', 'color' => '#008272'],
+                    'chatgpt'  => ['label' => 'ChatGPT', 'icon' => 'bi-chat-dots', 'color' => '#10a37f'],
+                    'whatsapp' => ['label' => 'WhatsApp', 'icon' => 'bi-whatsapp', 'color' => '#25D366'],
+                    'linkedin' => ['label' => 'LinkedIn', 'icon' => 'bi-linkedin', 'color' => '#0A66C2'],
+                    'direct'   => ['label' => 'Direct', 'icon' => 'bi-link-45deg', 'color' => '#6c757d'],
+                    'other'    => ['label' => 'Other', 'icon' => 'bi-globe', 'color' => '#adb5bd'],
+                ];
+                $meta = $labels[$row->referrer_source] ?? $labels['other'];
+                $row->label = $meta['label'];
+                $row->icon  = $meta['icon'];
+                $row->color = $meta['color'];
+                return $row;
+            });
+
+        $totalVisitors = $sourceBreakdown->sum('total') ?: 1;
+
         return view('admin.analytics.index', [
             'totalViews' => $totalViews,
             'totalEngagement' => $totalEngagement,
@@ -50,6 +76,8 @@ class AnalyticsController extends Controller
             'topNews' => $topNews,
             'categoryAnalytics' => $categoryAnalytics,
             'recentVisitors' => $recentVisitors,
+            'sourceBreakdown' => $sourceBreakdown,
+            'totalVisitors' => $totalVisitors,
         ]);
     }
 
