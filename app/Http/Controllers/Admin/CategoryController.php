@@ -11,11 +11,21 @@ class CategoryController extends Controller
     /**
      * Display a listing of categories.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $categories = Category::withCount('news')
-            ->latest()
-            ->paginate(20);
+        $query = Category::withCount('news')->latest();
+
+        if ($request->filled('search')) {
+            $query->where('name', 'like', '%' . $request->search . '%');
+        }
+
+        if ($request->status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($request->status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        $categories = $query->paginate(20)->withQueryString();
 
         return view('admin.categories.index', [
             'categories' => $categories,
@@ -118,7 +128,7 @@ class CategoryController extends Controller
      */
     public function togglePublished(Category $category)
     {
-        $category->update(['is_published' => !$category->is_published]);
+        $category->update(['is_active' => !$category->is_active]);
 
         return back()->with('success', 'Category status updated.');
     }

@@ -145,9 +145,9 @@
                         <form method="POST" action="{{ route('admin.categories.toggle', $category) }}" class="inline">
                             @csrf
                             <button type="submit" class="flex items-center gap-2 group" title="স্ট্যাটাস পরিবর্তন করুন">
-                                <div class="toggle-track {{ $category->is_published ? 'on' : '' }}"></div>
-                                <span class="text-xs font-bold {{ $category->is_published ? 'text-on-surface' : 'text-on-surface-variant' }} uppercase">
-                                    {{ $category->is_published ? 'সক্রিয়' : 'নিষ্ক্রিয়' }}
+                                <div class="toggle-track {{ $category->is_active ? 'on' : '' }}"></div>
+                                <span class="text-xs font-bold {{ $category->is_active ? 'text-on-surface' : 'text-on-surface-variant' }} uppercase">
+                                    {{ $category->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়' }}
                                 </span>
                             </button>
                         </form>
@@ -242,7 +242,7 @@
 {{-- ===== Quick Stats Cards ===== --}}
 @php
     $totalCats  = \App\Models\Category::count();
-    $activeCats = \App\Models\Category::where('is_published', true)->count();
+    $activeCats = \App\Models\Category::where('is_active', true)->count();
     $totalViews = \App\Models\News::where('status','published')->sum('views');
 @endphp
 <section class="grid grid-cols-1 md:grid-cols-3 gap-5">
