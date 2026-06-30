@@ -205,6 +205,7 @@
         {!! adminNavLink('admin.tags.index', 'label', 'ট্যাগ', 'admin.tags') !!}
         {!! adminNavLink('admin.advertisements.index', 'campaign', 'বিজ্ঞাপন', 'admin.advertisements') !!}
         {!! adminNavLink('admin.users.index', 'group', 'ব্যবহারকারী', 'admin.users') !!}
+        {!! adminNavLink('admin.newsletters.index', 'mail', 'নিউজলেটার', 'admin.newsletters') !!}
         {!! adminNavLink('admin.analytics', 'analytics', 'অ্যানালিটিক্স') !!}
         {!! adminNavLink('admin.activities', 'history', 'অ্যাক্টিভিটি লগ') !!}
 

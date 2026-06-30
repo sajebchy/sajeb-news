@@ -12,15 +12,35 @@ class UserController extends Controller
     /**
      * Display a listing of users.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::with('roles')
-            ->latest()
-            ->paginate(20);
+        $query = User::with('roles')->withCount('newsArticles')->latest();
 
-        return view('admin.users.index', [
-            'users' => $users,
-        ]);
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->search . '%')
+                  ->orWhere('email', 'like', '%' . $request->search . '%');
+            });
+        }
+
+        if ($request->filled('role')) {
+            $query->whereHas('roles', fn($q) => $q->where('name', $request->role));
+        }
+
+        if ($request->status === 'active') {
+            $query->where('is_active', true);
+        } elseif ($request->status === 'inactive') {
+            $query->where('is_active', false);
+        }
+
+        $users = $query->paginate(20)->withQueryString();
+        $roles  = Role::all();
+
+        $totalUsers  = User::count();
+        $activeUsers = User::where('is_active', true)->count();
+        $todayUsers  = User::whereDate('created_at', today())->count();
+
+        return view('admin.users.index', compact('users', 'roles', 'totalUsers', 'activeUsers', 'todayUsers'));
     }
 
     /**

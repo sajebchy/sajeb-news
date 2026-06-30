@@ -1,760 +1,645 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Edit Advertisement')
+@section('page-title', 'বিজ্ঞাপন সম্পাদনা')
+
+@push('styles')
+<style>
+    .form-section { transition: box-shadow .2s; }
+    .form-section:hover { box-shadow: 0 4px 16px rgba(0,78,159,.07); }
+    .field-label { font-size:.8125rem; font-weight:600; color:#4a5568; margin-bottom:.35rem; display:block; }
+    .field-input {
+        width:100%; padding:.625rem .875rem;
+        border: 1.5px solid #d0d5dd;
+        border-radius:.75rem;
+        font-size:.875rem;
+        background:#fff;
+        outline:none;
+        transition: border-color .15s, box-shadow .15s;
+    }
+    .field-input:focus { border-color:#004e9f; box-shadow:0 0 0 3px rgba(0,78,159,.12); }
+    .field-input.is-invalid { border-color:#c5221f; }
+    .invalid-msg { font-size:.75rem; color:#c5221f; margin-top:.25rem; }
+    .section-icon { width:36px; height:36px; border-radius:.625rem; display:flex; align-items:center; justify-content:center; flex-shrink:0; }
+</style>
+@endpush
 
 @section('content')
-<div class="row">
-    <div class="col-12">
-        <h1 class="h3 mb-4">
-            <i class="bi bi-pencil-square"></i> Edit Advertisement: {{ $ad->name }}
-        </h1>
+
+{{-- Header --}}
+<header class="flex items-center gap-4 mb-8">
+    <a href="{{ route('admin.advertisements.index') }}"
+       class="w-9 h-9 flex items-center justify-center rounded-xl border border-outline-variant text-on-surface-variant hover:bg-surface-container transition-colors">
+        <span class="material-symbols-outlined text-[20px]">arrow_back</span>
+    </a>
+    <div>
+        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">বিজ্ঞাপন সম্পাদনা</h2>
+        <p class="text-sm text-on-surface-variant mt-0.5">{{ $ad->name }}</p>
     </div>
+</header>
+
+{{-- Alerts --}}
+@if($errors->any())
+<div class="mb-6 bg-error/10 border border-error/30 text-error px-4 py-3 rounded-xl text-sm">
+    <p class="font-bold mb-1 flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">error</span> ফর্মে কিছু ত্রুটি আছে</p>
+    <ul class="list-disc list-inside space-y-0.5">
+        @foreach($errors->all() as $e)<li>{{ $e }}</li>@endforeach
+    </ul>
 </div>
+@endif
 
-<div class="row">
-    <div class="col-12 col-lg-8">
-        <form action="{{ route('admin.advertisements.update', $ad) }}" method="POST" enctype="multipart/form-data" class="needs-validation">
-            @csrf
-            @method('PUT')
+<form action="{{ route('admin.advertisements.update', $ad) }}" method="POST" enctype="multipart/form-data" id="ad-form">
+@csrf
+@method('PUT')
 
-            <!-- Basic Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-info-circle"></i> Basic Information</h5>
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+    {{-- ===== LEFT COLUMN (main) ===== --}}
+    <div class="xl:col-span-2 space-y-5">
+
+        {{-- Basic Info --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-primary/10">
+                    <span class="material-symbols-outlined text-primary text-[18px]">info</span>
                 </div>
-                <div class="card-body">
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Advertisement Name <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $ad->name) }}" placeholder="e.g., SoftDrink Banner" required>
-                        @error('name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="placement" class="form-label">Placement <span class="text-danger">*</span></label>
-                            <select class="form-select @error('placement') is-invalid @enderror" id="placement" name="placement" required>
-                                <option value="">Select Placement</option>
-                                @foreach ($placements as $value => $label)
-                                    <option value="{{ $value }}" {{ old('placement', $ad->placement) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @error('placement') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="type" class="form-label">Type <span class="text-danger">*</span></label>
-                            <select class="form-select @error('type') is-invalid @enderror" id="type" name="type" required>
-                                <option value="">Select Type</option>
-                                @foreach ($types as $value => $label)
-                                    <option value="{{ $value }}" {{ old('type', $ad->type) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @error('type') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="device_target" class="form-label">Device Target <span class="text-danger">*</span></label>
-                            <select class="form-select @error('device_target') is-invalid @enderror" id="device_target" name="device_target" required>
-                                @foreach ($deviceTargets as $value => $label)
-                                    <option value="{{ $value }}" {{ old('device_target', $ad->device_target) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @error('device_target') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="ad_source" class="form-label">Ad Source <span class="text-danger">*</span></label>
-                            <select class="form-select @error('ad_source') is-invalid @enderror" id="ad_source" name="ad_source" required>
-                                <option value="">Select Ad Source</option>
-                                @foreach ($adSources as $value => $label)
-                                    <option value="{{ $value }}" {{ old('ad_source', $ad->ad_source) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @error('ad_source') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="ad_type" class="form-label">Ad Type <span class="text-danger">*</span></label>
-                            <select class="form-select @error('ad_type') is-invalid @enderror" id="ad_type" name="ad_type" required>
-                                <option value="">Select Ad Type</option>
-                                @foreach ($adTypes as $value => $label)
-                                    <option value="{{ $value }}" {{ old('ad_type', $ad->ad_type) == $value ? 'selected' : '' }}>{{ $label }}</option>
-                                @endforeach
-                            </select>
-                            @error('ad_type') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="display_order" class="form-label">Display Order</label>
-                            <input type="number" class="form-control @error('display_order') is-invalid @enderror" id="display_order" name="display_order" value="{{ old('display_order', $ad->display_order) }}" min="0">
-                            @error('display_order') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-                </div>
+                <h3 class="font-bold text-on-surface">মৌলিক তথ্য</h3>
             </div>
+            <div class="p-6 space-y-4">
 
-            <!-- Image & URL -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-image"></i> Image & Link</h5>
+                <div>
+                    <label class="field-label" for="name">বিজ্ঞাপনের নাম <span class="text-error">*</span></label>
+                    <input class="field-input @error('name') is-invalid @enderror"
+                           type="text" id="name" name="name"
+                           value="{{ old('name', $ad->name) }}"
+                           placeholder="যেমন: হোমপেজ ব্যানার - ABC কোম্পানি" required>
+                    @error('name')<p class="invalid-msg">{{ $message }}</p>@enderror
                 </div>
-                <div class="card-body">
-                    <!-- Image Upload Section -->
-                    <div class="mb-4 pb-4 border-bottom">
-                        <h6 class="mb-3"><i class="bi bi-cloud-upload"></i> Image Upload</h6>
-                        
-                        <div class="mb-3">
-                            <label for="image_file" class="form-label">Upload Image <span class="text-danger">*</span></label>
-                            <div class="input-group">
-                                <input type="file" class="form-control @error('image_file') is-invalid @enderror" id="image_file" name="image_file" accept="image/*" placeholder="Choose image...">
-                                <button class="btn btn-outline-secondary" type="button" id="upload-btn">Upload</button>
-                            </div>
-                            @error('image_file') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
-                            <small class="text-muted d-block mt-2">
-                                <i class="bi bi-info-circle"></i> 
-                                Supported formats: JPG, PNG, GIF, WebP (Max 5MB)
-                            </small>
-                        </div>
 
-                        <!-- Upload Progress -->
-                        <div id="upload-progress" class="progress" style="display: none;">
-                            <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
-                        </div>
-
-                        <!-- Upload Status Message -->
-                        <div id="upload-message" class="mt-2"></div>
-                    </div>
-
-                    <!-- Hidden Image URL Field (for backend) -->
-                    <input type="hidden" id="image_url" name="image_url" value="{{ old('image_url', $ad->image_url) }}">
-
-                    <!-- Image Alt Text -->
-                    <div class="mb-3">
-                        <label for="alt_text" class="form-label">Image Alt Text</label>
-                        <input type="text" class="form-control @error('alt_text') is-invalid @enderror" id="alt_text" name="alt_text" value="{{ old('alt_text', $ad->alt_text) }}" placeholder="Descriptive text for accessibility">
-                        @error('alt_text') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- Image Preview -->
-                    <div id="image-preview" class="mb-3">
-                        <label class="form-label fw-bold">📷 Image Preview:</label>
-                        <div class="border-2 rounded p-4" style="background: linear-gradient(135deg, #f5f7fa 0%, #f8f9fa 100%); text-align: center; min-height: 250px; display: flex; align-items: center; justify-content: center;">
-                            <div>
-                                <img id="preview-img" src="{{ $ad->image_url ? asset($ad->image_url) : 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22Arial%22 font-size=%2224%22 fill=%22%23999%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ENo Image Uploaded%3C/text%3E%3C/svg%3E' }}" alt="Preview" style="max-width: 100%; max-height: 400px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: block; margin: 0 auto;">
-                                <p class="text-muted small mt-2 mb-0">Preview will update after upload</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Link/URL Section -->
-                    <div class="mt-4 pt-4 border-top">
-                        <h6 class="mb-3"><i class="bi bi-link-45deg"></i> Destination Link</h6>
-                        
-                        <div class="mb-3">
-                            <label for="ad_url" class="form-label">Destination URL <span class="text-danger">*</span></label>
-                            <input type="url" class="form-control @error('ad_url') is-invalid @enderror" id="ad_url" name="ad_url" value="{{ old('ad_url', $ad->ad_url) }}" placeholder="https://example.com" required>
-                            @error('ad_url') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                            <small class="text-muted d-block mt-2">
-                                <i class="bi bi-info-circle"></i> 
-                                Where users will be directed when clicking the ad. Include http:// or https://
-                            </small>
-                        </div>
-
-                        <!-- Link Preview with UTM Parameters -->
-                        <div class="alert alert-light border">
-                            <label class="form-label"><small><strong>Link Preview:</strong></small></label>
-                            <div class="p-2 bg-white rounded border mt-1" style="font-size: 12px; word-break: break-all; font-family: monospace; min-height: 40px;">
-                                <span id="link-preview" class="text-muted">{{ $ad->ad_url ?? 'No URL entered yet' }}</span>
-                            </div>
-                        </div>
-
-                        <!-- Open in New Tab Option -->
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="link_open_new_tab" name="link_open_new_tab" value="1" {{ old('link_open_new_tab') ? 'checked' : '' }}>
-                            <label class="form-check-label" for="link_open_new_tab">
-                                Open link in new tab
-                            </label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Monetization Networks (AdSense + Alternative Networks) -->
-            <div class="card mb-4" id="networks-section">
-                <div class="card-header bg-success bg-opacity-10">
-                    <h5 class="mb-0">
-                        <i class="bi bi-graph-up"></i> Monetization Networks
-                        <span class="badge bg-success float-end">AdSense & Alternative Networks</span>
-                    </h5>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> <strong>Monetization Options:</strong> Choose from Google AdSense or 11 alternative ad networks (Media.net, Ezoic, PropellerAds, Mediavine, and more).
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="ad_network" class="form-label">Select Monetization Network <span class="text-danger">*</span></label>
-                        <select class="form-select @error('ad_network') is-invalid @enderror" id="ad_network" name="ad_network">
-                            <option value="">-- Select a network --</option>
-                            @foreach ($adNetworks as $key => $label)
-                                <option value="{{ $key }}" {{ old('ad_network', $ad->ad_network) == $key ? 'selected' : '' }}>{{ $label }}</option>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label" for="placement">প্লেসমেন্ট <span class="text-error">*</span></label>
+                        <select class="field-input @error('placement') is-invalid @enderror" id="placement" name="placement" required>
+                            <option value="">প্লেসমেন্ট বেছে নিন</option>
+                            @foreach ($placements as $value => $label)
+                            <option value="{{ $value }}" @selected(old('placement', $ad->placement) == $value)>{{ $label }}</option>
                             @endforeach
                         </select>
-                        @error('ad_network') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        @error('placement')<p class="invalid-msg">{{ $message }}</p>@enderror
                     </div>
-
-                    <!-- Dynamic Network Fields Container -->
-                    <div id="network-fields-container"></div>
-
-                    <!-- AdSense-specific policy warning (shown when adsense selected) -->
-                    <div id="adsense-warning" style="display: none;" class="alert alert-warning mb-3">
-                        <i class="bi bi-exclamation-circle"></i> <strong>Google AdSense Policy:</strong> 
-                        <ul class="mb-0 mt-2 small">
-                            <li><strong>Maximum 3 ads per page</strong> - Do not exceed this limit</li>
-                            <li><strong>Minimum 300 words of content</strong> - Page must have sufficient content</li>
-                            <li><strong>Valid publisher ID format:</strong> pub-XXXXXXXXXXXXXXXX (16 digits)</li>
-                        </ul>
+                    <div>
+                        <label class="field-label" for="type">টাইপ <span class="text-error">*</span></label>
+                        <select class="field-input @error('type') is-invalid @enderror" id="type" name="type" required>
+                            <option value="">টাইপ বেছে নিন</option>
+                            @foreach ($types as $value => $label)
+                            <option value="{{ $value }}" @selected(old('type', $ad->type) == $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('type')<p class="invalid-msg">{{ $message }}</p>@enderror
                     </div>
                 </div>
-            </div>
 
-            <!-- UTM Parameters -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0">
-                        <i class="bi bi-link"></i> UTM Parameters (Campaign Tracking)
-                    </h5>
-                    <small class="text-muted">Add UTM parameters to track your advertisement performance in Google Analytics</small>
-                </div>
-                <div class="card-body">
-                    <div class="alert alert-info">
-                        <i class="bi bi-lightbulb"></i> <strong>UTM Builder:</strong> These parameters will be automatically appended to your ad URL for tracking purposes.
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label" for="device_target">ডিভাইস টার্গেট <span class="text-error">*</span></label>
+                        <select class="field-input @error('device_target') is-invalid @enderror" id="device_target" name="device_target" required>
+                            @foreach ($deviceTargets as $value => $label)
+                            <option value="{{ $value }}" @selected(old('device_target', $ad->device_target) == $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('device_target')<p class="invalid-msg">{{ $message }}</p>@enderror
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="utm_source" class="form-label">UTM Source</label>
-                            <input type="text" class="form-control @error('utm_source') is-invalid @enderror" id="utm_source" name="utm_source" value="{{ old('utm_source', $ad->utm_source) }}" placeholder="e.g., facebook, google, newsletter">
-                            <small class="text-muted">The referrer: e.g., facebook, google, newsletter</small>
-                            @error('utm_source') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="utm_medium" class="form-label">UTM Medium</label>
-                            <input type="text" class="form-control @error('utm_medium') is-invalid @enderror" id="utm_medium" name="utm_medium" value="{{ old('utm_medium', $ad->utm_medium) }}" placeholder="e.g., cpc, banner, email">
-                            <small class="text-muted">The marketing medium: e.g., cpc, banner, email</small>
-                            @error('utm_medium') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="utm_campaign" class="form-label">UTM Campaign</label>
-                            <input type="text" class="form-control @error('utm_campaign') is-invalid @enderror" id="utm_campaign" name="utm_campaign" value="{{ old('utm_campaign', $ad->utm_campaign) }}" placeholder="e.g., winter_sale_2026">
-                            <small class="text-muted">The campaign name: e.g., winter_sale_2026</small>
-                            @error('utm_campaign') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="utm_term" class="form-label">UTM Term (Keywords)</label>
-                            <input type="text" class="form-control @error('utm_term') is-invalid @enderror" id="utm_term" name="utm_term" value="{{ old('utm_term', $ad->utm_term) }}" placeholder="e.g., soft drinks, beverage">
-                            <small class="text-muted">Keywords: e.g., soft drinks, beverage</small>
-                            @error('utm_term') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="utm_content" class="form-label">UTM Content</label>
-                        <input type="text" class="form-control @error('utm_content') is-invalid @enderror" id="utm_content" name="utm_content" value="{{ old('utm_content', $ad->utm_content) }}" placeholder="e.g., sidebar_banner, footer_link">
-                        <small class="text-muted">To differentiate ads: e.g., sidebar_banner, footer_link</small>
-                        @error('utm_content') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <!-- URL Preview -->
-                    <div class="mt-3 p-3 bg-light rounded">
-                        <label class="font-weight-bold">Complete URL Preview:</label>
-                        <div class="p-2 bg-white rounded border mt-2" style="font-size: 12px; word-break: break-all; font-family: monospace;">
-                            <span id="url-preview">{{ $ad->ad_url }}</span>
-                        </div>
+                    <div>
+                        <label class="field-label" for="ad_source">বিজ্ঞাপনের উৎস <span class="text-error">*</span></label>
+                        <select class="field-input @error('ad_source') is-invalid @enderror" id="ad_source" name="ad_source" required>
+                            <option value="">উৎস বেছে নিন</option>
+                            @foreach ($adSources as $value => $label)
+                            <option value="{{ $value }}" @selected(old('ad_source', $ad->ad_source) == $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('ad_source')<p class="invalid-msg">{{ $message }}</p>@enderror
                     </div>
                 </div>
-            </div>
 
-            <!-- Schedule -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-calendar-event"></i> Schedule</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="start_date" class="form-label">Start Date <span class="text-danger">*</span></label>
-                            <input type="datetime-local" class="form-control @error('start_date') is-invalid @enderror" id="start_date" name="start_date" value="{{ old('start_date', $ad->start_date?->format('Y-m-d\TH:i')) }}" required>
-                            @error('start_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="end_date" class="form-label">End Date (Optional)</label>
-                            <input type="datetime-local" class="form-control @error('end_date') is-invalid @enderror" id="end_date" name="end_date" value="{{ old('end_date', $ad->end_date?->format('Y-m-d\TH:i')) }}">
-                            @error('end_date') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label" for="ad_type">বিজ্ঞাপনের ধরণ <span class="text-error">*</span></label>
+                        <select class="field-input @error('ad_type') is-invalid @enderror" id="ad_type" name="ad_type" required>
+                            <option value="">ধরণ বেছে নিন</option>
+                            @foreach ($adTypes as $value => $label)
+                            <option value="{{ $value }}" @selected(old('ad_type', $ad->ad_type) == $value)>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        @error('ad_type')<p class="invalid-msg">{{ $message }}</p>@enderror
+                    </div>
+                    <div>
+                        <label class="field-label" for="display_order">প্রদর্শনের ক্রম</label>
+                        <input class="field-input @error('display_order') is-invalid @enderror"
+                               type="number" id="display_order" name="display_order"
+                               value="{{ old('display_order', $ad->display_order) }}" min="0">
+                        @error('display_order')<p class="invalid-msg">{{ $message }}</p>@enderror
                     </div>
                 </div>
-            </div>
-
-            <!-- Advertiser Information -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-person-badge"></i> Advertiser Information</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="advertiser_name" class="form-label">Advertiser Name</label>
-                            <input type="text" class="form-control @error('advertiser_name') is-invalid @enderror" id="advertiser_name" name="advertiser_name" value="{{ old('advertiser_name', $ad->advertiser_name) }}" placeholder="Company name">
-                            @error('advertiser_name') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="advertiser_email" class="form-label">Advertiser Email</label>
-                            <input type="email" class="form-control @error('advertiser_email') is-invalid @enderror" id="advertiser_email" name="advertiser_email" value="{{ old('advertiser_email', $ad->advertiser_email) }}" placeholder="contact@company.com">
-                            @error('advertiser_email') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="advertiser_phone" class="form-label">Advertiser Phone</label>
-                        <input type="text" class="form-control @error('advertiser_phone') is-invalid @enderror" id="advertiser_phone" name="advertiser_phone" value="{{ old('advertiser_phone', $ad->advertiser_phone) }}" placeholder="+880-XXXX-XXXXXX">
-                        @error('advertiser_phone') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-                </div>
-            </div>
-
-            <!-- Additional Settings -->
-            <div class="card mb-4">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-sliders"></i> Additional Settings</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="cpc_amount" class="form-label">Cost Per Click (CPC)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">৳</span>
-                                <input type="number" step="0.01" class="form-control @error('cpc_amount') is-invalid @enderror" id="cpc_amount" name="cpc_amount" value="{{ old('cpc_amount', $ad->cpc_amount) }}" placeholder="0.00">
-                            </div>
-                            @error('cpc_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="cpm_amount" class="form-label">Cost Per 1000 Impressions (CPM)</label>
-                            <div class="input-group">
-                                <span class="input-group-text">৳</span>
-                                <input type="number" step="0.01" class="form-control @error('cpm_amount') is-invalid @enderror" id="cpm_amount" name="cpm_amount" value="{{ old('cpm_amount', $ad->cpm_amount) }}" placeholder="0.00">
-                            </div>
-                            @error('cpm_amount') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label for="daily_impression_limit" class="form-label">Daily Impression Limit</label>
-                            <input type="number" class="form-control @error('daily_impression_limit') is-invalid @enderror" id="daily_impression_limit" name="daily_impression_limit" value="{{ old('daily_impression_limit', $ad->daily_impression_limit) }}" min="1" placeholder="Leave empty for unlimited">
-                            @error('daily_impression_limit') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label for="max_clicks_per_day" class="form-label">Max Clicks Per Day</label>
-                            <input type="number" class="form-control @error('max_clicks_per_day') is-invalid @enderror" id="max_clicks_per_day" name="max_clicks_per_day" value="{{ old('max_clicks_per_day', $ad->max_clicks_per_day) }}" min="1" placeholder="Leave empty for unlimited">
-                            @error('max_clicks_per_day') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                        </div>
-                    </div>
-
-                    <div class="mb-3">
-                        <label for="notes" class="form-label">Notes</label>
-                        <textarea class="form-control @error('notes') is-invalid @enderror" id="notes" name="notes" rows="3" placeholder="Internal notes about this advertisement">{{ old('notes', $ad->notes) }}</textarea>
-                        @error('notes') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                    </div>
-
-                    <div class="form-check mb-3">
-                        <input class="form-check-input" type="checkbox" id="is_active" name="is_active" value="1" {{ old('is_active', $ad->is_active) ? 'checked' : '' }}>
-                        <label class="form-check-label" for="is_active">
-                            This advertisement is active
-                        </label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Performance Stats -->
-            <div class="card mb-4 bg-light">
-                <div class="card-header">
-                    <h5 class="mb-0"><i class="bi bi-graph-up"></i> Performance Statistics</h5>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-4 text-center">
-                            <div class="mb-2">
-                                <strong style="font-size: 24px; color: #667eea;">{{ number_format($ad->views) }}</strong>
-                                <div class="text-muted">Views</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="mb-2">
-                                <strong style="font-size: 24px; color: #f5576c;">{{ number_format($ad->clicks) }}</strong>
-                                <div class="text-muted">Clicks</div>
-                            </div>
-                        </div>
-                        <div class="col-md-4 text-center">
-                            <div class="mb-2">
-                                <strong style="font-size: 24px; color: #43e97b;">{{ $ad->ctr }}%</strong>
-                                <div class="text-muted">CTR (Click-Through Rate)</div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit Buttons -->
-            <div class="d-flex gap-2">
-                <button type="submit" class="btn btn-primary">
-                    <i class="bi bi-check-circle"></i> Update Advertisement
-                </button>
-                <a href="{{ route('admin.advertisements.show', $ad) }}" class="btn btn-secondary">
-                    <i class="bi bi-x-circle"></i> Cancel
-                </a>
-            </div>
-        </form>
-    </div>
-
-    <!-- Sidebar Info -->
-    <div class="col-12 col-lg-4">
-        <div class="card mb-4">
-            <div class="card-header">
-                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Information</h5>
-            </div>
-            <div class="card-body small">
-                <p><strong>Created:</strong> {{ $ad->created_at->format('M d, Y H:i') }}</p>
-                <p><strong>Updated:</strong> {{ $ad->updated_at->format('M d, Y H:i') }}</p>
-                <p><strong>Created By:</strong> {{ $ad->creator->name ?? 'Unknown' }}</p>
             </div>
         </div>
+
+        {{-- Image & Link --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-secondary/10">
+                    <span class="material-symbols-outlined text-secondary text-[18px]">image</span>
+                </div>
+                <h3 class="font-bold text-on-surface">ছবি ও লিংক</h3>
+            </div>
+            <div class="p-6 space-y-5">
+
+                {{-- Image Upload --}}
+                <div class="pb-5 border-b border-outline-variant">
+                    <p class="text-sm font-bold text-on-surface mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px] text-primary">cloud_upload</span>
+                        ছবি আপলোড
+                    </p>
+                    <div class="flex gap-3 items-start">
+                        <div class="flex-1">
+                            <input class="field-input @error('image_file') is-invalid @enderror"
+                                   type="file" id="image_file" name="image_file" accept="image/*">
+                            @error('image_file')<p class="invalid-msg">{{ $message }}</p>@enderror
+                            <p class="text-xs text-on-surface-variant mt-1.5">JPG, PNG, GIF, WebP — সর্বোচ্চ ৫MB</p>
+                        </div>
+                        <button type="button" id="upload-btn"
+                                class="px-4 py-2.5 bg-primary text-white rounded-xl text-sm font-bold hover:opacity-90 transition-opacity flex items-center gap-1.5 whitespace-nowrap">
+                            <span class="material-symbols-outlined text-[16px]">upload</span>
+                            আপলোড
+                        </button>
+                    </div>
+                    <div id="upload-progress" class="mt-3 hidden">
+                        <div class="w-full bg-surface-container-high rounded-full h-2 overflow-hidden">
+                            <div id="progress-bar" class="h-full bg-primary rounded-full transition-all duration-300" style="width:0%"></div>
+                        </div>
+                    </div>
+                    <div id="upload-message" class="mt-2"></div>
+                </div>
+
+                <input type="hidden" id="image_url" name="image_url" value="{{ old('image_url', $ad->image_url) }}">
+
+                {{-- Preview --}}
+                <div id="image-preview-wrap">
+                    <label class="field-label">বর্তমান ছবি</label>
+                    <div class="rounded-xl border-2 border-dashed border-outline-variant bg-surface-container p-4 flex items-center justify-center min-h-[180px]">
+                        <img id="preview-img"
+                             src="{{ $ad->image_url ? asset($ad->image_url) : '' }}"
+                             alt="Preview"
+                             class="{{ $ad->image_url ? '' : 'hidden' }} max-h-48 rounded-lg object-contain">
+                        <div id="no-image-placeholder" class="{{ $ad->image_url ? 'hidden' : '' }} text-center text-on-surface-variant">
+                            <span class="material-symbols-outlined" style="font-size:48px">image_not_supported</span>
+                            <p class="text-sm mt-1">কোনো ছবি নেই</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="field-label" for="alt_text">ছবির Alt টেক্সট</label>
+                    <input class="field-input @error('alt_text') is-invalid @enderror"
+                           type="text" id="alt_text" name="alt_text"
+                           value="{{ old('alt_text', $ad->alt_text) }}"
+                           placeholder="অ্যাক্সেসিবিলিটির জন্য বর্ণনামূলক টেক্সট">
+                    @error('alt_text')<p class="invalid-msg">{{ $message }}</p>@enderror
+                </div>
+
+                <div class="pt-5 border-t border-outline-variant">
+                    <p class="text-sm font-bold text-on-surface mb-3 flex items-center gap-2">
+                        <span class="material-symbols-outlined text-[16px] text-primary">link</span>
+                        গন্তব্য লিংক
+                    </p>
+                    <div>
+                        <label class="field-label" for="ad_url">ক্লিক URL <span class="text-error">*</span></label>
+                        <input class="field-input @error('ad_url') is-invalid @enderror"
+                               type="url" id="ad_url" name="ad_url"
+                               value="{{ old('ad_url', $ad->ad_url) }}"
+                               placeholder="https://example.com" required>
+                        @error('ad_url')<p class="invalid-msg">{{ $message }}</p>@enderror
+                        <div class="mt-2 bg-surface-container rounded-lg px-3 py-2 text-xs font-mono text-on-surface-variant break-all" id="link-preview">
+                            {{ $ad->ad_url ?? 'কোনো URL নেই' }}
+                        </div>
+                    </div>
+                    <label class="flex items-center gap-2.5 mt-3 cursor-pointer">
+                        <input type="checkbox" name="link_open_new_tab" value="1" class="w-4 h-4 rounded accent-primary"
+                               {{ old('link_open_new_tab', $ad->link_open_new_tab ?? false) ? 'checked' : '' }}>
+                        <span class="text-sm text-on-surface">নতুন ট্যাবে খুলুন</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+
+        {{-- Monetization Networks --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden" id="networks-section">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-tertiary/10">
+                    <span class="material-symbols-outlined text-tertiary text-[18px]">monetization_on</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-on-surface">মনিটাইজেশন নেটওয়ার্ক</h3>
+                    <p class="text-xs text-on-surface-variant">AdSense ও বিকল্প নেটওয়ার্ক</p>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="bg-primary/5 border border-primary/20 rounded-xl px-4 py-3 text-sm text-primary flex items-start gap-2">
+                    <span class="material-symbols-outlined text-[16px] mt-0.5">info</span>
+                    Google AdSense সহ ১১+ বিকল্প নেটওয়ার্ক থেকে বেছে নিন।
+                </div>
+                <div>
+                    <label class="field-label" for="ad_network">নেটওয়ার্ক বেছে নিন</label>
+                    <select class="field-input @error('ad_network') is-invalid @enderror" id="ad_network" name="ad_network">
+                        <option value="">-- নেটওয়ার্ক বেছে নিন --</option>
+                        @foreach ($adNetworks as $key => $label)
+                        <option value="{{ $key }}" @selected(old('ad_network', $ad->ad_network) == $key)>{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    @error('ad_network')<p class="invalid-msg">{{ $message }}</p>@enderror
+                </div>
+                <div id="network-fields-container"></div>
+                <div id="adsense-warning" class="hidden bg-yellow-50 border border-yellow-200 rounded-xl px-4 py-3 text-sm text-yellow-800">
+                    <p class="font-bold flex items-center gap-1.5 mb-1.5"><span class="material-symbols-outlined text-[16px]">warning</span> Google AdSense নীতি</p>
+                    <ul class="list-disc list-inside space-y-0.5 text-xs">
+                        <li>প্রতি পেজে সর্বোচ্চ ৩টি বিজ্ঞাপন</li>
+                        <li>পেজে ন্যূনতম ৩০০ শব্দের কন্টেন্ট থাকতে হবে</li>
+                        <li>Publisher ID ফরম্যাট: pub-XXXXXXXXXXXXXXXX (১৬ ডিজিট)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        {{-- UTM Parameters --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-6 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-primary/10">
+                    <span class="material-symbols-outlined text-primary text-[18px]">analytics</span>
+                </div>
+                <div>
+                    <h3 class="font-bold text-on-surface">UTM প্যারামিটার</h3>
+                    <p class="text-xs text-on-surface-variant">ক্যাম্পেইন ট্র্যাকিং</p>
+                </div>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label" for="utm_source">UTM Source</label>
+                        <input class="field-input" type="text" id="utm_source" name="utm_source"
+                               value="{{ old('utm_source', $ad->utm_source) }}"
+                               placeholder="facebook, google, newsletter">
+                        <p class="text-xs text-on-surface-variant mt-1">ট্র্যাফিকের উৎস</p>
+                    </div>
+                    <div>
+                        <label class="field-label" for="utm_medium">UTM Medium</label>
+                        <input class="field-input" type="text" id="utm_medium" name="utm_medium"
+                               value="{{ old('utm_medium', $ad->utm_medium) }}"
+                               placeholder="cpc, banner, email">
+                        <p class="text-xs text-on-surface-variant mt-1">মার্কেটিং মাধ্যম</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="field-label" for="utm_campaign">UTM Campaign</label>
+                        <input class="field-input" type="text" id="utm_campaign" name="utm_campaign"
+                               value="{{ old('utm_campaign', $ad->utm_campaign) }}"
+                               placeholder="winter_sale_2026">
+                        <p class="text-xs text-on-surface-variant mt-1">ক্যাম্পেইনের নাম</p>
+                    </div>
+                    <div>
+                        <label class="field-label" for="utm_term">UTM Term</label>
+                        <input class="field-input" type="text" id="utm_term" name="utm_term"
+                               value="{{ old('utm_term', $ad->utm_term) }}"
+                               placeholder="soft drinks, beverage">
+                        <p class="text-xs text-on-surface-variant mt-1">কীওয়ার্ড</p>
+                    </div>
+                </div>
+                <div>
+                    <label class="field-label" for="utm_content">UTM Content</label>
+                    <input class="field-input" type="text" id="utm_content" name="utm_content"
+                           value="{{ old('utm_content', $ad->utm_content) }}"
+                           placeholder="sidebar_banner, footer_link">
+                    <p class="text-xs text-on-surface-variant mt-1">বিজ্ঞাপন পার্থক্য করতে</p>
+                </div>
+                <div class="bg-surface-container rounded-xl p-3">
+                    <p class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mb-1.5">সম্পূর্ণ URL প্রিভিউ</p>
+                    <p class="text-xs font-mono text-on-surface break-all" id="url-preview">{{ $ad->ad_url }}</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    {{-- ===== RIGHT COLUMN (sidebar) ===== --}}
+    <div class="space-y-5">
+
+        {{-- Submit Actions --}}
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-5 space-y-3">
+            <button type="submit"
+                    class="w-full flex items-center justify-center gap-2 bg-primary text-white px-5 py-3 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity active:scale-95">
+                <span class="material-symbols-outlined text-[18px]">save</span>
+                পরিবর্তন সংরক্ষণ করুন
+            </button>
+            <a href="{{ route('admin.advertisements.show', $ad) }}"
+               class="w-full flex items-center justify-center gap-2 border border-outline-variant text-on-surface-variant px-5 py-3 rounded-xl font-bold text-sm hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined text-[18px]">close</span>
+                বাতিল করুন
+            </a>
+            <a href="{{ route('admin.advertisements.index') }}"
+               class="w-full flex items-center justify-center gap-2 text-on-surface-variant px-5 py-2.5 rounded-xl text-sm hover:bg-surface-container transition-colors">
+                <span class="material-symbols-outlined text-[16px]">list</span>
+                তালিকায় ফিরে যান
+            </a>
+        </div>
+
+        {{-- Status & Schedule --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-tertiary/10">
+                    <span class="material-symbols-outlined text-tertiary text-[18px]">schedule</span>
+                </div>
+                <h3 class="font-bold text-on-surface text-sm">সময়সূচি ও স্ট্যাটাস</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <label class="flex items-center gap-3 cursor-pointer p-3 rounded-xl border border-outline-variant hover:bg-surface-container transition-colors">
+                    <input type="checkbox" name="is_active" value="1"
+                           class="w-4 h-4 rounded accent-primary"
+                           {{ old('is_active', $ad->is_active) ? 'checked' : '' }}>
+                    <div>
+                        <span class="text-sm font-bold text-on-surface block">বিজ্ঞাপন সক্রিয়</span>
+                        <span class="text-xs text-on-surface-variant">চেক করলে বিজ্ঞাপনটি দৃশ্যমান হবে</span>
+                    </div>
+                </label>
+                <div>
+                    <label class="field-label" for="start_date">শুরুর তারিখ <span class="text-error">*</span></label>
+                    <input class="field-input @error('start_date') is-invalid @enderror"
+                           type="datetime-local" id="start_date" name="start_date"
+                           value="{{ old('start_date', $ad->start_date?->format('Y-m-d\TH:i')) }}" required>
+                    @error('start_date')<p class="invalid-msg">{{ $message }}</p>@enderror
+                </div>
+                <div>
+                    <label class="field-label" for="end_date">শেষের তারিখ</label>
+                    <input class="field-input @error('end_date') is-invalid @enderror"
+                           type="datetime-local" id="end_date" name="end_date"
+                           value="{{ old('end_date', $ad->end_date?->format('Y-m-d\TH:i')) }}">
+                    @error('end_date')<p class="invalid-msg">{{ $message }}</p>@enderror
+                    <p class="text-xs text-on-surface-variant mt-1">ফাঁকা রাখলে মেয়াদহীন</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Advertiser Info --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-primary/10">
+                    <span class="material-symbols-outlined text-primary text-[18px]">person_pin</span>
+                </div>
+                <h3 class="font-bold text-on-surface text-sm">বিজ্ঞাপনদাতার তথ্য</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="field-label" for="advertiser_name">নাম</label>
+                    <input class="field-input" type="text" id="advertiser_name" name="advertiser_name"
+                           value="{{ old('advertiser_name', $ad->advertiser_name) }}"
+                           placeholder="কোম্পানির নাম">
+                </div>
+                <div>
+                    <label class="field-label" for="advertiser_email">ইমেইল</label>
+                    <input class="field-input" type="email" id="advertiser_email" name="advertiser_email"
+                           value="{{ old('advertiser_email', $ad->advertiser_email) }}"
+                           placeholder="contact@company.com">
+                </div>
+                <div>
+                    <label class="field-label" for="advertiser_phone">ফোন</label>
+                    <input class="field-input" type="text" id="advertiser_phone" name="advertiser_phone"
+                           value="{{ old('advertiser_phone', $ad->advertiser_phone) }}"
+                           placeholder="+880-XXXX-XXXXXX">
+                </div>
+            </div>
+        </div>
+
+        {{-- Budget Settings --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-secondary/10">
+                    <span class="material-symbols-outlined text-secondary text-[18px]">payments</span>
+                </div>
+                <h3 class="font-bold text-on-surface text-sm">বাজেট সেটিংস</h3>
+            </div>
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="field-label" for="cpc_amount">CPC (প্রতি ক্লিক)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold text-sm">৳</span>
+                        <input class="field-input pl-7" type="number" step="0.01" id="cpc_amount" name="cpc_amount"
+                               value="{{ old('cpc_amount', $ad->cpc_amount) }}" placeholder="0.00">
+                    </div>
+                </div>
+                <div>
+                    <label class="field-label" for="cpm_amount">CPM (প্রতি ১০০০ ইম্প্রেশন)</label>
+                    <div class="relative">
+                        <span class="absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant font-bold text-sm">৳</span>
+                        <input class="field-input pl-7" type="number" step="0.01" id="cpm_amount" name="cpm_amount"
+                               value="{{ old('cpm_amount', $ad->cpm_amount) }}" placeholder="0.00">
+                    </div>
+                </div>
+                <div>
+                    <label class="field-label" for="daily_impression_limit">দৈনিক ইম্প্রেশন সীমা</label>
+                    <input class="field-input" type="number" id="daily_impression_limit" name="daily_impression_limit"
+                           value="{{ old('daily_impression_limit', $ad->daily_impression_limit) }}"
+                           min="1" placeholder="সীমাহীন">
+                </div>
+                <div>
+                    <label class="field-label" for="max_clicks_per_day">দৈনিক সর্বোচ্চ ক্লিক</label>
+                    <input class="field-input" type="number" id="max_clicks_per_day" name="max_clicks_per_day"
+                           value="{{ old('max_clicks_per_day', $ad->max_clicks_per_day) }}"
+                           min="1" placeholder="সীমাহীন">
+                </div>
+            </div>
+        </div>
+
+        {{-- Performance Stats --}}
+        <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-primary/10">
+                    <span class="material-symbols-outlined text-primary text-[18px]">bar_chart</span>
+                </div>
+                <h3 class="font-bold text-on-surface text-sm">পারফরম্যান্স</h3>
+            </div>
+            <div class="p-5 grid grid-cols-3 gap-3 text-center">
+                <div>
+                    <p class="text-2xl font-bold text-primary">{{ number_format($ad->views) }}</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">ভিউ</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-secondary">{{ number_format($ad->clicks) }}</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">ক্লিক</p>
+                </div>
+                <div>
+                    <p class="text-2xl font-bold text-tertiary">{{ $ad->ctr }}%</p>
+                    <p class="text-xs text-on-surface-variant mt-0.5">CTR</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Meta info --}}
+        <div class="bg-surface-container rounded-xl p-4 text-xs text-on-surface-variant space-y-1.5">
+            <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">schedule</span> তৈরি: {{ $ad->created_at->format('d M Y, H:i') }}</p>
+            <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">update</span> আপডেট: {{ $ad->updated_at->format('d M Y, H:i') }}</p>
+            @if($ad->creator ?? null)
+            <p class="flex items-center gap-2"><span class="material-symbols-outlined text-[14px]">person</span> {{ $ad->creator->name }}</p>
+            @endif
+        </div>
+
+        {{-- Notes --}}
+        <div class="form-section bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
+            <div class="flex items-center gap-3 px-5 py-4 border-b border-outline-variant bg-surface-container">
+                <div class="section-icon bg-outline/10">
+                    <span class="material-symbols-outlined text-outline text-[18px]">note</span>
+                </div>
+                <h3 class="font-bold text-on-surface text-sm">নোট</h3>
+            </div>
+            <div class="p-5">
+                <textarea class="field-input resize-none" id="notes" name="notes" rows="4"
+                          placeholder="এই বিজ্ঞাপন সম্পর্কে অভ্যন্তরীণ নোট">{{ old('notes', $ad->notes) }}</textarea>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    // Note: Image URL field is now hidden. Images are provided through file upload only.
+</form>
 
-    // Handle Ad Source change (Offline vs Online)
+@endsection
+
+@push('scripts')
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    // Ad source → show/hide networks section
     const adSourceSelect = document.getElementById('ad_source');
     const networksSection = document.getElementById('networks-section');
-
-    function updateNetworksSectionVisibility() {
-        const selectedSource = adSourceSelect.value;
-        
-        if (selectedSource === 'online') {
-            networksSection.style.display = 'block';
-        } else {
-            networksSection.style.display = 'none';
-        }
+    function toggleNetworks() {
+        networksSection.style.display = adSourceSelect.value === 'online' ? 'block' : 'none';
     }
+    adSourceSelect.addEventListener('change', toggleNetworks);
+    toggleNetworks();
 
-    adSourceSelect.addEventListener('change', updateNetworksSectionVisibility);
-
-    // Network fields configuration
+    // Network dynamic fields
     const networkFieldsConfig = @json($networkFields ?? []);
     const adNetworkSelect = document.getElementById('ad_network');
     const networkFieldsContainer = document.getElementById('network-fields-container');
+    const adsenseWarning = document.getElementById('adsense-warning');
+    const existingConfig = @json($ad->network_config ?? []);
 
-    function generateNetworkFields() {
-        const selectedNetwork = adNetworkSelect.value;
+    function renderNetworkFields() {
+        const net = adNetworkSelect.value;
         networkFieldsContainer.innerHTML = '';
+        adsenseWarning.classList.toggle('hidden', net !== 'adsense');
+        if (!net || !networkFieldsConfig[net]) return;
 
-        if (!selectedNetwork || !networkFieldsConfig[selectedNetwork]) {
-            return;
-        }
-
-        const fields = networkFieldsConfig[selectedNetwork];
-        const existingConfig = @json($ad->network_config ?? []);
-        let fieldsHTML = '';
-
-        Object.entries(fields).forEach(([fieldKey, fieldLabel]) => {
-            const fieldName = `network_${fieldKey}`;
-            const oldValue = existingConfig[fieldKey] || '';
-            
-            if (fieldKey === 'code') {
-                // Show textarea for code fields
-                fieldsHTML += `
-                    <div class="mb-3">
-                        <label for="${fieldName}" class="form-label">${fieldLabel} <span class="text-danger">*</span></label>
-                        <textarea class="form-control" id="${fieldName}" name="${fieldName}" rows="5" placeholder="Paste your network code here...">${oldValue}</textarea>
-                        <small class="text-muted d-block mt-1">Complete script code from your ${selectedNetwork.replace(/_/g, ' ')} account</small>
-                    </div>
-                `;
-            } else {
-                // Show text input for other fields
-                fieldsHTML += `
-                    <div class="mb-3">
-                        <label for="${fieldName}" class="form-label">${fieldLabel} <span class="text-danger">*</span></label>
-                        <input type="text" class="form-control" id="${fieldName}" name="${fieldName}" value="${oldValue}" placeholder="Enter your ${fieldLabel.toLowerCase()}">
-                        <small class="text-muted">From your ${selectedNetwork.replace(/_/g, ' ')} account settings</small>
-                    </div>
-                `;
-            }
+        Object.entries(networkFieldsConfig[net]).forEach(([key, label]) => {
+            const oldVal = existingConfig[key] || '';
+            const isCode = key === 'code';
+            networkFieldsContainer.insertAdjacentHTML('beforeend', `
+                <div class="mb-3">
+                    <label class="field-label" for="network_${key}">${label} <span class="text-error">*</span></label>
+                    ${isCode
+                        ? `<textarea class="field-input resize-none" id="network_${key}" name="network_${key}" rows="5">${oldVal}</textarea>`
+                        : `<input class="field-input" type="text" id="network_${key}" name="network_${key}" value="${oldVal}" placeholder="${label}">`
+                    }
+                </div>
+            `);
         });
-
-        networkFieldsContainer.innerHTML = fieldsHTML;
     }
+    adNetworkSelect.addEventListener('change', renderNetworkFields);
+    if (adNetworkSelect.value) renderNetworkFields();
 
-    adNetworkSelect.addEventListener('change', function() {
-        generateNetworkFields();
-        
-        // Show/hide AdSense warning
-        const adsenseWarning = document.getElementById('adsense-warning');
-        if (this.value === 'adsense') {
-            adsenseWarning.style.display = 'block';
-        } else {
-            adsenseWarning.style.display = 'none';
-        }
-    });
-
-    // Handle Image File Upload
+    // Image upload
     const imageFileInput = document.getElementById('image_file');
-    const uploadBtn = document.getElementById('upload-btn');
+    const uploadBtn     = document.getElementById('upload-btn');
     const uploadProgress = document.getElementById('upload-progress');
+    const progressBar   = document.getElementById('progress-bar');
     const uploadMessage = document.getElementById('upload-message');
-    const previewImg = document.getElementById('preview-img');
-    const imagePreview = document.getElementById('image-preview');
+    const previewImg    = document.getElementById('preview-img');
+    const noImagePlaceholder = document.getElementById('no-image-placeholder');
     const imageUrlField = document.getElementById('image_url');
 
-    // Create a fallback placeholder function
-    function showPlaceholder() {
-        previewImg.src = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%22400%22 height=%22250%22%3E%3Crect fill=%22%23e9ecef%22 width=%22400%22 height=%22250%22/%3E%3Ctext x=%2250%25%22 y=%2250%25%22 font-family=%22Arial%22 font-size=%2220%22 fill=%22%236c757d%22 text-anchor=%22middle%22 dominant-baseline=%22middle%22%3ENo Image Available%3C/text%3E%3C/svg%3E';
-    }
-
-    // Initialize preview - check if current image exists
-    if (previewImg.src && previewImg.src !== '' && !previewImg.src.includes('data:image')) {
-        const testImg = new Image();
-        testImg.onload = function() {
-            // Image exists, do nothing
-        };
-        testImg.onerror = function() {
-            // Image doesn't exist, show placeholder
-            showPlaceholder();
-        };
-        testImg.src = previewImg.src;
-    }
-
-    // Show preview when file is selected
-    imageFileInput.addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            // Show local preview
+    imageFileInput.addEventListener('change', function () {
+        if (this.files[0]) {
             const reader = new FileReader();
-            reader.onload = function(event) {
-                previewImg.src = event.target.result;
-                imagePreview.style.display = 'block';
+            reader.onload = e => {
+                previewImg.src = e.target.result;
+                previewImg.classList.remove('hidden');
+                noImagePlaceholder.classList.add('hidden');
             };
-            reader.readAsDataURL(file);
-
-            uploadBtn.disabled = false;
-            uploadBtn.classList.remove('btn-outline-secondary');
-            uploadBtn.classList.add('btn-primary');
+            reader.readAsDataURL(this.files[0]);
         }
     });
 
-    // Handle image load error - show placeholder
-    previewImg.addEventListener('error', function() {
-        showPlaceholder();
-    });
-
-    // Upload image via AJAX
-    uploadBtn.addEventListener('click', function(e) {
+    uploadBtn.addEventListener('click', function (e) {
         e.preventDefault();
-        e.stopPropagation();
-        
-        console.log('Upload button clicked');
         const file = imageFileInput.files[0];
         if (!file) {
-            uploadMessage.innerHTML = '<div class="alert alert-warning">Please select an image first</div>';
+            uploadMessage.innerHTML = '<p class="text-xs text-error mt-1">প্রথমে একটি ছবি বেছে নিন।</p>';
             return;
         }
 
-        console.log('File selected:', file.name, file.size, file.type);
         const formData = new FormData();
         formData.append('image', file);
         formData.append('_token', document.querySelector('input[name="_token"]').value);
 
-        uploadProgress.style.display = 'block';
+        uploadProgress.classList.remove('hidden');
+        progressBar.style.width = '40%';
         uploadBtn.disabled = true;
         uploadMessage.innerHTML = '';
 
-        console.log('Sending upload request to {{ route("admin.upload-advertisement-image") }}');
         fetch('{{ route("admin.upload-advertisement-image") }}', {
             method: 'POST',
             body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
+            headers: { 'X-Requested-With': 'XMLHttpRequest' }
         })
-        .then(response => {
-            console.log('Upload response status:', response.status);
-            return response.json();
-        })
+        .then(r => r.json())
         .then(data => {
-            console.log('Upload response data:', data);
-            uploadProgress.style.display = 'none';
-            
+            progressBar.style.width = '100%';
+            setTimeout(() => uploadProgress.classList.add('hidden'), 500);
             if (data.success) {
                 imageUrlField.value = data.url;
-                
-                // Update image preview immediately (prepend / to make it root-relative)
                 previewImg.src = '/' + data.url;
-                imagePreview.style.display = 'block';
-                
-                uploadMessage.innerHTML = '<div class="alert alert-success"><i class="bi bi-check-circle"></i> Image uploaded successfully! <strong>Don\'t forget to click the Save button below to save changes.</strong></div>';
-                uploadBtn.classList.remove('btn-primary');
-                uploadBtn.classList.add('btn-outline-secondary');
-                uploadBtn.disabled = false;
+                previewImg.classList.remove('hidden');
+                noImagePlaceholder.classList.add('hidden');
+                uploadMessage.innerHTML = '<p class="text-xs text-tertiary mt-1 flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> ছবি আপলোড সফল হয়েছে।</p>';
             } else {
-                console.error('Upload failed:', data.message);
-                uploadMessage.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> ' + (data.message || 'Upload failed') + '</div>';
-                uploadBtn.disabled = false;
+                uploadMessage.innerHTML = `<p class="text-xs text-error mt-1">${data.message || 'আপলোড ব্যর্থ হয়েছে।'}</p>`;
             }
+            uploadBtn.disabled = false;
         })
-        .catch(error => {
-            uploadProgress.style.display = 'none';
-            uploadMessage.innerHTML = '<div class="alert alert-danger"><i class="bi bi-exclamation-triangle"></i> Upload error: ' + error.message + '</div>';
+        .catch(err => {
+            uploadProgress.classList.add('hidden');
+            uploadMessage.innerHTML = `<p class="text-xs text-error mt-1">ত্রুটি: ${err.message}</p>`;
             uploadBtn.disabled = false;
         });
     });
 
-    // Handle Ad Type change - show/hide Image & URL fields
-    const adTypeSelect = document.getElementById('ad_type');
-    const altTextField = document.getElementById('alt_text');
-    const adUrlField = document.getElementById('ad_url');
-
-    function updateImageFieldsVisibility() {
-        const adType = adTypeSelect.value;
-        
-        if (adType) {
-            // Ad type selected - show image fields (image_url is now hidden, only show alt_text and ad_url)
-            altTextField.parentElement.parentElement.style.display = 'block';
-            adUrlField.parentElement.style.display = 'block';
-        } else {
-            // No ad type selected - hide image fields
-            altTextField.parentElement.parentElement.style.display = 'none';
-            adUrlField.parentElement.style.display = 'none';
-        }
-    }
-
-    adTypeSelect.addEventListener('change', updateImageFieldsVisibility);
-
-    // Initialize on page load
-    updateImageFieldsVisibility();
-    updateNetworksSectionVisibility();
-    if (adNetworkSelect.value) {
-        generateNetworkFields();
-        if (adNetworkSelect.value === 'adsense') {
-            document.getElementById('adsense-warning').style.display = 'block';
-        }
-    }
-
-    // URL preview with UTM parameters
+    // URL preview & UTM
     function updateUrlPreview() {
-        const baseUrl = document.getElementById('ad_url').value;
-        const utm_source = document.getElementById('utm_source').value;
-        const utm_medium = document.getElementById('utm_medium').value;
-        const utm_campaign = document.getElementById('utm_campaign').value;
-        const utm_term = document.getElementById('utm_term').value;
-        const utm_content = document.getElementById('utm_content').value;
-
-        let fullUrl = baseUrl;
+        const base = document.getElementById('ad_url').value;
         const params = [];
-
-        if (utm_source) params.push('utm_source=' + encodeURIComponent(utm_source));
-        if (utm_medium) params.push('utm_medium=' + encodeURIComponent(utm_medium));
-        if (utm_campaign) params.push('utm_campaign=' + encodeURIComponent(utm_campaign));
-        if (utm_term) params.push('utm_term=' + encodeURIComponent(utm_term));
-        if (utm_content) params.push('utm_content=' + encodeURIComponent(utm_content));
-
-        if (params.length > 0) {
-            fullUrl += (fullUrl.includes('?') ? '&' : '?') + params.join('&');
-        }
-
-        document.getElementById('url-preview').textContent = fullUrl;
+        ['utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(id => {
+            const v = document.getElementById(id)?.value;
+            if (v) params.push(`${id}=${encodeURIComponent(v)}`);
+        });
+        document.getElementById('url-preview').textContent =
+            base + (params.length ? (base.includes('?') ? '&' : '?') + params.join('&') : '');
+        document.getElementById('link-preview').textContent = base || 'কোনো URL নেই';
     }
-
-    ['ad_url', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'].forEach(id => {
-        document.getElementById(id).addEventListener('input', updateUrlPreview);
+    ['ad_url','utm_source','utm_medium','utm_campaign','utm_term','utm_content'].forEach(id => {
+        document.getElementById(id)?.addEventListener('input', updateUrlPreview);
     });
-
-    // Initial preview for existing image
-    if (imageUrlField.value) {
-        previewImg.src = imageUrlField.value;
-        imagePreview.style.display = 'block';
-    }
-    
     updateUrlPreview();
 
-    // Form submission - filter out SVG placeholders
-    document.querySelector('form').addEventListener('submit', function(e) {
-        // Clear any SVG placeholder in image_url field before submission
-        if (imageUrlField.value && imageUrlField.value.startsWith('data:image/svg')) {
-            imageUrlField.value = '';
-        }
+    // Form: clear SVG placeholder before submit
+    document.getElementById('ad-form').addEventListener('submit', function () {
+        if (imageUrlField.value.startsWith('data:image/svg')) imageUrlField.value = '';
     });
 });
 </script>
-
-<style>
-.card {
-    border: none;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 8px;
-}
-
-.card-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 8px 8px 0 0 !important;
-    border: none;
-    padding: 15px;
-}
-
-.card-header h5 {
-    color: white;
-    margin-bottom: 0;
-}
-
-.card-header small {
-    color: rgba(255, 255, 255, 0.9);
-    display: block;
-    margin-top: 5px;
-}
-
-.form-label {
-    font-weight: 600;
-    margin-bottom: 8px;
-}
-
-.text-danger {
-    color: #dc3545 !important;
-}
-
-.btn-primary, .btn-secondary {
-    padding: 10px 20px;
-    font-weight: 600;
-}
-
-.bg-light {
-    background-color: #f8f9fa !important;
-}
-</style>
-@endsection
+@endpush

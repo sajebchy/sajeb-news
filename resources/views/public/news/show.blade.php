@@ -28,11 +28,13 @@
 {{-- ══════════════════════════════════════════
      MOBILE: Small banner ad below header
 ═══════════════════════════════════════════ --}}
+@php $__mobileAd = \App\Helpers\AdHelper::getRandomAdByPlacement('article_2nd_paragraph'); @endphp
+@if($__mobileAd)
 <div class="flex md:hidden w-full bg-surface-container-low border-b border-subtle py-2 justify-center items-center">
-  <div class="w-[320px] h-[50px] bg-surface-variant flex items-center justify-center text-on-surface-variant font-label-caps text-[10px] border border-outline-variant">
-    ADVERTISEMENT
-  </div>
+  <p class="text-[10px] text-outline-variant uppercase tracking-widest mr-2">বিজ্ঞাপন</p>
+  {!! \App\Helpers\AdHelper::renderAd($__mobileAd) !!}
 </div>
+@endif
 
 {{-- ══════════════════════════════════════════
      MAIN CONTENT — 70/30 Grid (Desktop)
@@ -149,13 +151,14 @@
         {!! $news->content !!}
       </div>
 
-      {{-- In-article Sponsored Ad (after content) --}}
-      <div class="my-stack-lg p-stack-md bg-surface-container-low border-y border-subtle flex flex-col items-center">
-        <span class="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-widest">বিজ্ঞাপন</span>
-        <div class="w-full max-w-md h-28 bg-surface-container flex items-center justify-center rounded border border-dashed border-outline-variant">
-          <span class="material-symbols-outlined text-outline-variant text-3xl">ads_click</span>
-        </div>
+      {{-- Article Conclusion Ad --}}
+      @php $__artConclusionAd = \App\Helpers\AdHelper::getRandomAdByPlacement('article_conclusion'); @endphp
+      @if($__artConclusionAd)
+      <div class="my-stack-lg border-y border-subtle py-3 text-center">
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($__artConclusionAd) !!}
       </div>
+      @endif
 
       {{-- Tags --}}
       @if($news->tags && $news->tags->count() > 0)
@@ -318,13 +321,23 @@
       </section>
       @endif
 
-      {{-- Sidebar Ad Slot --}}
-      <section class="bg-surface-container-low p-stack-lg rounded-xl flex flex-col items-center justify-center min-h-[250px] border border-subtle">
-        <span class="font-label-caps text-on-surface-variant opacity-50 mb-2 text-xs">বিজ্ঞাপন</span>
-        <div class="w-full h-48 bg-surface-container-highest rounded flex items-center justify-center border border-dashed border-outline-variant">
-          <span class="material-symbols-outlined text-outline-variant text-3xl">ads_click</span>
-        </div>
-      </section>
+      {{-- Sidebar Ads --}}
+      @php
+        $__sidebarAd = \App\Helpers\AdHelper::getRandomAdByPlacement('sidebar_medium_rectangle');
+        $__sidebarHalfAd = \App\Helpers\AdHelper::getRandomAdByPlacement('sidebar_half_page');
+      @endphp
+      @if($__sidebarAd)
+      <div class="text-center">
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($__sidebarAd) !!}
+      </div>
+      @endif
+      @if($__sidebarHalfAd)
+      <div class="text-center">
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($__sidebarHalfAd) !!}
+      </div>
+      @endif
 
       {{-- Newsletter Widget --}}
       <section class="bg-primary-container p-stack-lg rounded-xl text-center">

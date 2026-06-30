@@ -32,7 +32,22 @@ class NewsController extends Controller
         $trending = $this->newsService->getTrendingNews(7, 10);
         $seoSettings = \App\Models\SeoSetting::first();
 
-        return view('public.index', compact('featured', 'breaking', 'latest', 'trending', 'seoSettings'));
+        // All active categories with their latest 6 published news
+        $allCategories = Category::where('is_active', true)
+            ->withCount(['news' => fn($q) => $q->where('status', 'published')])
+            ->orderByRaw("CASE WHEN featured_order IS NOT NULL THEN featured_order ELSE 999 END")
+            ->orderBy('name')
+            ->get()
+            ->filter(fn($cat) => $cat->news_count > 0)
+            ->each(function ($cat) {
+                $cat->setRelation('latestNews', \App\Models\News::where('status', 'published')
+                    ->where('category_id', $cat->id)
+                    ->latest('published_at')
+                    ->limit(6)
+                    ->get());
+            });
+
+        return view('public.index', compact('featured', 'breaking', 'latest', 'trending', 'seoSettings', 'allCategories'));
     }
 
     /**

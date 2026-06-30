@@ -11,21 +11,34 @@ class NewsletterController extends Controller
     /**
      * Display a listing of newsletter subscribers.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $subscribers = NewsletterSubscriber::latest()
-            ->paginate(20);
+        $query = NewsletterSubscriber::latest();
 
-        $totalSubscribers = NewsletterSubscriber::count();
-        $verifiedSubscribers = NewsletterSubscriber::where('is_verified', true)->count();
-        $unverifiedSubscribers = NewsletterSubscriber::where('is_verified', false)->count();
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('email', 'like', '%' . $request->search . '%')
+                  ->orWhere('name', 'like', '%' . $request->search . '%');
+            });
+        }
 
-        return view('admin.newsletters.index', [
-            'subscribers' => $subscribers,
-            'totalSubscribers' => $totalSubscribers,
-            'verifiedSubscribers' => $verifiedSubscribers,
-            'unverifiedSubscribers' => $unverifiedSubscribers,
-        ]);
+        if ($request->status === 'verified') {
+            $query->where('is_verified', true)->whereNull('unsubscribed_at');
+        } elseif ($request->status === 'unverified') {
+            $query->where('is_verified', false);
+        } elseif ($request->status === 'unsubscribed') {
+            $query->whereNotNull('unsubscribed_at');
+        }
+
+        $subscribers          = $query->paginate(20)->withQueryString();
+        $totalSubscribers     = NewsletterSubscriber::count();
+        $verifiedSubscribers  = NewsletterSubscriber::where('is_verified', true)->whereNull('unsubscribed_at')->count();
+        $unsubscribed         = NewsletterSubscriber::whereNotNull('unsubscribed_at')->count();
+        $todaySubscribers     = NewsletterSubscriber::whereDate('created_at', today())->count();
+
+        return view('admin.newsletters.index', compact(
+            'subscribers', 'totalSubscribers', 'verifiedSubscribers', 'unsubscribed', 'todaySubscribers'
+        ));
     }
 
     /**

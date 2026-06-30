@@ -80,9 +80,10 @@ class AdHelper
         $html .= '<p style="font-size: 12px; color: #999; margin: 5px 0;">বিজ্ঞাপন</p>';
 
         if ($ad->image_url) {
+            $imageUrl = str_starts_with($ad->image_url, 'http') ? $ad->image_url : asset($ad->image_url);
             $html .= '<div style="margin: 5px 0;">';
-            $html .= '<a href="' . $ad->ad_url . '" target="_blank" rel="noopener">';
-            $html .= '<img src="' . asset($ad->image_url) . '" alt="' . ($ad->alt_text ?? $ad->name) . '" style="max-width: 100%; height: auto; border-radius: 4px;">';
+            $html .= '<a href="' . ($ad->ad_url ?: '#') . '" target="_blank" rel="noopener">';
+            $html .= '<img src="' . $imageUrl . '" alt="' . ($ad->alt_text ?? $ad->name) . '" style="max-width: 100%; height: auto; border-radius: 4px;">';
             $html .= '</a></div>';
         } elseif ($ad->code) {
             $html .= '<div style="margin: 10px auto;">';

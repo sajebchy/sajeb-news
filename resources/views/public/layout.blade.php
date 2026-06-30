@@ -235,6 +235,15 @@ tailwind.config = {
   </div>
 </aside>
 
+{{-- Header Top Ad --}}
+@php $__headerAd = \App\Helpers\AdHelper::getRandomAdByPlacement('header_top'); @endphp
+@if($__headerAd)
+<div class="w-full bg-surface-container-low border-b border-subtle py-1 text-center">
+  <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-0.5">বিজ্ঞাপন</p>
+  {!! \App\Helpers\AdHelper::renderAd($__headerAd) !!}
+</div>
+@endif
+
 {{-- Unified Sticky Header --}}
 <header class="sticky top-0 w-full z-50 bg-surface/95 backdrop-blur-sm border-b border-subtle shadow-sm">
   <div class="max-w-container-max mx-auto px-gutter py-3 flex items-center justify-between gap-4">
@@ -292,6 +301,15 @@ tailwind.config = {
 <!-- ═══════════════════════════════════════════════════════════
      FOOTER
      ═══════════════════════════════════════════════════════════ -->
+{{-- Footer Banner Ad --}}
+@php $__footerAd = \App\Helpers\AdHelper::getRandomAdByPlacement('footer_banner'); @endphp
+@if($__footerAd)
+<div class="w-full bg-surface-container-low border-t border-subtle py-2 text-center">
+  <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-0.5">বিজ্ঞাপন</p>
+  {!! \App\Helpers\AdHelper::renderAd($__footerAd) !!}
+</div>
+@endif
+
 <footer class="bg-surface-container-lowest text-on-surface pt-section-padding border-t border-subtle mt-12">
   <div class="max-w-container-max mx-auto px-gutter grid grid-cols-1 md:grid-cols-4 gap-stack-lg pb-stack-lg">
     <div class="md:col-span-1">

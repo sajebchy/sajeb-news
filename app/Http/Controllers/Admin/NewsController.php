@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendNewsletterEmail;
 use App\Models\News;
 use App\Models\Category;
 use App\Traits\LogsActivity;
@@ -100,6 +101,11 @@ class NewsController extends Controller
                 'status' => $news->status,
             ]);
 
+            // Send newsletter emails to all verified subscribers
+            if ($news->status === 'published') {
+                SendNewsletterEmail::dispatch($news->id)->delay(now()->addSeconds(10));
+            }
+
             return redirect()
                 ->route('admin.news.edit', $news)
                 ->with('success', 'নিউজ সফলভাবে প্রকাশ করা হয়েছে! (News post created successfully!) - ' . $news->title);
@@ -189,6 +195,12 @@ class NewsController extends Controller
             // Log the activity with changes
             $changes = $this->getChanges($oldData, $news->fresh()->toArray(), ['updated_at', 'created_at']);
             $this->logActivity('updated', 'News', $news->id, $changes);
+
+            // Send newsletter if newly published (was draft/scheduled, now published)
+            $wasPublished = in_array($oldData['status'] ?? '', ['draft', 'scheduled']);
+            if ($wasPublished && $news->status === 'published') {
+                SendNewsletterEmail::dispatch($news->id)->delay(now()->addSeconds(10));
+            }
 
             return redirect()
                 ->route('admin.news.edit', $news)

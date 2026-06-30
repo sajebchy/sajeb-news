@@ -6,10 +6,9 @@
 @section('content')
 
 @php
-  $heroNews = $featured->first() ?? $latest->first();
+  $heroNews      = $featured->first() ?? $latest->first();
   $secondaryNews = $featured->skip(1)->take(4)->merge($latest->take(4))->unique('id')->take(4);
-  $popularNews = \App\Models\News::where('status','published')->orderBy('views','desc')->limit(5)->get();
-  $featuredCats = \App\Models\Category::where('is_active',true)->whereNotNull('featured_order')->orderBy('featured_order')->limit(4)->get();
+  $popularNews   = \App\Models\News::where('status','published')->orderBy('views','desc')->limit(5)->get();
 @endphp
 
 <!-- Breaking News Ticker -->
@@ -29,11 +28,20 @@
 </div>
 @endif
 
+<!-- Homepage Top Ad -->
+@php $__hpTopAd = \App\Helpers\AdHelper::getRandomAdByPlacement('homepage_top'); @endphp
+@if($__hpTopAd)
+<div class="max-w-container-max mx-auto px-gutter pt-4 text-center">
+  <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+  {!! \App\Helpers\AdHelper::renderAd($__hpTopAd) !!}
+</div>
+@endif
+
 <!-- Main Content -->
 <main class="max-w-container-max mx-auto px-gutter py-stack-lg">
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
 
-    <!-- ── Left: Main Content (70%) ────────────────────────── -->
+    <!-- ── Left: Main Content ────────────────────────── -->
     <div class="lg:col-span-8 space-y-stack-lg">
 
       <!-- Hero Article -->
@@ -89,39 +97,74 @@
       </div>
       @endif
 
-      <!-- Category Sections -->
-      @foreach($featuredCats as $fcat)
-      @php
-        $catNews = \App\Models\News::where('status','published')->where('category_id', $fcat->id)->latest('published_at')->limit(3)->get();
-      @endphp
-      @if($catNews->count() > 0)
-      <section class="pt-stack-lg">
-        <div class="flex items-center justify-between mb-4 border-b-2 border-primary">
-          <h2 class="bg-primary text-white px-4 py-1 font-headline-md">{{ $fcat->name }}</h2>
-          <a class="text-body-sm font-body-sm text-outline hover:text-secondary transition-colors" href="{{ route('category.show', $fcat->slug) }}">সব খবর →</a>
-        </div>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          @foreach($catNews as $cn)
-          <a href="{{ route('news.show', $cn->slug) }}" class="space-y-3 group cursor-pointer">
-            <div class="aspect-video overflow-hidden rounded-lg">
-              <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                   src="{{ $cn->featured_image ? \Storage::url($cn->featured_image) : 'https://picsum.photos/seed/'.($cn->id ?? rand()).'/400/225' }}"
-                   alt="{{ $cn->title }}"/>
+      <!-- ── All Category Sections ── -->
+      @isset($allCategories)
+        @foreach($allCategories as $cat)
+        @php $catNews = $cat->latestNews; @endphp
+        @if($catNews->count() > 0)
+        <section class="pt-stack-lg">
+          <!-- Section Header -->
+          <div class="flex items-center justify-between mb-5 border-b-2 border-primary pb-1">
+            <h2 class="bg-primary text-white px-4 py-1.5 font-headline-md text-base tracking-wide">{{ $cat->name }}</h2>
+            <a class="text-body-sm font-body-sm text-outline hover:text-secondary transition-colors flex items-center gap-1"
+               href="{{ route('category.show', $cat->slug) }}">
+              সব খবর
+              <span class="material-symbols-outlined text-base leading-none">arrow_forward</span>
+            </a>
+          </div>
+
+          @php
+            $firstNews  = $catNews->first();
+            $restNews   = $catNews->skip(1);
+          @endphp
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <!-- Big card (spans 2 cols on md) -->
+            <a href="{{ route('news.show', $firstNews->slug) }}" class="md:col-span-2 group block">
+              <div class="relative aspect-[16/9] overflow-hidden rounded-xl mb-3">
+                <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                     src="{{ $firstNews->featured_image ? \Storage::url($firstNews->featured_image) : 'https://picsum.photos/seed/'.$firstNews->id.'/600/338' }}"
+                     alt="{{ $firstNews->title }}"/>
+                @if($firstNews->is_breaking)
+                <span class="absolute top-3 left-3 bg-secondary text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">ব্রেকিং</span>
+                @endif
+              </div>
+              <h3 class="font-headline-md text-lg leading-snug group-hover:text-secondary transition-colors line-clamp-2">{{ $firstNews->title }}</h3>
+              @if($firstNews->excerpt)
+              <p class="text-body-sm font-body-main text-on-surface-variant mt-1 line-clamp-2">{{ $firstNews->excerpt }}</p>
+              @endif
+              @if($firstNews->published_at)
+              <p class="text-meta-data font-meta-data text-outline mt-2">{{ $firstNews->published_at->diffForHumans() }}</p>
+              @endif
+            </a>
+
+            <!-- Side list -->
+            <div class="flex flex-col gap-4">
+              @foreach($restNews->take(5) as $cn)
+              <a href="{{ route('news.show', $cn->slug) }}" class="flex gap-3 group cursor-pointer border-b border-subtle pb-4 last:border-0 last:pb-0">
+                <div class="flex-shrink-0 w-20 h-16 overflow-hidden rounded-lg">
+                  <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                       src="{{ $cn->featured_image ? \Storage::url($cn->featured_image) : 'https://picsum.photos/seed/'.$cn->id.'/200/150' }}"
+                       alt="{{ $cn->title }}"/>
+                </div>
+                <div class="min-w-0">
+                  <h4 class="font-headline-md text-sm leading-snug group-hover:text-secondary transition-colors line-clamp-2">{{ $cn->title }}</h4>
+                  @if($cn->published_at)
+                  <p class="text-[11px] text-outline mt-1">{{ $cn->published_at->diffForHumans() }}</p>
+                  @endif
+                </div>
+              </a>
+              @endforeach
             </div>
-            <h4 class="font-headline-md group-hover:text-secondary transition-colors line-clamp-2">{{ $cn->title }}</h4>
-            @if($cn->published_at)
-            <p class="text-meta-data font-meta-data text-outline">{{ $cn->published_at->diffForHumans() }}</p>
-            @endif
-          </a>
-          @endforeach
-        </div>
-      </section>
-      @endif
-      @endforeach
+          </div>
+        </section>
+        @endif
+        @endforeach
+      @endisset
 
     </div><!-- /left col-8 -->
 
-    <!-- ── Right: Sidebar (30%) ───────────────────────────── -->
+    <!-- ── Right: Sidebar ───────────────────────────── -->
     <aside class="lg:col-span-4 space-y-stack-lg">
 
       <!-- Popular News Widget -->
@@ -160,10 +203,42 @@
         </div>
       </div>
 
-      <!-- Ad Placeholder -->
-      <div class="w-full aspect-[4/5] bg-surface-variant flex items-center justify-center rounded-lg border border-subtle border-dashed">
-        <p class="text-meta-data font-meta-data text-outline-variant uppercase tracking-widest">বিজ্ঞাপন</p>
+      <!-- Category Quick Links -->
+      @isset($allCategories)
+      <div class="bg-surface-container-low p-6 rounded-xl border border-subtle">
+        <h2 class="font-headline-md border-b border-subtle pb-3 mb-4 flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary">category</span>
+          বিভাগ
+        </h2>
+        <div class="flex flex-wrap gap-2">
+          @foreach($allCategories as $cat)
+          <a href="{{ route('category.show', $cat->slug) }}"
+             class="px-3 py-1.5 bg-primary/10 text-primary text-sm font-medium rounded-full hover:bg-primary hover:text-white transition-colors">
+            {{ $cat->name }}
+            <span class="text-xs opacity-70">({{ $cat->news_count }})</span>
+          </a>
+          @endforeach
+        </div>
       </div>
+      @endisset
+
+      <!-- Sidebar Ads -->
+      @php
+        $__sidebarAd1 = \App\Helpers\AdHelper::getRandomAdByPlacement('sidebar_medium_rectangle');
+        $__sidebarAd2 = \App\Helpers\AdHelper::getRandomAdByPlacement('sidebar_half_page');
+      @endphp
+      @if($__sidebarAd1)
+      <div class="text-center">
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($__sidebarAd1) !!}
+      </div>
+      @endif
+      @if($__sidebarAd2)
+      <div class="text-center">
+        <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($__sidebarAd2) !!}
+      </div>
+      @endif
 
       <!-- Trending Widget -->
       @if($trending && $trending->count() > 0)
@@ -191,48 +266,6 @@
     </aside>
   </div>
 </main>
-
-<!-- Bento Section: Featured Categories (Tech & Entertainment) -->
-@php
-  $bentoCategories = \App\Models\Category::where('is_active',true)->whereNotNull('featured_order')->orderBy('featured_order')->skip(2)->take(2)->get();
-@endphp
-@if($bentoCategories->count() > 0)
-<section class="bg-surface-muted py-section-padding border-y border-subtle">
-  <div class="max-w-container-max mx-auto px-gutter">
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-stack-lg">
-      @foreach($bentoCategories as $bc)
-      @php $bcNews = \App\Models\News::where('status','published')->where('category_id',$bc->id)->latest('published_at')->limit(3)->get(); @endphp
-      @if($bcNews->count() > 0)
-      <div class="space-y-6">
-        <h2 class="font-headline-lg border-l-4 border-secondary pl-4">{{ $bc->name }}</h2>
-        <div class="grid grid-cols-2 gap-4">
-          @if($bcNews->first())
-          <div class="col-span-2 group cursor-pointer">
-            <a href="{{ route('news.show', $bcNews->first()->slug) }}">
-              <div class="relative rounded-xl overflow-hidden aspect-video">
-                <img class="w-full h-full object-cover group-hover:scale-105 transition-all duration-700"
-                     src="{{ $bcNews->first()->featured_image ? \Storage::url($bcNews->first()->featured_image) : 'https://picsum.photos/seed/'.$bcNews->first()->id.'/600/338' }}"
-                     alt="{{ $bcNews->first()->title }}"/>
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent flex flex-col justify-end p-6">
-                  <h3 class="font-headline-md text-white text-xl leading-tight">{{ $bcNews->first()->title }}</h3>
-                </div>
-              </div>
-            </a>
-          </div>
-          @endif
-          @foreach($bcNews->skip(1) as $bn)
-          <a href="{{ route('news.show', $bn->slug) }}" class="bg-white p-4 rounded-xl border border-subtle hover:border-secondary transition-colors cursor-pointer block">
-            <h4 class="font-headline-md text-primary text-base line-clamp-2 hover:text-secondary transition-colors">{{ $bn->title }}</h4>
-          </a>
-          @endforeach
-        </div>
-      </div>
-      @endif
-      @endforeach
-    </div>
-  </div>
-</section>
-@endif
 
 <!-- Latest News Section -->
 @if($latest->count() > 0)
