@@ -22,11 +22,16 @@ class AnalyticsController extends Controller
         $averageReadTime = NewsAnalytics::avg('avg_time_on_page') ?? 0;
         $totalClicks = NewsAnalytics::sum('clicks') ?? 0;
 
-        // Top performing news
+        // Top performing news (by views)
         $topNews = News::with('category')
-            ->latest()
+            ->where('status', 'published')
+            ->orderByDesc('views')
             ->limit(10)
             ->get();
+
+        // Total news & users for stat cards
+        $totalNews  = \App\Models\News::where('status', 'published')->count();
+        $totalUsers = \App\Models\User::count();
 
         // Category performance
         $categoryAnalytics = \DB::table('news')
@@ -68,16 +73,27 @@ class AnalyticsController extends Controller
 
         $totalVisitors = $sourceBreakdown->sum('total') ?: 1;
 
+        // Device breakdown from visitor_analytics
+        $deviceBreakdown = VisitorAnalytic::selectRaw('visitor_device, COUNT(*) as total')
+            ->groupBy('visitor_device')
+            ->get()
+            ->keyBy('visitor_device');
+        $totalDevices = $deviceBreakdown->sum('total') ?: 1;
+
         return view('admin.analytics.index', [
-            'totalViews' => $totalViews,
-            'totalEngagement' => $totalEngagement,
-            'averageReadTime' => $averageReadTime,
-            'totalClicks' => $totalClicks,
-            'topNews' => $topNews,
-            'categoryAnalytics' => $categoryAnalytics,
-            'recentVisitors' => $recentVisitors,
-            'sourceBreakdown' => $sourceBreakdown,
-            'totalVisitors' => $totalVisitors,
+            'totalViews'       => $totalViews,
+            'totalEngagement'  => $totalEngagement,
+            'averageReadTime'  => $averageReadTime,
+            'totalClicks'      => $totalClicks,
+            'totalNews'        => $totalNews,
+            'totalUsers'       => $totalUsers,
+            'topNews'          => $topNews,
+            'categoryAnalytics'=> $categoryAnalytics,
+            'recentVisitors'   => $recentVisitors,
+            'sourceBreakdown'  => $sourceBreakdown,
+            'totalVisitors'    => $totalVisitors,
+            'deviceBreakdown'  => $deviceBreakdown,
+            'totalDevices'     => $totalDevices,
         ]);
     }
 
