@@ -502,9 +502,9 @@ Route::middleware('auth')->group(function () {
     Route::delete('/news/comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('news.comments.destroy');
 });
 
-// Dashboard
+// Dashboard - Redirect to admin panel
 Route::get('/dashboard', function () {
-    return view('dashboard');
+    return redirect('/admin');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Admin Routes
