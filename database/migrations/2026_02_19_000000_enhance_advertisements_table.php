@@ -16,14 +16,15 @@ return new class extends Migration
                 // Ad Placement Types
                 if (!Schema::hasColumn('advertisements', 'placement')) {
                     $table->enum('placement', [
-                        'within_news',           // Within news article content
-                        'homepage_banner',       // Homepage banner
-                        'homepage_popup',        // Homepage popup
-                        'homepage_header',       // Homepage header
-                        'homepage_footer',       // Homepage footer
-                        'category_page',         // Category page
-                        'sidebar',               // Sidebar
-                        'between_comments'       // Between comments
+                        'within_news', 'homepage_banner', 'homepage_popup',
+                        'homepage_header', 'homepage_footer', 'category_page',
+                        'sidebar', 'between_comments',
+                        'header_top', 'navigation_sticky', 'homepage_top',
+                        'sidebar_medium_rectangle', 'sidebar_half_page',
+                        'article_2nd_paragraph', 'article_middle',
+                        'article_conclusion', 'below_article', 'footer_banner',
+                        'between_news_listings', 'popup_interstitial',
+                        'sticky_sidebar_left', 'sticky_sidebar_right',
                     ])->after('type')->default('sidebar');
                 }
 

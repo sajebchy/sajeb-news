@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('slug')->unique();
             $table->text('code')->nullable();
-            $table->enum('type', ['banner', 'sidebar', 'inline', 'featured', 'header', 'category_page', 'search'])->default('banner');
+            $table->enum('type', ['banner', 'sidebar', 'inline', 'featured', 'header', 'category_page', 'search', 'sticky', 'popup'])->default('banner');
             $table->enum('device_target', ['desktop', 'mobile', 'all'])->default('all');
             $table->dateTime('start_date');
             $table->dateTime('end_date')->nullable();
