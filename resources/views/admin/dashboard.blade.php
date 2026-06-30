@@ -1,349 +1,356 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Dashboard')
+@section('page-title', 'ড্যাশবোর্ড')
+
+@push('styles')
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  important: '.tw',
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "surface-bright":           "#fcf9f8",
+        "surface-tint":             "#005cba",
+        "outline":                  "#727784",
+        "on-tertiary":              "#ffffff",
+        "on-background":            "#1c1b1b",
+        "on-tertiary-container":    "#98ffaf",
+        "on-primary-container":     "#dfe8ff",
+        "tertiary-fixed":           "#76fd9d",
+        "on-surface":               "#1c1b1b",
+        "on-surface-variant":       "#414753",
+        "tertiary":                 "#005e2c",
+        "on-primary-fixed":         "#001b3e",
+        "primary-fixed-dim":        "#aac7ff",
+        "background":               "#fcf9f8",
+        "primary-fixed":            "#d7e3ff",
+        "surface-container-low":    "#f6f3f2",
+        "inverse-on-surface":       "#f3f0ef",
+        "primary":                  "#004e9f",
+        "outline-variant":          "#c1c6d5",
+        "surface-container-highest":"#e5e2e1",
+        "error-container":          "#ffdad6",
+        "surface":                  "#fcf9f8",
+        "surface-container-high":   "#eae7e7",
+        "error":                    "#ba1a1a",
+        "inverse-primary":          "#aac7ff",
+        "on-primary":               "#ffffff",
+        "surface-container-lowest": "#ffffff",
+        "on-secondary":             "#ffffff",
+        "tertiary-container":       "#00793b",
+        "surface-variant":          "#e5e2e1",
+        "secondary-container":      "#fe6a34",
+        "secondary":                "#ab3500",
+        "on-secondary-container":   "#5d1900",
+        "surface-dim":              "#dcd9d9",
+        "surface-container":        "#f0eded",
+        "primary-container":        "#0066cc",
+      }
+    }
+  }
+}
+</script>
+<style>
+  .tw { font-family: 'Inter', sans-serif; }
+  .tw .material-symbols-outlined {
+    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+    vertical-align: middle;
+  }
+  .tw .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+  .tw .no-scrollbar::-webkit-scrollbar { display: none; }
+  .tw .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  @keyframes draw {
+    from { stroke-dashoffset: 400; }
+    to { stroke-dashoffset: 0; }
+  }
+  .tw .chart-line {
+    stroke-dasharray: 400;
+    animation: draw 2s ease-out forwards;
+  }
+  .tw .card-hover { transition: transform .2s, box-shadow .2s; }
+  .tw .card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+</style>
+@endpush
 
 @section('content')
-<style>
-    .stat-card {
-        transition: all 0.3s ease;
-    }
-    
-    a:hover .stat-card {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15) !important;
-    }
-</style>
+<div class="tw">
 
-<div class="row mb-4 g-3">
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a href="{{ route('admin.news.index') }}" style="text-decoration: none;">
-            <div class="stat-card primary" style="cursor: pointer; transition: all 0.3s ease;">
-                <div class="stat-card-icon text-primary">
-                    <i class="bi bi-file-text"></i>
-                </div>
-                <div>
-                    <div class="stat-card-value">{{ $totalNews ?? 0 }}</div>
-                    <div class="stat-card-label">Total News Posts</div>
-                </div>
-            </div>
-        </a>
-    </div>
+{{-- ===== Stats Grid (2x2 → 4 cols on lg) ===== --}}
+<section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a href="{{ route('admin.analytics') }}" style="text-decoration: none;">
-            <div class="stat-card success" style="cursor: pointer; transition: all 0.3s ease;">
-                <div class="stat-card-icon text-success">
-                    <i class="bi bi-eye"></i>
-                </div>
-                <div>
-                    <div class="stat-card-value">{{ number_format($totalViews ?? 0) }}</div>
-                    <div class="stat-card-label">Total Views</div>
-                </div>
-            </div>
-        </a>
+  {{-- Live Views --}}
+  <div class="card-hover bg-surface-container-lowest p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] flex flex-col gap-3 border border-outline-variant/30">
+    <div class="flex items-center justify-between">
+      <span class="material-symbols-outlined text-primary text-[26px]">visibility</span>
+      <span class="text-[11px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">
+        +12%
+      </span>
     </div>
+    <div>
+      <p class="text-sm text-on-surface-variant">লাইভ ভিউ</p>
+      @php $liveViews = \App\Models\News::where('status','published')->sum('views'); @endphp
+      <p class="text-2xl font-bold text-on-surface mt-0.5">
+        {{ $liveViews > 1000 ? number_format($liveViews/1000,1).'K' : number_format($liveViews) }}
+      </p>
+    </div>
+  </div>
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a href="{{ route('admin.users.index') }}" style="text-decoration: none;">
-            <div class="stat-card info" style="cursor: pointer; transition: all 0.3s ease;">
-                <div class="stat-card-icon text-info">
-                    <i class="bi bi-people"></i>
-                </div>
-                <div>
-                    <div class="stat-card-value">{{ $totalUsers ?? 0 }}</div>
-                    <div class="stat-card-label">Total Users</div>
-                </div>
-            </div>
-        </a>
+  {{-- Articles --}}
+  <div class="card-hover bg-surface-container-lowest p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] flex flex-col gap-3 border border-outline-variant/30">
+    <div class="flex items-center justify-between">
+      <span class="material-symbols-outlined text-secondary text-[26px]">article</span>
+      <span class="text-[11px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">
+        +{{ \App\Models\News::whereDate('created_at', today())->count() }} আজ
+      </span>
     </div>
+    <div>
+      <p class="text-sm text-on-surface-variant">সংবাদ</p>
+      <p class="text-2xl font-bold text-on-surface mt-0.5">{{ number_format($totalNews ?? \App\Models\News::count()) }}</p>
+    </div>
+  </div>
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a href="{{ route('admin.newsletters.index') }}" style="text-decoration: none;">
-            <div class="stat-card warning" style="cursor: pointer; transition: all 0.3s ease;">
-                <div class="stat-card-icon text-warning">
-                    <i class="bi bi-envelope"></i>
-                </div>
-                <div>
-                    <div class="stat-card-value">{{ $newsletterSubscribers ?? 0 }}</div>
-                    <div class="stat-card-label">Newsletter Subscribers</div>
-                </div>
-            </div>
-        </a>
+  {{-- Comments --}}
+  <div class="card-hover bg-surface-container-lowest p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] flex flex-col gap-3 border border-outline-variant/30">
+    <div class="flex items-center justify-between">
+      <span class="material-symbols-outlined text-tertiary text-[26px]">comment</span>
+      @php $commentCount = \App\Models\Comment::count(); @endphp
+      <span class="text-[11px] font-bold text-on-surface-variant bg-surface-container px-2 py-0.5 rounded-full">মোট</span>
     </div>
+    <div>
+      <p class="text-sm text-on-surface-variant">মন্তব্য</p>
+      <p class="text-2xl font-bold text-on-surface mt-0.5">{{ number_format($commentCount) }}</p>
+    </div>
+  </div>
 
-    <div class="col-12 col-sm-6 col-lg-3">
-        <a href="{{ route('admin.file-manager.index') }}" style="text-decoration: none;">
-            <div class="stat-card" style="cursor: pointer; transition: all 0.3s ease; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 8px;">
-                <div class="stat-card-icon" style="color: white;">
-                    <i class="bi bi-folder2-open"></i>
-                </div>
-                <div>
-                    <div class="stat-card-value" style="color: white;">📁</div>
-                    <div class="stat-card-label" style="color: white;">File Manager</div>
-                </div>
-            </div>
-        </a>
+  {{-- Users --}}
+  <div class="card-hover bg-surface-container-lowest p-4 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] flex flex-col gap-3 border border-outline-variant/30">
+    <div class="flex items-center justify-between">
+      <span class="material-symbols-outlined text-surface-tint text-[26px]">group</span>
+      @php $newUsers = \App\Models\User::whereDate('created_at', '>=', now()->subDays(30))->count(); @endphp
+      <span class="text-[11px] font-bold text-tertiary bg-tertiary/10 px-2 py-0.5 rounded-full">+{{ $newUsers }}</span>
     </div>
+    <div>
+      <p class="text-sm text-on-surface-variant">ব্যবহারকারী</p>
+      <p class="text-2xl font-bold text-on-surface mt-0.5">{{ number_format(\App\Models\User::count()) }}</p>
+    </div>
+  </div>
+
+</section>
+
+{{-- ===== Two Column: Chart + Quick Actions ===== --}}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+
+  {{-- News Performance Chart --}}
+  <section class="lg:col-span-2 bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">সংবাদ কার্যক্ষমতা</h2>
+      <span class="text-[11px] font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">শেষ ৭ দিন</span>
+    </div>
+    <div class="relative h-48 w-full">
+      @php
+        $chartDays = collect(range(6,0))->map(fn($d) => [
+          'label' => now()->subDays($d)->format('D')[0],
+          'value' => \App\Models\News::whereDate('created_at', now()->subDays($d))->count(),
+        ]);
+        $maxVal = max($chartDays->pluck('value')->max(), 1);
+      @endphp
+      <svg class="absolute inset-0 h-full w-full" viewBox="0 0 100 60" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="chartGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+            <stop offset="0%" style="stop-color:#004e9f;stop-opacity:1"/>
+            <stop offset="100%" style="stop-color:#aac7ff;stop-opacity:1"/>
+          </linearGradient>
+          <linearGradient id="fillGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" style="stop-color:#004e9f;stop-opacity:0.15"/>
+            <stop offset="100%" style="stop-color:#004e9f;stop-opacity:0"/>
+          </linearGradient>
+        </defs>
+        @php
+          $points = $chartDays->values()->map(fn($d,$i) => [
+            'x' => $i * (100/6),
+            'y' => 55 - ($d['value'] / $maxVal * 45),
+          ]);
+          $pathD = $points->map(fn($p,$i) => ($i===0?'M':'L').round($p['x'],1).','.round($p['y'],1))->implode(' ');
+          $fillD = $pathD . ' L100,60 L0,60 Z';
+        @endphp
+        <path d="{{ $fillD }}" fill="url(#fillGradient)"/>
+        <path class="chart-line" d="{{ $pathD }}" fill="none" stroke="url(#chartGradient)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        @foreach($points as $p)
+        <circle cx="{{ round($p['x'],1) }}" cy="{{ round($p['y'],1) }}" r="2" fill="#004e9f"/>
+        @endforeach
+      </svg>
+      <div class="absolute bottom-0 left-0 right-0 flex justify-between px-1">
+        @foreach($chartDays as $d)
+        <span class="text-[10px] font-bold text-on-surface-variant">{{ $d['label'] }}</span>
+        @endforeach
+      </div>
+    </div>
+  </section>
+
+  {{-- Quick Actions --}}
+  <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30 flex flex-col">
+    <h2 class="text-lg font-bold text-on-surface mb-4" style="font-family:'Noto Serif Bengali',serif;">দ্রুত অ্যাকশন</h2>
+    <div class="grid grid-cols-2 gap-3 flex-1">
+      @foreach([
+        ['route' => 'admin.news.create',      'icon' => 'add_circle',  'label' => 'নতুন সংবাদ',    'color' => 'text-primary',   'bg' => 'bg-primary/10'],
+        ['route' => 'admin.news.index',        'icon' => 'article',     'label' => 'সংবাদ তালিকা', 'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
+        ['route' => 'admin.categories.index',  'icon' => 'category',    'label' => 'বিভাগসমূহ',    'color' => 'text-tertiary',  'bg' => 'bg-tertiary/10'],
+        ['route' => 'admin.users.index',       'icon' => 'group',       'label' => 'ব্যবহারকারী',  'color' => 'text-primary',   'bg' => 'bg-primary/10'],
+        ['route' => 'admin.comments.index',    'icon' => 'comment',     'label' => 'মন্তব্য',       'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
+        ['route' => 'admin.settings',          'icon' => 'settings',    'label' => 'সেটিংস',        'color' => 'text-tertiary',  'bg' => 'bg-tertiary/10'],
+      ] as $action)
+      <a href="{{ route($action['route']) }}"
+         class="flex flex-col items-center justify-center gap-2 p-3 rounded-xl {{ $action['bg'] }} hover:opacity-80 transition-opacity text-center group">
+        <span class="material-symbols-outlined {{ $action['color'] }} text-[24px]">{{ $action['icon'] }}</span>
+        <span class="text-[11px] font-bold text-on-surface-variant group-hover:text-on-surface transition-colors leading-tight">{{ $action['label'] }}</span>
+      </a>
+      @endforeach
+    </div>
+  </section>
+
 </div>
 
-<!-- Charts Row -->
-<div class="row mb-4 g-3">
-    <div class="col-12 col-lg-6">
-        <div class="table-wrapper">
-            <h5 class="mb-4"><i class="bi bi-graph-up"></i> Views This Month</h5>
-            <canvas id="viewsChart"></canvas>
-        </div>
-    </div>
-
-    <div class="col-12 col-lg-6">
-        <div class="table-wrapper">
-            <h5 class="mb-4"><i class="bi bi-newspaper"></i> News by Category</h5>
-            <canvas id="categoriesChart"></canvas>
-        </div>
-    </div>
-</div>
-
-<!-- Recent Posts -->
-<div class="row mb-4 g-3">
-    <div class="col-12">
-        <div class="table-wrapper">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5><i class="bi bi-list-check"></i> Recent News Posts</h5>
-                <a href="{{ route('admin.news.create') }}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus"></i> Add News
-                </a>
-            </div>
-
-            @if ($recentNews && $recentNews->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Title</th>
-                                <th>Category</th>
-                                <th>Status</th>
-                                <th>Views</th>
-                                <th>Author</th>
-                                <th>Date</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recentNews as $news)
-                                <tr>
-                                    <td>
-                                        <strong>{{ substr($news->title, 0, 50) }}{{ strlen($news->title) > 50 ? '...' : '' }}</strong>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-light text-dark">{{ $news->category->name ?? 'Uncategorized' }}</span>
-                                    </td>
-                                    <td>
-                                        @if ($news->status === 'published')
-                                            <span class="badge bg-success">Published</span>
-                                        @elseif ($news->status === 'draft')
-                                            <span class="badge bg-secondary">Draft</span>
-                                        @else
-                                            <span class="badge bg-warning">Scheduled</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $news->views ?? 0 }}</td>
-                                    <td>{{ $news->author->name ?? 'Unknown' }}</td>
-                                    <td>{{ $news->created_at->format('M d, Y') }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.news.edit', $news) }}" class="btn btn-sm btn-outline-primary" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                        <button class="btn btn-sm btn-outline-danger" onclick="deleteNews({{ $news->id }})" title="Delete">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <p class="text-muted">No news posts yet. <a href="{{ route('admin.news.create') }}">Create one now</a></p>
-                </div>
+{{-- ===== Recent Articles ===== --}}
+<section class="mb-6">
+  <div class="flex items-center justify-between mb-4">
+    <h2 class="text-lg font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">সাম্প্রতিক সংবাদ</h2>
+    <a href="{{ route('admin.news.index') }}" class="text-primary font-bold text-[12px] uppercase tracking-wider hover:underline">সব দেখুন</a>
+  </div>
+  @php $recentNews = \App\Models\News::with(['category','author'])->latest()->limit(5)->get(); @endphp
+  <div class="space-y-3">
+    @foreach($recentNews as $article)
+    <div class="bg-surface-container-lowest p-3 rounded-xl flex gap-4 shadow-sm border border-outline-variant/30 hover:shadow-md transition-shadow">
+      <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
+        <img class="w-full h-full object-cover"
+             src="{{ $article->featured_image ? Storage::url($article->featured_image) : 'https://picsum.photos/seed/'.$article->id.'/200/200' }}"
+             alt="{{ $article->title }}">
+      </div>
+      <div class="flex-1 flex flex-col justify-between min-w-0">
+        <h3 class="text-sm font-bold text-on-surface line-clamp-1" style="font-family:'Noto Serif Bengali',serif;">
+          {{ $article->title }}
+        </h3>
+        <div class="flex items-center justify-between gap-2 flex-wrap">
+          <div class="flex items-center gap-2">
+            @if($article->category)
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full
+              {{ $article->status === 'published' ? 'bg-primary/10 text-primary' :
+                 ($article->status === 'draft'    ? 'bg-outline-variant/50 text-on-surface-variant' :
+                  'bg-secondary/10 text-secondary') }}">
+              {{ $article->category->name }}
+            </span>
             @endif
+            <span class="text-[10px] font-bold px-2 py-0.5 rounded-full
+              {{ $article->status === 'published' ? 'bg-tertiary/10 text-tertiary' :
+                 ($article->status === 'draft'    ? 'bg-surface-container text-on-surface-variant' :
+                  'bg-secondary/10 text-secondary') }}">
+              {{ $article->status === 'published' ? 'প্রকাশিত' : ($article->status === 'draft' ? 'খসড়া' : 'নির্ধারিত') }}
+            </span>
+          </div>
+          <span class="text-[10px] text-on-surface-variant">{{ $article->created_at->diffForHumans() }}</span>
         </div>
+      </div>
+      <div class="flex items-center gap-1 flex-shrink-0">
+        <a href="{{ route('admin.news.edit', $article) }}"
+           class="w-8 h-8 flex items-center justify-center rounded-lg bg-surface-container hover:bg-primary/10 text-on-surface-variant hover:text-primary transition-colors">
+          <span class="material-symbols-outlined text-[16px]">edit</span>
+        </a>
+      </div>
     </div>
+    @endforeach
+  </div>
+</section>
+
+{{-- ===== Bottom Two: System Logs + Category Stats ===== --}}
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+
+  {{-- System Logs --}}
+  <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30">
+    <h2 class="text-lg font-bold text-on-surface mb-5" style="font-family:'Noto Serif Bengali',serif;">সাম্প্রতিক কার্যক্রম</h2>
+    <div class="space-y-4">
+      @php
+        $latestPublished = \App\Models\News::where('status','published')->with('author')->latest('published_at')->first();
+        $latestUser = \App\Models\User::latest()->first();
+        $latestComment = \App\Models\Comment::with('user')->latest()->first();
+      @endphp
+
+      @if($latestPublished)
+      <div class="flex gap-4">
+        <div class="w-2 bg-primary rounded-full flex-shrink-0"></div>
+        <div>
+          <p class="text-sm font-bold text-on-surface">সংবাদ প্রকাশিত</p>
+          <p class="text-[12px] text-on-surface-variant line-clamp-1">{{ $latestPublished->title }}</p>
+          <p class="text-[11px] text-outline font-bold mt-1">{{ $latestPublished->published_at?->diffForHumans() }}</p>
+        </div>
+      </div>
+      @endif
+
+      @if($latestUser)
+      <div class="flex gap-4">
+        <div class="w-2 bg-tertiary rounded-full flex-shrink-0"></div>
+        <div>
+          <p class="text-sm font-bold text-on-surface">নতুন ব্যবহারকারী</p>
+          <p class="text-[12px] text-on-surface-variant">{{ $latestUser->name }} যোগ দিয়েছেন</p>
+          <p class="text-[11px] text-outline font-bold mt-1">{{ $latestUser->created_at->diffForHumans() }}</p>
+        </div>
+      </div>
+      @endif
+
+      @if($latestComment)
+      <div class="flex gap-4">
+        <div class="w-2 bg-secondary rounded-full flex-shrink-0"></div>
+        <div>
+          <p class="text-sm font-bold text-on-surface">নতুন মন্তব্য</p>
+          <p class="text-[12px] text-on-surface-variant line-clamp-1">{{ $latestComment->user?->name ?? 'অতিথি' }}: {{ Str::limit($latestComment->content ?? $latestComment->body ?? '', 60) }}</p>
+          <p class="text-[11px] text-outline font-bold mt-1">{{ $latestComment->created_at->diffForHumans() }}</p>
+        </div>
+      </div>
+      @else
+      <div class="flex gap-4">
+        <div class="w-2 bg-error rounded-full flex-shrink-0"></div>
+        <div>
+          <p class="text-sm font-bold text-on-surface">কোনো মন্তব্য নেই</p>
+          <p class="text-[12px] text-on-surface-variant">এখনো কোনো মন্তব্য করা হয়নি</p>
+        </div>
+      </div>
+      @endif
+    </div>
+  </section>
+
+  {{-- Category Stats --}}
+  <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30">
+    <div class="flex items-center justify-between mb-5">
+      <h2 class="text-lg font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">বিভাগ পরিসংখ্যান</h2>
+      <a href="{{ route('admin.categories.index') }}" class="text-primary font-bold text-[12px] uppercase tracking-wider hover:underline">সব দেখুন</a>
+    </div>
+    @php
+      $catStats = \App\Models\Category::withCount(['news' => fn($q) => $q->where('status','published')])->orderByDesc('news_count')->limit(6)->get();
+      $maxCount = max($catStats->pluck('news_count')->max(), 1);
+    @endphp
+    <div class="space-y-3">
+      @foreach($catStats as $cat)
+      <div class="flex items-center gap-3">
+        <span class="text-[12px] text-on-surface-variant w-24 truncate flex-shrink-0">{{ $cat->name }}</span>
+        <div class="flex-1 bg-surface-container-high rounded-full h-2 overflow-hidden">
+          <div class="h-full bg-primary rounded-full transition-all duration-500"
+               style="width: {{ ($cat->news_count / $maxCount) * 100 }}%"></div>
+        </div>
+        <span class="text-[11px] font-bold text-primary w-6 text-right flex-shrink-0">{{ $cat->news_count }}</span>
+      </div>
+      @endforeach
+    </div>
+  </section>
+
 </div>
 
-<!-- Live Streams (Admin Only) -->
-@if (auth()->user()->hasRole('admin'))
-<div class="row mb-4 g-3">
-    <div class="col-12">
-        <div class="table-wrapper">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5><i class="bi bi-camera-video"></i> Live Streams</h5>
-                <a href="{{ route('admin.live-streams.create') }}" class="btn btn-primary btn-sm">
-                    <i class="bi bi-plus"></i> Start Live Stream
-                </a>
-            </div>
-
-            @if ($liveStreams && $liveStreams->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>Title</th>
-                                <th>Status</th>
-                                <th>Viewers</th>
-                                <th>Duration</th>
-                                <th>Created</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($liveStreams as $stream)
-                                <tr>
-                                    <td>
-                                        <strong>{{ substr($stream->title, 0, 40) }}{{ strlen($stream->title) > 40 ? '...' : '' }}</strong>
-                                    </td>
-                                    <td>
-                                        @if ($stream->status === 'live')
-                                            <span class="badge bg-danger"><span class="badge bg-danger-pulse"></span> LIVE</span>
-                                        @elseif ($stream->status === 'pending')
-                                            <span class="badge bg-warning">SCHEDULED</span>
-                                        @elseif ($stream->status === 'ended')
-                                            <span class="badge bg-secondary">ENDED</span>
-                                        @else
-                                            <span class="badge bg-info">DRAFT</span>
-                                        @endif
-                                    </td>
-                                    <td>{{ $stream->viewer_count }}</td>
-                                    <td>{{ $stream->getFormattedDuration() }}</td>
-                                    <td>{{ $stream->created_at->format('M d, Y') }}</td>
-                                    <td>
-                                        <a href="{{ route('admin.live-streams.show', $stream) }}" class="btn btn-sm btn-outline-primary" title="View">
-                                            <i class="bi bi-eye"></i>
-                                        </a>
-                                        <a href="{{ route('admin.live-streams.edit', $stream) }}" class="btn btn-sm btn-outline-secondary" title="Edit">
-                                            <i class="bi bi-pencil"></i>
-                                        </a>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <p class="text-muted">No live streams yet. <a href="{{ route('admin.live-streams.create') }}">Create your first stream</a></p>
-                </div>
-            @endif
-        </div>
-    </div>
-</div>
-@endif
-
-<!-- Activity Log -->
-<div class="row g-3">
-    <div class="col-12">
-        <div class="table-wrapper">
-            <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5><i class="bi bi-clock-history"></i> Recent Activities</h5>
-                <a href="{{ route('admin.activities') }}" class="btn btn-sm btn-outline-secondary">View All</a>
-            </div>
-
-            @if ($recentActivities && $recentActivities->count() > 0)
-                <div class="table-responsive">
-                    <table class="table table-sm table-hover mb-0">
-                        <thead class="table-light">
-                            <tr>
-                                <th>User</th>
-                                <th>Action</th>
-                                <th>Description</th>
-                                <th>Time</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach ($recentActivities as $activity)
-                                <tr>
-                                    <td>{{ $activity->user->name ?? 'System' }}</td>
-                                    <td>
-                                        <span class="badge bg-info">{{ ucfirst($activity->action_type) }}</span>
-                                    </td>
-                                    <td>{{ substr($activity->description, 0, 60) }}{{ strlen($activity->description) > 60 ? '...' : '' }}</td>
-                                    <td>{{ $activity->created_at->diffForHumans() }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            @else
-                <div class="text-center py-5">
-                    <p class="text-muted">No activities yet</p>
-                </div>
-            @endif
-        </div>
-    </div>
 </div>
 
-@push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script>
-    // Views Chart
-    const viewsCtx = document.getElementById('viewsChart').getContext('2d');
-    new Chart(viewsCtx, {
-        type: 'line',
-        data: {
-            labels: ['Day 1', 'Day 2', 'Day 3', 'Day 4', 'Day 5', 'Day 6', 'Day 7'],
-            datasets: [{
-                label: 'Views',
-                data: [120, 190, 150, 170, 200, 220, 180],
-                borderColor: '#0d6efd',
-                backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                borderWidth: 2,
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
-            }
-        }
-    });
+{{-- Floating Action Button --}}
+<a href="{{ route('admin.news.create') }}"
+   class="tw fixed bottom-8 right-8 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-lg flex items-center justify-center hover:opacity-90 active:scale-90 transition-all z-40">
+  <span class="material-symbols-outlined text-[28px] filled" style="font-variation-settings:'FILL' 1;">add</span>
+</a>
 
-    // Categories Chart
-    const categoriesCtx = document.getElementById('categoriesChart').getContext('2d');
-    new Chart(categoriesCtx, {
-        type: 'doughnut',
-        data: {
-            labels: ['Politics', 'Sports', 'Technology', 'Entertainment', 'Others'],
-            datasets: [{
-                data: [30, 25, 20, 15, 10],
-                backgroundColor: ['#0d6efd', '#6c757d', '#198754', '#ffc107', '#0dcaf0']
-            }]
-        },
-        options: {
-            responsive: true,
-            plugins: {
-                legend: {
-                    position: 'bottom'
-                }
-            }
-        }
-    });
-
-    // Delete news function
-    function deleteNews(newsId) {
-        if (confirm('Are you sure you want to delete this news post?')) {
-            // TODO: Implement delete functionality
-            console.log('Delete news:', newsId);
-        }
-    }
-</script>
-@endpush
 @endsection
