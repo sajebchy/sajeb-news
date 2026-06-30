@@ -329,133 +329,100 @@ Need help? Check these resources:
 
 ### Version 3.0 (July 1, 2026) — Admin Redesign, Newsletter System & Ad Integration
 
-এই ভার্সনে সম্পূর্ণ Stitch Design System দিয়ে একাধিক Admin পেইজ রিডিজাইন, নতুন Newsletter অটো-মেইল সিস্টেম, ডেমো ডেটা seeder, হোমপেইজে সব ক্যাটাগরি প্রদর্শন এবং Advertisement সিস্টেম সম্পূর্ণরূপে কার্যকর করা হয়েছে।
+This release introduces a full redesign of multiple admin panel pages using the Stitch Design System, an automated newsletter email system, Bengali demo content, a revamped homepage layout displaying all categories, and a fully functional advertisement system across all public pages.
 
 ---
 
-#### 🎨 Admin Panel — Redesigned Pages (Stitch Design System)
+#### 🎨 Admin Panel Redesigns
 
-##### `/admin/advertisements` — বিজ্ঞাপন ইনডেক্স পেইজ সম্পূর্ণ রিডিজাইন
-**ফাইল:** `resources/views/admin/advertisements/index.blade.php`
-- ৪টি স্ট্যাট কার্ড (মোট বিজ্ঞাপন, সক্রিয়, মোট ইম্প্রেশন, মোট ক্লিক)
-- সার্চ ও ফিল্টার বার (Placement + Status ফিল্টার)
-- ডেটা টেবিলে CSS টগল দিয়ে Status সরাসরি পরিবর্তন
-- কাস্টম Pagination
-- নিচে Bento সেকশন: Top Performer, Active Rate, Overall CTR
+**Advertisements — List Page**
+- Rebuilt with 4 summary stat cards: total ads, active ads, total impressions, total clicks
+- Added search bar and dual filter (by placement type and status)
+- Inline status toggle directly from the table — no page reload required
+- Custom pagination component
+- Bottom analytics strip showing top-performing ad, active rate, and overall CTR
 
-##### `/admin/advertisements/edit` — বিজ্ঞাপন এডিট পেইজ সম্পূর্ণ রিডিজাইন
-**ফাইল:** `resources/views/admin/advertisements/edit.blade.php`
-- ২-কলাম লেআউট (Bootstrap ৫ সরিয়ে Stitch/Tailwind দিয়ে পুনর্নির্মাণ)
-- বাম কলাম: Basic Info, Image & Link (AJAX আপলোড), Monetization Networks (ডায়নামিক ফিল্ড), UTM Parameters
-- ডান সাইডবার: Save বাটন, Schedule/Status, Advertiser Info, Budget Settings, Performance Stats, Notes
-- সব JS `@push('scripts')` এ: image upload AJAX, dynamic network fields, URL+UTM preview
+**Advertisements — Edit Page**
+- Migrated from Bootstrap 5 to Stitch / Tailwind two-column layout
+- Left column: basic info, image upload, ad network settings with dynamic fields, UTM parameter builder
+- Right sidebar: save controls, scheduling, advertiser details, budget settings, performance overview, internal notes
+- Live URL + UTM preview updates as fields are filled
 
-##### `/admin/users` — ইউজার লিস্ট পেইজ সম্পূর্ণ রিডিজাইন
-**ফাইল:** `resources/views/admin/users/index.blade.php`  
-**Controller আপডেট:** `app/Http/Controllers/Admin/UserController.php`
-- UserController এ Search, Role filter, Status filter যোগ
-- `withCount('newsArticles')` দিয়ে প্রতিটি ইউজারের আর্টিকেল সংখ্যা
-- টেবিলে Avatar Initials (email এর `crc32` দিয়ে deterministic রঙ), Role Badge, Status Badge, Hover-reveal Actions
-- নিচে ৩টি স্ট্যাট কার্ড: মোট ইউজার, সক্রিয়, আজকের নতুন
+**Users — List Page**
+- Added server-side search by name or email
+- Role filter and account status filter (active / inactive)
+- Each row shows avatar initials with a deterministic colour, role badge, article count, status indicator, and hover-reveal action buttons
+- Three summary cards at the bottom: total users, active users, new today
 
-##### `/admin/newsletters` — নিউজলেটার ম্যানেজমেন্ট পেইজ নতুন তৈরি ও রিডিজাইন
-**ফাইল:** `resources/views/admin/newsletters/index.blade.php`  
-**Controller আপডেট:** `app/Http/Controllers/Admin/NewsletterController.php`  
-**Sidebar:** `resources/views/layouts/admin.blade.php`
-- NewsletterController এ Search (email+name), Status filter (verified/unverified/unsubscribed), নতুন stats variables
-- ৪টি স্ট্যাট কার্ড (মোট, verified, unsubscribed, আজকের নতুন)
-- Subscriber টেবিলে Avatar initials, status badge, custom pagination
-- ডান সাইডবার: Growth progress bar, Recent Campaigns, Quick Actions
-- Admin sidebar এ নিউজলেটার লিংক যোগ (`adminNavLink` helper দিয়ে)
+**Newsletter Management — New Page**
+- Brand-new page accessible from the admin sidebar
+- Four stat cards: total subscribers, verified, unsubscribed, new today
+- Subscriber table with search, status filter, avatar initials, status badge, and pagination
+- Right panel: subscriber growth bars, recent campaign history, quick-action buttons
 
 ---
 
-#### 📧 Newsletter অটো-মেইল সিস্টেম (নতুন ফিচার)
+#### 📧 Automated Newsletter Email System
 
-**নতুন ফাইলসমূহ:**
-- `app/Mail/NewsletterNewsMail.php` — Custom Mailable (Bengali subject line)
-- `app/Jobs/SendNewsletterEmail.php` — Queue Job (`tries=3`, `backoff=60`, `cursor()` দিয়ে memory-efficient loop)
-- `resources/views/emails/newsletter/new-news.blade.php` — Full HTML email template (blue header, featured image, category badge, breaking badge, CTA button, unsubscribe link)
+When a news article is published for the first time, an email is automatically dispatched to all verified, active subscribers. Key behaviours:
 
-**আপডেট ফাইল:**
-- `app/Http/Controllers/Admin/NewsController.php` — `store()` ও `update()` এ dispatch লজিক:
-  - নিউজ publish হলে ১০ সেকেন্ড delay দিয়ে job dispatch
-  - draft/scheduled → published transition এ একবারই পাঠানো (বারবার নয়)
+- Emails are only sent on the initial publish event (draft or scheduled → published). Subsequent edits do not re-trigger the email.
+- Only subscribers who have verified their email address and have not unsubscribed receive the notification.
+- The email includes the article title, category, excerpt, featured image, and a read-more link.
+- A one-click unsubscribe link is included in every email footer in compliance with email best practices.
+- Dispatch is handled via a background queue job for performance; the mail driver can be configured independently in the environment settings.
 
-**লজিক:**
-- শুধুমাত্র `is_verified=true` ও `unsubscribed_at=null` subscriber রা মেইল পাবেন
-- Mail driver: `MAIL_MAILER=log` (log-based, real SMTP এ switch করতে `.env` পরিবর্তন যথেষ্ট)
+**New components added:**
+- Queued mail job with automatic retry support and memory-efficient subscriber iteration
+- Custom HTML email template (Bengali subject line, branded header, article preview, unsubscribe footer)
 
 ---
 
-#### 🗂️ Demo Data Seeders (নতুন)
+#### 🗂️ Demo Content Seeders
 
-**নতুন ফাইলসমূহ:**
-- `database/seeders/DemoNewsSeeder.php` — ৮টি নতুন বাংলা ক্যাটাগরি তৈরি ও প্রতিটিতে ১০টি করে নিউজ (মোট ৯০টি):
-  - ক্যাটাগরি: জাতীয়, আন্তর্জাতিক, অর্থনীতি, খেলাধুলা, প্রযুক্তি, বিনোদন, স্বাস্থ্য, শিক্ষা
-  - প্রতিটি নিউজে বাংলা title, excerpt, content, varied status (published/draft/scheduled), `is_featured`, `is_breaking`, random views
+**News Seeder**
+- Created 8 new Bengali categories: National, International, Economy, Sports, Technology, Entertainment, Health, Education
+- Added 10 news articles per category (90 articles total) with Bengali titles, excerpts, and body content
+- Articles have a mix of published, draft, and scheduled statuses; some are flagged as featured or breaking news
 
-- `database/seeders/DummyAdsSeeder.php` — সব ১০টি active ad-এ proper dummy content আপডেট:
-  - Placement-অনুযায়ী সঠিক dimension এর placeholder image (placehold.co)
-  - header_top: 970×90, homepage_top: 970×250, sidebar: 300×250 ও 300×600, article: 728×90, footer: 970×90
-
----
-
-#### 🏠 Public Homepage — সব ক্যাটাগরি প্রদর্শন
-
-**ফাইল:** `resources/views/public/index.blade.php`  
-**Controller আপডেট:** `app/Http/Controllers/Public/NewsController.php`
-- Controller এ `$allCategories` পাঠানো হচ্ছে — সব active category যেখানে published news আছে, প্রতিটিতে latest ৬টি news সহ
-- প্রতিটি ক্যাটাগরি section এ **Big Card (2/3) + Side List (1/3)** লেআউট
-- Category header এ নাম ও "সব খবর →" লিংক
-- Sidebar এ **Category Quick Links Widget** (নাম + news count)
-- পুরনো `featured_order` based `$featuredCats` ও `$bentoCategories` এর পরিবর্তে unified `$allCategories` ব্যবহার
+**Advertisements Seeder**
+- Updated all 10 active ad slots with correctly sized placeholder images matching each placement's standard dimensions (header, homepage banner, sidebar, article inline, footer)
 
 ---
 
-#### 📢 Advertisement System — সম্পূর্ণ কার্যকর
+#### 🏠 Public Homepage — All Categories Now Displayed
 
-**Bug Fix:** `app/Helpers/AdHelper.php`
-- `renderAd()` এ `asset()` absolute URL ভেঙে দিত — fix করা হয়েছে (`str_starts_with` check)
+Previously the homepage only showed categories that had a manually assigned featured order. This has been changed so that **every active category with at least one published article** appears automatically.
 
-**Ad Placements যোগ করা হয়েছে:**
-
-| পেইজ | Placement | ফাইল |
-|------|-----------|-------|
-| সব পেইজ (Layout) | `header_top` — হেডারের উপরে | `resources/views/public/layout.blade.php` |
-| সব পেইজ (Layout) | `footer_banner` — ফুটারের উপরে | `resources/views/public/layout.blade.php` |
-| Homepage | `homepage_top` — hero section এর আগে | `resources/views/public/index.blade.php` |
-| Homepage Sidebar | `sidebar_medium_rectangle` (300×250) | `resources/views/public/index.blade.php` |
-| Homepage Sidebar | `sidebar_half_page` (300×600) | `resources/views/public/index.blade.php` |
-| News Article | `article_conclusion` — content এর পরে | `resources/views/public/news/show.blade.php` |
-| News Article Sidebar | `sidebar_medium_rectangle` + `sidebar_half_page` | `resources/views/public/news/show.blade.php` |
-| Mobile (News) | `article_2nd_paragraph` — header এর নিচে | `resources/views/public/news/show.blade.php` |
+- Each category section uses a two-column layout: a large featured article card on the left and a compact list of recent articles on the right
+- Each section header links to the full category page
+- The sidebar now includes a Category Quick Links widget listing all active categories with their article counts
 
 ---
 
-#### 📁 পরিবর্তিত সকল ফাইল
+#### 📢 Advertisement System — Fully Active on Public Pages
 
-**নতুন ফাইল (New):**
-- `app/Jobs/SendNewsletterEmail.php`
-- `app/Mail/NewsletterNewsMail.php`
-- `database/seeders/DemoNewsSeeder.php`
-- `database/seeders/DummyAdsSeeder.php`
-- `resources/views/emails/newsletter/new-news.blade.php`
-- `resources/views/admin/newsletters/index.blade.php`
+Fixed a rendering bug where absolute image URLs were being incorrectly prefixed, causing ad images not to display.
 
-**আপডেট (Modified):**
-- `app/Helpers/AdHelper.php`
-- `app/Http/Controllers/Admin/NewsController.php`
-- `app/Http/Controllers/Admin/NewsletterController.php`
-- `app/Http/Controllers/Admin/UserController.php`
-- `app/Http/Controllers/Public/NewsController.php`
-- `resources/views/admin/advertisements/edit.blade.php`
-- `resources/views/admin/advertisements/index.blade.php`
-- `resources/views/admin/users/index.blade.php`
-- `resources/views/layouts/admin.blade.php`
-- `resources/views/public/index.blade.php`
-- `resources/views/public/layout.blade.php`
-- `resources/views/public/news/show.blade.php`
+Ad slots are now live across the following areas:
+
+| Location | Placement |
+|---|---|
+| All pages — above the header | Header Top Banner |
+| All pages — above the footer | Footer Banner |
+| Homepage — above main content | Homepage Top Banner |
+| Homepage sidebar | Medium Rectangle + Half Page |
+| News article — end of content | Article Conclusion |
+| News article sidebar | Medium Rectangle + Half Page |
+| News article — mobile view | Inline Banner |
+
+---
+
+#### 📁 Files Changed
+
+**New files added:** Newsletter queue job, newsletter mailable, HTML email template, newsletter admin view, news demo seeder, advertisements demo seeder.
+
+**Modified files:** Advertisement helper, advertisement list view, advertisement edit view, user list view, newsletter controller, user controller, news controller (admin), news controller (public), admin layout, homepage view, public layout, article detail view.
 
 ---
 
