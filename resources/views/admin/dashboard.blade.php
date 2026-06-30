@@ -3,80 +3,21 @@
 @section('page-title', 'ড্যাশবোর্ড')
 
 @push('styles')
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script>
-tailwind.config = {
-  important: '.tw',
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "surface-bright":           "#fcf9f8",
-        "surface-tint":             "#005cba",
-        "outline":                  "#727784",
-        "on-tertiary":              "#ffffff",
-        "on-background":            "#1c1b1b",
-        "on-tertiary-container":    "#98ffaf",
-        "on-primary-container":     "#dfe8ff",
-        "tertiary-fixed":           "#76fd9d",
-        "on-surface":               "#1c1b1b",
-        "on-surface-variant":       "#414753",
-        "tertiary":                 "#005e2c",
-        "on-primary-fixed":         "#001b3e",
-        "primary-fixed-dim":        "#aac7ff",
-        "background":               "#fcf9f8",
-        "primary-fixed":            "#d7e3ff",
-        "surface-container-low":    "#f6f3f2",
-        "inverse-on-surface":       "#f3f0ef",
-        "primary":                  "#004e9f",
-        "outline-variant":          "#c1c6d5",
-        "surface-container-highest":"#e5e2e1",
-        "error-container":          "#ffdad6",
-        "surface":                  "#fcf9f8",
-        "surface-container-high":   "#eae7e7",
-        "error":                    "#ba1a1a",
-        "inverse-primary":          "#aac7ff",
-        "on-primary":               "#ffffff",
-        "surface-container-lowest": "#ffffff",
-        "on-secondary":             "#ffffff",
-        "tertiary-container":       "#00793b",
-        "surface-variant":          "#e5e2e1",
-        "secondary-container":      "#fe6a34",
-        "secondary":                "#ab3500",
-        "on-secondary-container":   "#5d1900",
-        "surface-dim":              "#dcd9d9",
-        "surface-container":        "#f0eded",
-        "primary-container":        "#0066cc",
-      }
-    }
-  }
-}
-</script>
 <style>
-  .tw { font-family: 'Inter', sans-serif; }
-  .tw .material-symbols-outlined {
-    font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
-    vertical-align: middle;
-  }
-  .tw .filled { font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
-  .tw .no-scrollbar::-webkit-scrollbar { display: none; }
-  .tw .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
   @keyframes draw {
     from { stroke-dashoffset: 400; }
     to { stroke-dashoffset: 0; }
   }
-  .tw .chart-line {
+  .chart-line {
     stroke-dasharray: 400;
     animation: draw 2s ease-out forwards;
   }
-  .tw .card-hover { transition: transform .2s, box-shadow .2s; }
-  .tw .card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
+  .card-hover { transition: transform .2s, box-shadow .2s; }
+  .card-hover:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,.1); }
 </style>
 @endpush
 
 @section('content')
-<div class="tw">
 
 {{-- ===== Stats Grid (2x2 → 4 cols on lg) ===== --}}
 <section class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -345,12 +286,10 @@ tailwind.config = {
 
 </div>
 
-</div>
-
 {{-- Floating Action Button --}}
 <a href="{{ route('admin.news.create') }}"
-   class="tw fixed bottom-8 right-8 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-lg flex items-center justify-center hover:opacity-90 active:scale-90 transition-all z-40">
-  <span class="material-symbols-outlined text-[28px] filled" style="font-variation-settings:'FILL' 1;">add</span>
+   class="fixed bottom-8 right-8 w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-lg flex items-center justify-center hover:opacity-90 active:scale-90 transition-all z-40">
+  <span class="material-symbols-outlined text-[28px]" style="font-variation-settings:'FILL' 1;">add</span>
 </a>
 
 @endsection
