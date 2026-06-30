@@ -121,10 +121,10 @@
 @if($news->count() > 0)
 <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 mb-8">
     @foreach($news as $item)
-    <article class="news-card bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden flex flex-col relative">
+    <article class="news-card bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm flex flex-col relative">
 
         {{-- Thumbnail --}}
-        <div class="relative h-48 w-full overflow-hidden flex-shrink-0">
+        <div class="relative h-48 w-full overflow-hidden flex-shrink-0 rounded-t-xl">
             <img class="w-full h-full object-cover {{ $item->status === 'draft' ? 'grayscale opacity-70' : '' }}"
                  src="{{ $item->featured_image ? Storage::url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/600/400' }}"
                  alt="{{ $item->title }}">
@@ -169,7 +169,7 @@
                             class="w-8 h-8 flex items-center justify-center rounded-full hover:bg-surface-container-high transition-colors">
                         <span class="material-symbols-outlined text-outline text-[20px]">more_vert</span>
                     </button>
-                    <div class="action-menu absolute right-0 top-9 w-44 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-lg z-20 py-1 overflow-hidden">
+                    <div class="action-menu absolute right-0 top-9 w-44 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-xl z-50 py-1 overflow-hidden">
                         <a href="{{ route('admin.news.edit', $item) }}"
                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
                             <span class="material-symbols-outlined text-[18px] text-primary">edit</span>
