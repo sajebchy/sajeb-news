@@ -517,6 +517,7 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     
     // Category Management
     Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
+    Route::post('categories/{category}/toggle', [\App\Http\Controllers\Admin\CategoryController::class, 'togglePublished'])->name('categories.toggle');
     
     // Tag Management
     Route::resource('tags', \App\Http\Controllers\Admin\TagController::class);

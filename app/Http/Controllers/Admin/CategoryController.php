@@ -114,6 +114,16 @@ class CategoryController extends Controller
     }
 
     /**
+     * Toggle the published status of a category.
+     */
+    public function togglePublished(Category $category)
+    {
+        $category->update(['is_published' => !$category->is_published]);
+
+        return back()->with('success', 'Category status updated.');
+    }
+
+    /**
      * Delete the specified category.
      */
     public function destroy(Category $category)
