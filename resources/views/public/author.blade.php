@@ -31,50 +31,46 @@
         </div>
     </div>
 
-    {{-- Avatar + Info overlay --}}
-    <div class="max-w-[1200px] mx-auto px-4 md:px-6 -mt-14 md:-mt-24 relative z-10">
-        <div class="flex flex-col md:flex-row items-end gap-4 md:gap-6">
-
-            {{-- Avatar --}}
-            <div class="relative flex-shrink-0">
-                <div class="w-28 h-28 md:w-48 md:h-48 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
-                    @if($author->avatar)
-                        <img class="w-full h-full object-cover"
-                             src="{{ Storage::url($author->avatar) }}"
-                             alt="{{ $author->name }}">
-                    @else
-                        <div class="w-full h-full flex items-center justify-center bg-primary-container">
-                            <span class="material-symbols-outlined text-white" style="font-size: 72px; font-variation-settings: 'FILL' 1;">person</span>
-                        </div>
-                    @endif
-                </div>
-            </div>
-
-            {{-- Name & Bio --}}
-            <div class="flex-1 pb-4 md:pb-8">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div>
-                        <h1 class="text-2xl md:text-4xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
-                            {{ $author->name }}
-                        </h1>
-                        <p class="text-sm md:text-base text-on-surface-variant max-w-2xl mt-1">
-                            {{ $author->bio ?? $author->name . ' সজীব নিউজের একজন লেখক।' }}
-                        </p>
+    {{-- Avatar (overlaps cover photo) --}}
+    <div class="max-w-[1200px] mx-auto px-4 md:px-6 relative z-10">
+        <div class="-mt-14 md:-mt-20">
+            <div class="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
+                @if($author->avatar)
+                    <img class="w-full h-full object-cover"
+                         src="{{ Storage::url($author->avatar) }}"
+                         alt="{{ $author->name }}">
+                @else
+                    <div class="w-full h-full flex items-center justify-center bg-primary-container">
+                        <span class="material-symbols-outlined text-white" style="font-size: 64px; font-variation-settings: 'FILL' 1;">person</span>
                     </div>
-                    @auth
-                        @if(auth()->id() === $author->id)
-                        <a href="{{ route('profile.edit') }}"
-                           class="flex items-center gap-1 bg-white border border-outline px-5 py-3 rounded-xl font-bold text-sm text-on-surface hover:bg-surface-container-low transition-colors shadow-sm self-start">
-                            <span class="material-symbols-outlined text-[18px]">edit</span>
-                            প্রোফাইল সম্পাদনা
-                        </a>
-                        @endif
-                    @endauth
-                </div>
+                @endif
             </div>
         </div>
     </div>
 </section>
+
+{{-- Name & Bio (below the cover, after avatar) --}}
+<div class="max-w-[1200px] mx-auto px-4 md:px-6 pt-4 pb-2">
+    <div class="flex flex-col md:flex-row md:items-start justify-between gap-3">
+        <div>
+            <h1 class="text-2xl md:text-4xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
+                {{ $author->name }}
+            </h1>
+            <p class="text-sm md:text-base text-on-surface-variant max-w-2xl mt-1">
+                {{ $author->bio ?? $author->name . ' সজীব নিউজের একজন লেখক।' }}
+            </p>
+        </div>
+        @auth
+            @if(auth()->id() === $author->id)
+            <a href="{{ route('profile.edit') }}"
+               class="flex items-center gap-1 bg-white border border-outline px-5 py-3 rounded-xl font-bold text-sm text-on-surface hover:bg-surface-container-low transition-colors shadow-sm self-start mt-2 md:mt-0 flex-shrink-0">
+                <span class="material-symbols-outlined text-[18px]">edit</span>
+                প্রোফাইল সম্পাদনা
+            </a>
+            @endif
+        @endauth
+    </div>
+</div>
 
 {{-- ========== STATS + CONTENT ========== --}}
 <div class="max-w-[1200px] mx-auto px-4 md:px-6 py-8">
