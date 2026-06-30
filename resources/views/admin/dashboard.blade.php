@@ -199,7 +199,7 @@ tailwind.config = {
         ['route' => 'admin.news.index',        'icon' => 'article',     'label' => 'সংবাদ তালিকা', 'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
         ['route' => 'admin.categories.index',  'icon' => 'category',    'label' => 'বিভাগসমূহ',    'color' => 'text-tertiary',  'bg' => 'bg-tertiary/10'],
         ['route' => 'admin.users.index',       'icon' => 'group',       'label' => 'ব্যবহারকারী',  'color' => 'text-primary',   'bg' => 'bg-primary/10'],
-        ['route' => 'admin.comments.index',    'icon' => 'comment',     'label' => 'মন্তব্য',       'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
+        ['route' => 'admin.tags.index',          'icon' => 'sell',        'label' => 'ট্যাগসমূহ',     'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
         ['route' => 'admin.settings',          'icon' => 'settings',    'label' => 'সেটিংস',        'color' => 'text-tertiary',  'bg' => 'bg-tertiary/10'],
       ] as $action)
       <a href="{{ route($action['route']) }}"
