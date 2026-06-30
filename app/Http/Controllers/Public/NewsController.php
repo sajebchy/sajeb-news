@@ -1,0 +1,127 @@
+<?php
+
+namespace App\Http\Controllers\Public;
+
+use App\Http\Controllers\Controller;
+use App\Models\News;
+use App\Models\Category;
+use App\Models\Advertisement;
+use App\Services\NewsService;
+use App\Services\SeoService;
+use Illuminate\Http\Request;
+
+class NewsController extends Controller
+{
+    protected NewsService $newsService;
+    protected SeoService $seoService;
+
+    public function __construct(NewsService $newsService, SeoService $seoService)
+    {
+        $this->newsService = $newsService;
+        $this->seoService = $seoService;
+    }
+
+    /**
+     * Display homepage
+     */
+    public function index()
+    {
+        $featured = $this->newsService->getFeaturedNews(5);
+        $breaking = $this->newsService->getBreakingNews(3);
+        $latest = $this->newsService->getPublishedNews(9);
+        $trending = $this->newsService->getTrendingNews(7, 10);
+        $seoSettings = \App\Models\SeoSetting::first();
+
+        return view('public.index', compact('featured', 'breaking', 'latest', 'trending', 'seoSettings'));
+    }
+
+    /**
+     * Display news detail
+     */
+    public function show(News $news)
+    {
+        abort_if($news->status !== 'published', 404);
+
+        // Increment views
+        $news->increment('views');
+
+        $related = $this->newsService->getRelatedNews($news, 5);
+        $metaTags = $this->seoService->getNewsMetaTags($news);
+        $schema = $this->seoService->getNewsSchema($news);
+        
+        // Fetch active ads for within_news placement
+        $ads = Advertisement::where('placement', 'within_news')
+            ->where('is_active', true)
+            ->where('start_date', '<=', now())
+            ->where(function($query) {
+                $query->whereNull('end_date')
+                      ->orWhere('end_date', '>=', now());
+            })
+            ->inRandomOrder()
+            ->first();
+
+        return view('public.news.show-modern', compact('news', 'related', 'metaTags', 'schema', 'ads'));
+    }
+
+    /**
+     * Display news by category
+     */
+    public function category(Category $category)
+    {
+        $news = $this->newsService->getNewsByCategory($category);
+        $metaTags = [
+            'title' => $category->meta_title ?? $category->name . ' - Sajeb NEWS',
+            'description' => $category->meta_description ?? $category->description,
+            'keywords' => $category->meta_keywords,
+        ];
+
+        return view('public.category', compact('category', 'news', 'metaTags'));
+    }
+
+    /**
+     * Search news
+     */
+    public function search(Request $request)
+    {
+        // Make search query optional - allow visiting /search without any query
+        $request->validate([
+            'q' => 'nullable|string|max:255',
+        ], [
+            'q.max' => 'Search query cannot exceed 255 characters',
+        ]);
+
+        $query = trim($request->input('q', ''));
+        $news = collect();
+        
+        // Only search if query is not empty
+        if (!empty($query)) {
+            $news = $this->newsService->searchNews($query);
+        }
+
+        return view('public.search', compact('query', 'news'));
+    }
+
+    /**
+     * Display news by tag
+     */
+    public function tag($tag)
+    {
+        $news = $this->newsService->getNewsByTag($tag);
+
+        return view('public.tag', compact('tag', 'news'));
+    }
+
+    /**
+     * Display author profile
+     */
+    public function author($author)
+    {
+        $author = \App\Models\User::where('id', $author)->firstOrFail();
+        $news = $author->newsArticles()
+            ->published()
+            ->orderBy('published_at', 'desc')
+            ->paginate(15);
+
+        return view('public.author', compact('author', 'news'));
+    }
+}

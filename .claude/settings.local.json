@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Skill(run)",
+      "Skill(run:*)",
+      "PowerShell(php --version)",
+      "PowerShell(composer --version)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; php --version; composer --version)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; composer install --no-interaction 2>&1 | Select-Object -Last 20)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; composer install --prefer-dist --no-interaction 2>&1 | Tee-Object -FilePath \"C:\\\\Users\\\\Durjoy\\\\AppData\\\\Local\\\\Temp\\\\composer-install.log\" | Select-Object -Last 10)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; Copy-Item .env.example .env; php artisan key:generate; php artisan migrate --force 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; php artisan db:seed --force 2>&1)",
+      "PowerShell(Start-Sleep -Seconds 3; \\(Invoke-WebRequest -Uri \"http://127.0.0.1:8000\" -UseBasicParsing -TimeoutSec 5\\).StatusCode)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; php artisan storage:link 2>&1)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; Start-Process -FilePath \"php\" -ArgumentList \"artisan serve --host=127.0.0.1 --port=8000\" -NoNewWindow; Start-Sleep -Seconds 3; \\(Invoke-WebRequest -Uri \"http://127.0.0.1:8000\" -UseBasicParsing -TimeoutSec 5\\).StatusCode)",
+      "PowerShell(\\(Invoke-WebRequest -Uri \"http://127.0.0.1:8000\" -UseBasicParsing\\).Content | Select-String -Pattern \"<title>\" | Select-Object -First 1)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\nodejs\\\\node-v22;C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; node --version; npm --version)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\nodejs\\\\node-v22;C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; npm install 2>&1 | Select-Object -Last 5)",
+      "PowerShell($env:PATH = \"C:\\\\laragon\\\\bin\\\\nodejs\\\\node-v22;C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64;C:\\\\laragon\\\\bin\\\\composer;$env:PATH\"; Set-Location \"C:\\\\laragon\\\\www\\\\sajeb-news-main\"; npm run build 2>&1)",
+      "PowerShell(\\(Invoke-WebRequest -Uri \"http://127.0.0.1:8000/admin\" -UseBasicParsing -TimeoutSec 5\\).StatusCode)"
+    ]
+  }
+}
