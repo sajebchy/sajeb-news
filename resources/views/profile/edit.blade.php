@@ -126,9 +126,49 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
+                <form method="POST" action="{{ route('profile.update') }}" class="space-y-6" enctype="multipart/form-data">
                     @csrf
                     @method('PATCH')
+
+                    {{-- Profile Picture --}}
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-4 block">প্রোফাইল ছবি</label>
+                        <div class="flex flex-col gap-4">
+                            <!-- Current Avatar Preview -->
+                            <div class="flex items-center gap-4">
+                                <div class="w-20 h-20 rounded-full overflow-hidden bg-surface-container flex-shrink-0 border-2 border-primary-container">
+                                    @if($user->avatar)
+                                    <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                    @else
+                                    <div class="w-full h-full flex items-center justify-center bg-primary-container text-on-primary-container">
+                                        <span class="material-symbols-outlined text-[36px]">person</span>
+                                    </div>
+                                    @endif
+                                </div>
+                                <div>
+                                    <p class="text-[14px] text-on-surface font-bold">বর্তমান ছবি</p>
+                                    <p class="text-[12px] text-on-surface-variant">আপনার প্রোফাইল ছবি</p>
+                                </div>
+                            </div>
+
+                            <!-- Upload Input -->
+                            <div class="relative border-2 border-dashed border-outline-variant rounded-lg p-6 text-center hover:bg-surface-container-low transition-colors cursor-pointer" id="uploadArea">
+                                <input type="file" name="avatar" id="avatarInput" class="hidden" accept="image/*">
+                                <div class="flex flex-col items-center gap-2">
+                                    <span class="material-symbols-outlined text-[40px] text-on-surface-variant">image</span>
+                                    <div>
+                                        <p class="text-[14px] font-bold text-primary">ছবি নির্বাচন করুন</p>
+                                        <p class="text-[12px] text-on-surface-variant">JPG, PNG, GIF (সর্বোচ্চ ২ MB)</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Preview -->
+                            <img id="previewImage" class="hidden w-full max-w-sm rounded-lg border border-outline-variant" alt="Preview">
+
+                            @error('avatar')<p class="text-error text-[12px]">{{ $message }}</p>@enderror
+                        </div>
+                    </div>
 
                     {{-- Name --}}
                     <div>
@@ -152,7 +192,7 @@
                         <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">জীবনী (ঐচ্ছিক)</label>
                         <textarea name="bio" rows="4"
                                   class="w-full p-4 rounded-lg border border-outline-variant form-input-focus text-[16px]"
-                                  placeholder="নিজের সম্পর্কে কিছু লিখুন..."></textarea>
+                                  placeholder="নিজের সম্পর্কে কিছু লিখুন...">{{ old('bio', $user->bio) }}</textarea>
                     </div>
 
                     {{-- Save Button --}}
@@ -231,6 +271,52 @@
         // Highlight active button
         event.currentTarget.classList.add('bg-primary-container', 'text-on-primary-container');
         event.currentTarget.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
+    }
+
+    // Avatar Upload Handler
+    const uploadArea = document.getElementById('uploadArea');
+    const avatarInput = document.getElementById('avatarInput');
+    const previewImage = document.getElementById('previewImage');
+
+    // Click to upload
+    uploadArea.addEventListener('click', () => avatarInput.click());
+
+    // File selection handler
+    avatarInput.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+            displayPreview(file);
+        }
+    });
+
+    // Drag and drop
+    uploadArea.addEventListener('dragover', (e) => {
+        e.preventDefault();
+        uploadArea.classList.add('bg-surface-container-low');
+    });
+
+    uploadArea.addEventListener('dragleave', () => {
+        uploadArea.classList.remove('bg-surface-container-low');
+    });
+
+    uploadArea.addEventListener('drop', (e) => {
+        e.preventDefault();
+        uploadArea.classList.remove('bg-surface-container-low');
+
+        const file = e.dataTransfer.files[0];
+        if (file && file.type.startsWith('image/')) {
+            avatarInput.files = e.dataTransfer.files;
+            displayPreview(file);
+        }
+    });
+
+    function displayPreview(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImage.src = e.target.result;
+            previewImage.classList.remove('hidden');
+        };
+        reader.readAsDataURL(file);
     }
 </script>
 
