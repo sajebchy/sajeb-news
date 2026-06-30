@@ -1,220 +1,238 @@
-@extends('public.layout')
+<!DOCTYPE html>
+<html class="light" lang="bn">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রোফাইল সেটিংস — সজীব নিউজ</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif:wght@400;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script id="tailwind-config">
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "primary": "#004e9f",
+            "primary-container": "#0066cc",
+            "primary-fixed": "#d7e3ff",
+            "on-primary-container": "#dfe8ff",
+            "on-primary-fixed": "#001b3e",
+            "secondary": "#ab3500",
+            "secondary-container": "#fe6a34",
+            "on-secondary-container": "#5d1900",
+            "tertiary": "#005e2c",
+            "tertiary-container": "#00793b",
+            "on-tertiary-container": "#98ffaf",
+            "error": "#ba1a1a",
+            "error-container": "#ffdad6",
+            "background": "#fcf9f8",
+            "on-background": "#1c1b1b",
+            "surface": "#fcf9f8",
+            "on-surface": "#1c1b1b",
+            "on-surface-variant": "#414753",
+            "surface-container-low": "#f6f3f2",
+            "surface-container": "#f0eded",
+            "surface-container-high": "#eae7e7",
+            "surface-container-lowest": "#ffffff",
+            "outline": "#727784",
+            "outline-variant": "#c1c6d5",
+          },
+          spacing: {
+            "xs": "4px",
+            "sm": "8px",
+            "md": "16px",
+            "lg": "24px",
+            "xl": "32px",
+            "xxl": "48px",
+            "xxxl": "64px",
+          },
+        }
+      }
+    }
+    </script>
+    <style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        body {
+            background-color: #fcf9f8;
+            font-family: 'Inter', sans-serif;
+        }
+        h1, h2, h3, .font-serif-bn {
+            font-family: 'Noto Serif', serif;
+        }
+        .form-input-focus:focus {
+            border-color: #004e9f;
+            box-shadow: 0 0 0 2px rgba(0, 78, 159, 0.1);
+            outline: none;
+        }
+        .nav-item {
+            transition: all 0.2s ease;
+        }
+    </style>
+</head>
+<body class="text-on-surface">
 
-@section('title', 'My Profile - ' . config('app.name'))
-
-@section('content')
-<div class="container py-5">
-    <div class="row">
-        <!-- Sidebar Navigation (Desktop) -->
-        <div class="col-lg-3 d-none d-lg-block mb-4">
-            <div class="card shadow-sm">
-                <div class="card-body p-3">
-                    <h5 class="card-title mb-3">
-                        <i class="bi bi-person-circle"></i> Profile Menu
-                    </h5>
-                    <nav class="nav flex-column">
-                        <a class="nav-link ps-0 active" href="#profile-info" data-bs-toggle="tab">
-                            <i class="bi bi-person"></i> Profile Information
-                        </a>
-                        <a class="nav-link ps-0" href="#password-form" data-bs-toggle="tab">
-                            <i class="bi bi-key"></i> Change Password
-                        </a>
-                        @if(auth()->user()->hasRole('admin'))
-                        <a class="nav-link ps-0 text-danger" href="#delete-account" data-bs-toggle="tab">
-                            <i class="bi bi-trash"></i> Delete Account
-                        </a>
-                        @endif
-                    </nav>
-                </div>
-            </div>
-        </div>
-
-        <!-- Main Content -->
-        <div class="col-lg-9">
-            <!-- Mobile Tabs (Mobile View) -->
-            <div class="d-lg-none mb-4">
-                <ul class="nav nav-tabs" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link active" id="profile-tab" data-bs-toggle="tab" data-bs-target="#profile-info" type="button">
-                            <i class="bi bi-person"></i> Profile
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="password-tab" data-bs-toggle="tab" data-bs-target="#password-form" type="button">
-                            <i class="bi bi-key"></i> Password
-                        </button>
-                    </li>
-                    @if(auth()->user()->hasRole('admin'))
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link" id="delete-tab" data-bs-toggle="tab" data-bs-target="#delete-account" type="button">
-                            <i class="bi bi-trash text-danger"></i> Delete
-                        </button>
-                    </li>
-                    @endif
-                </ul>
-            </div>
-
-            <div class="tab-content">
-                <!-- Profile Information Tab -->
-                <div class="tab-pane fade show active" id="profile-info" role="tabpanel">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-primary text-white">
-                            <h5 class="mb-0">
-                                <i class="bi bi-person-fill"></i> Profile Information
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            @include('profile.partials.update-profile-information-form')
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Password Change Tab -->
-                <div class="tab-pane fade" id="password-form" role="tabpanel">
-                    <div class="card shadow-sm mb-4">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="mb-0">
-                                <i class="bi bi-key-fill"></i> Change Password
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            @include('profile.partials.update-password-form')
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Delete Account Tab (Admin Only) -->
-                @if(auth()->user()->hasRole('admin'))
-                <div class="tab-pane fade" id="delete-account" role="tabpanel">
-                    <div class="card shadow-sm border-danger mb-4">
-                        <div class="card-header bg-danger text-white">
-                            <h5 class="mb-0">
-                                <i class="bi bi-exclamation-triangle-fill"></i> Delete Account
-                            </h5>
-                        </div>
-                        <div class="card-body">
-                            @include('profile.partials.delete-user-form')
-                        </div>
-                    </div>
-                </div>
-                @endif
-            </div>
+{{-- Header --}}
+<header class="sticky top-0 z-50 w-full bg-surface border-b border-outline-variant px-6 py-4 shadow-sm">
+    <div class="max-w-6xl mx-auto flex items-center justify-between">
+        <h1 class="font-serif-bn text-[28px] font-bold text-primary">সজীব নিউজ</h1>
+        <div class="flex items-center gap-4">
+            <a href="{{ route('home') }}" target="_blank" class="text-on-surface-variant hover:text-primary transition-colors text-[14px]">সাইট দেখুন</a>
+            <form method="POST" action="{{ route('logout') }}" class="m-0">
+                @csrf
+                <button type="submit" class="text-error hover:opacity-70 text-[14px] font-bold">লগআউট</button>
+            </form>
         </div>
     </div>
-</div>
+</header>
 
-<style>
-    .card {
-        border: none;
-        border-radius: 8px;
-        transition: all 0.3s ease;
+<main class="max-w-6xl mx-auto px-6 py-8 min-h-[calc(100vh-120px)]">
+    <div class="flex flex-col lg:flex-row gap-8">
+        {{-- Sidebar --}}
+        <aside class="w-full lg:w-72 flex-shrink-0">
+            <div class="bg-surface-container-low p-6 rounded-xl shadow-sm border border-outline-variant sticky top-24">
+                <div class="mb-6">
+                    <h2 class="font-serif-bn text-[22px] font-bold text-on-surface">সেটিংস</h2>
+                    <p class="text-[14px] text-on-surface-variant">আপনার অ্যাকাউন্ট পরিচালনা করুন</p>
+                </div>
+                <nav class="space-y-2">
+                    <button type="button" onclick="switchTab('account')" class="nav-item w-full flex items-center gap-4 p-4 rounded-lg font-bold text-[14px] bg-primary-container text-on-primary-container transition-all">
+                        <span class="material-symbols-outlined">person</span>
+                        প্রোফাইল তথ্য
+                    </button>
+                    <button type="button" onclick="switchTab('password')" class="nav-item w-full flex items-center gap-4 p-4 rounded-lg font-bold text-[14px] text-on-surface-variant hover:bg-surface-container transition-all">
+                        <span class="material-symbols-outlined">security</span>
+                        পাসওয়ার্ড পরিবর্তন
+                    </button>
+                </nav>
+            </div>
+        </aside>
+
+        {{-- Content --}}
+        <div class="flex-grow">
+            {{-- Account Info Tab --}}
+            <section id="tab-account" class="bg-white p-8 rounded-xl shadow-md border border-outline-variant">
+                <div class="mb-8 flex items-center justify-between">
+                    <h2 class="font-serif-bn text-[28px] font-bold text-on-surface">প্রোফাইল তথ্য</h2>
+                </div>
+
+                {{-- Success Message --}}
+                @if (session('status') === 'profile-updated')
+                <div class="alert alert-success alert-dismissible fade show mb-6" role="alert">
+                    <i class="bi bi-check-circle"></i> প্রোফাইল সফলভাবে আপডেট হয়েছে।
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                @endif
+
+                <form method="POST" action="{{ route('profile.update') }}" class="space-y-6">
+                    @csrf
+                    @method('PATCH')
+
+                    {{-- Name --}}
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">নাম</label>
+                        <input type="text" name="name" value="{{ old('name', $user->name) }}" required
+                               class="w-full p-4 rounded-lg border border-outline-variant form-input-focus text-[16px]"
+                               placeholder="আপনার নাম">
+                        @error('name')<p class="text-error text-[12px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    {{-- Email --}}
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">ইমেইল</label>
+                        <input type="email" value="{{ $user->email }}" disabled
+                               class="w-full p-4 rounded-lg border border-outline-variant bg-surface-container-low text-[16px]">
+                        <p class="text-[12px] text-on-surface-variant mt-1">ইমেইল পরিবর্তন করা যাবে না</p>
+                    </div>
+
+                    {{-- Bio --}}
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">জীবনী (ঐচ্ছিক)</label>
+                        <textarea name="bio" rows="4"
+                                  class="w-full p-4 rounded-lg border border-outline-variant form-input-focus text-[16px]"
+                                  placeholder="নিজের সম্পর্কে কিছু লিখুন..."></textarea>
+                    </div>
+
+                    {{-- Save Button --}}
+                    <div class="pt-6 flex justify-end">
+                        <button type="submit" class="px-8 py-3 bg-primary-container text-on-primary-container rounded-lg font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all">
+                            পরিবর্তন সংরক্ষণ করুন
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            {{-- Password Tab --}}
+            <section id="tab-password" class="hidden bg-white p-8 rounded-xl shadow-md border border-outline-variant">
+                <h2 class="font-serif-bn text-[28px] font-bold text-on-surface mb-8">পাসওয়ার্ড পরিবর্তন করুন</h2>
+
+                @if (session('status') === 'password-updated')
+                <div class="alert alert-success alert-dismissible fade show mb-6" role="alert">
+                    <i class="bi bi-check-circle"></i> পাসওয়ার্ড সফলভাবে আপডেট হয়েছে।
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                @endif
+
+                <form method="POST" action="{{ route('password.update') }}" class="space-y-6 max-w-md">
+                    @csrf
+                    @method('PUT')
+
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">বর্তমান পাসওয়ার্ড</label>
+                        <input type="password" name="current_password" required
+                               class="w-full p-4 rounded-lg border border-outline-variant form-input-focus text-[16px]">
+                        @error('current_password')<p class="text-error text-[12px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">নতুন পাসওয়ার্ড</label>
+                        <input type="password" name="password" required
+                               class="w-full p-4 rounded-lg border border-outline-variant form-input-focus text-[16px]">
+                        @error('password')<p class="text-error text-[12px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div>
+                        <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">পাসওয়ার্ড নিশ্চিত করুন</label>
+                        <input type="password" name="password_confirmation" required
+                               class="w-full p-4 rounded-lg border border-outline-variant form-input-focus text-[16px]">
+                        @error('password_confirmation')<p class="text-error text-[12px] mt-1">{{ $message }}</p>@enderror
+                    </div>
+
+                    <div class="pt-4">
+                        <button type="submit" class="px-8 py-3 bg-primary text-on-primary rounded-lg font-bold shadow-sm hover:opacity-90 active:scale-95 transition-all">
+                            পাসওয়ার্ড আপডেট করুন
+                        </button>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</main>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function switchTab(tabId) {
+        // Hide all tabs
+        document.querySelectorAll('[id^="tab-"]').forEach(tab => {
+            tab.classList.add('hidden');
+        });
+
+        // Show target tab
+        document.getElementById('tab-' + tabId).classList.remove('hidden');
+
+        // Update button styles
+        document.querySelectorAll('.nav-item').forEach(btn => {
+            btn.classList.remove('bg-primary-container', 'text-on-primary-container');
+            btn.classList.add('text-on-surface-variant', 'hover:bg-surface-container');
+        });
+
+        // Highlight active button
+        event.currentTarget.classList.add('bg-primary-container', 'text-on-primary-container');
+        event.currentTarget.classList.remove('text-on-surface-variant', 'hover:bg-surface-container');
     }
+</script>
 
-    .card:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
-    }
-
-    .card-header {
-        border-radius: 8px 8px 0 0;
-        padding: 1.25rem;
-        font-weight: 600;
-    }
-
-    .nav-link {
-        color: #6c757d;
-        border-radius: 5px;
-        padding: 10px 12px !important;
-        transition: all 0.3s ease;
-        margin-bottom: 5px;
-    }
-
-    .nav-link:hover {
-        background-color: #f8f9fa;
-        color: #0d6efd;
-    }
-
-    .nav-link.active {
-        background-color: #0d6efd;
-        color: white !important;
-    }
-
-    .tab-pane {
-        animation: fadeIn 0.3s ease-in;
-    }
-
-    @keyframes fadeIn {
-        from {
-            opacity: 0;
-        }
-        to {
-            opacity: 1;
-        }
-    }
-
-    .nav-tabs {
-        border-bottom: 2px solid #dee2e6;
-    }
-
-    .nav-tabs .nav-link {
-        border: none;
-        border-bottom: 3px solid transparent;
-        margin-bottom: -2px;
-        color: #6c757d;
-        padding-bottom: 10px;
-    }
-
-    .nav-tabs .nav-link:hover {
-        border-bottom-color: #0d6efd;
-        background-color: transparent;
-    }
-
-    .nav-tabs .nav-link.active {
-        color: #0d6efd;
-        border-bottom-color: #0d6efd;
-        background-color: transparent;
-    }
-
-    /* Form styling */
-    .form-label {
-        font-weight: 600;
-        color: #333;
-        margin-bottom: 8px;
-    }
-
-    .form-control,
-    .form-select {
-        border-radius: 5px;
-        border: 1px solid #ddd;
-        padding: 10px 12px;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.2rem rgba(13, 110, 253, 0.25);
-    }
-
-    /* Mobile responsiveness */
-    @media (max-width: 768px) {
-        .card-header {
-            padding: 1rem;
-            font-size: 14px;
-        }
-
-        .card-body {
-            padding: 1rem;
-        }
-
-        .form-control,
-        .form-select {
-            font-size: 14px;
-            min-height: 38px;
-        }
-
-        .nav-link {
-            padding: 8px 10px !important;
-            font-size: 13px;
-        }
-    }
-</style>
-@endsection
+</body>
+</html>
