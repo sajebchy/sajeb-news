@@ -184,6 +184,8 @@
                         <label class="text-[12px] font-bold text-on-surface-variant uppercase tracking-wide mb-2 block">ইমেইল</label>
                         <input type="email" value="{{ $user->email }}" disabled
                                class="w-full p-4 rounded-lg border border-outline-variant bg-surface-container-low text-[16px]">
+                        {{-- Hidden field so email is submitted with the form --}}
+                        <input type="hidden" name="email" value="{{ $user->email }}">
                         <p class="text-[12px] text-on-surface-variant mt-1">ইমেইল পরিবর্তন করা যাবে না</p>
                     </div>
 
