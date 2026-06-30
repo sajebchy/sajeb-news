@@ -3,154 +3,248 @@
 @section('title', $author->name . ' - লেখক প্রোফাইল | সজীব নিউজ')
 @section('meta_description', $author->bio ?? $author->name . ' এর প্রকাশিত সব সংবাদ পড়ুন সজীব নিউজে।')
 
+@push('styles')
+<style>
+    .tab-active {
+        border-bottom: 3px solid #004e9f;
+        color: #004e9f;
+    }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+@endpush
+
 @section('content')
 
-<!-- Author Hero -->
-<div class="bg-surface-container-low border-b border-subtle py-10 px-gutter">
-  <div class="max-w-container-max mx-auto">
-    <div class="flex flex-col md:flex-row gap-6 items-start">
-      <!-- Avatar -->
-      @php $avatarPath = $author->profile_photo_path ?? $author->avatar ?? null; @endphp
-      <div class="w-36 h-36 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container-high border border-subtle">
-        @if($avatarPath)
-        <img class="w-full h-full object-cover" src="{{ asset('storage/' . $avatarPath) }}" alt="{{ $author->name }}"/>
-        @else
-        <div class="w-full h-full flex items-center justify-center bg-primary-container">
-          <span class="material-symbols-outlined text-[60px] text-on-primary-container/40">person</span>
+{{-- ========== PROFILE HEADER ========== --}}
+<section class="relative">
+    {{-- Cover Photo --}}
+    <div class="h-56 md:h-80 w-full overflow-hidden">
+        <div class="w-full h-full bg-cover bg-center bg-gradient-to-br from-primary to-primary-container"
+             style="background-image: url('https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=1400&auto=format&fit=crop&q=80')">
         </div>
-        @endif
-      </div>
-
-      <!-- Info -->
-      <div class="flex-1">
-        <span class="font-label-caps text-label-caps text-secondary block mb-1 tracking-widest uppercase">{{ $author->role ?? 'সাংবাদিক' }}</span>
-        <h1 class="font-headline-lg text-3xl md:text-4xl text-primary mb-3 leading-tight">{{ $author->name }}</h1>
-        @if($author->bio ?? null)
-        <p class="font-body-main text-on-surface-variant leading-relaxed max-w-2xl mb-4">{{ $author->bio }}</p>
-        @else
-        <p class="font-body-main text-on-surface-variant leading-relaxed max-w-2xl mb-4">{{ $author->name }} সজীব নিউজের একজন লেখক।</p>
-        @endif
-
-        <!-- Social Links -->
-        <div class="flex gap-2">
-          @if($author->facebook ?? null)
-          <a href="{{ $author->facebook }}" target="_blank" rel="noopener"
-             class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface hover:bg-secondary hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-[18px]">face_nod</span>
-          </a>
-          @endif
-          @if($author->twitter ?? null)
-          <a href="{{ $author->twitter }}" target="_blank" rel="noopener"
-             class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface hover:bg-secondary hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-[18px]">alternate_email</span>
-          </a>
-          @endif
-          @if($author->email ?? null)
-          <a href="mailto:{{ $author->email }}"
-             class="w-9 h-9 flex items-center justify-center rounded-full bg-surface-container-high text-on-surface hover:bg-secondary hover:text-white transition-colors">
-            <span class="material-symbols-outlined text-[18px]">mail</span>
-          </a>
-          @endif
-        </div>
-      </div>
-
-      <!-- Stats Card -->
-      <div class="hidden md:block flex-shrink-0 bg-white border border-subtle p-5 min-w-[200px] rounded">
-        <h3 class="font-label-caps text-label-caps text-on-surface-variant border-b border-subtle pb-3 mb-4">লেখকের পরিসংখ্যান</h3>
-        <div class="grid grid-cols-2 gap-4 text-center">
-          <div>
-            <span class="font-headline-lg text-2xl font-bold text-primary block">{{ $news->total() }}</span>
-            <span class="font-meta-data text-meta-data text-on-surface-variant">প্রকাশিত নিবন্ধ</span>
-          </div>
-          <div>
-            @php $totalViews = \App\Models\News::where('author_id', $author->id)->sum('views'); @endphp
-            <span class="font-headline-lg text-2xl font-bold text-primary block">{{ $totalViews > 1000 ? number_format($totalViews/1000,1).'K' : number_format($totalViews) }}</span>
-            <span class="font-meta-data text-meta-data text-on-surface-variant">মোট পাঠক</span>
-          </div>
-        </div>
-      </div>
     </div>
-  </div>
+
+    {{-- Avatar + Info overlay --}}
+    <div class="max-w-[1200px] mx-auto px-4 md:px-6 -mt-14 md:-mt-24 relative z-10">
+        <div class="flex flex-col md:flex-row items-end gap-4 md:gap-6">
+
+            {{-- Avatar --}}
+            <div class="relative flex-shrink-0">
+                <div class="w-28 h-28 md:w-48 md:h-48 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
+                    @if($author->avatar)
+                        <img class="w-full h-full object-cover"
+                             src="{{ Storage::url($author->avatar) }}"
+                             alt="{{ $author->name }}">
+                    @else
+                        <div class="w-full h-full flex items-center justify-center bg-primary-container">
+                            <span class="material-symbols-outlined text-white" style="font-size: 72px; font-variation-settings: 'FILL' 1;">person</span>
+                        </div>
+                    @endif
+                </div>
+            </div>
+
+            {{-- Name & Bio --}}
+            <div class="flex-1 pb-4 md:pb-8">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+                    <div>
+                        <h1 class="text-2xl md:text-4xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
+                            {{ $author->name }}
+                        </h1>
+                        <p class="text-sm md:text-base text-on-surface-variant max-w-2xl mt-1">
+                            {{ $author->bio ?? $author->name . ' সজীব নিউজের একজন লেখক।' }}
+                        </p>
+                    </div>
+                    @auth
+                        @if(auth()->id() === $author->id)
+                        <a href="{{ route('profile.edit') }}"
+                           class="flex items-center gap-1 bg-white border border-outline px-5 py-3 rounded-xl font-bold text-sm text-on-surface hover:bg-surface-container-low transition-colors shadow-sm self-start">
+                            <span class="material-symbols-outlined text-[18px]">edit</span>
+                            প্রোফাইল সম্পাদনা
+                        </a>
+                        @endif
+                    @endauth
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- ========== STATS + CONTENT ========== --}}
+<div class="max-w-[1200px] mx-auto px-4 md:px-6 py-8">
+
+    {{-- Stats Grid --}}
+    @php
+        $totalViews  = \App\Models\News::where('author_id', $author->id)->sum('views');
+        $totalPublished = \App\Models\News::where('author_id', $author->id)->where('status', 'published')->count();
+        $totalComments  = \App\Models\Comment::where('user_id', $author->id)->count();
+        $memberSince = $author->created_at ? $author->created_at->translatedFormat('M Y') : 'N/A';
+    @endphp
+
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+        <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-primary-container text-4xl mb-1" style="font-size: 40px;">menu_book</span>
+            <span class="text-2xl md:text-3xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
+                {{ $totalViews > 1000 ? number_format($totalViews/1000, 1).'K' : number_format($totalViews) }}
+            </span>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">মোট পাঠক</span>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-secondary-container text-4xl mb-1" style="font-size: 40px;">article</span>
+            <span class="text-2xl md:text-3xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
+                {{ $totalPublished }}
+            </span>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">প্রকাশিত নিবন্ধ</span>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-tertiary-container text-4xl mb-1" style="font-size: 40px;">comment</span>
+            <span class="text-2xl md:text-3xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
+                {{ $totalComments }}
+            </span>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">মন্তব্য</span>
+        </div>
+        <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
+            <span class="material-symbols-outlined text-outline text-4xl mb-1" style="font-size: 40px;">calendar_today</span>
+            <span class="text-lg md:text-xl font-bold text-on-surface" style="font-family: 'Noto Serif Bengali', serif;">
+                {{ $author->created_at ? $author->created_at->format('M Y') : 'N/A' }}
+            </span>
+            <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">সদস্য হওয়ার তারিখ</span>
+        </div>
+    </div>
+
+    {{-- Tabs --}}
+    <div class="mb-6 border-b border-outline-variant">
+        <div class="flex gap-8 overflow-x-auto pb-px no-scrollbar">
+            <button class="tab-active py-4 px-1 font-bold text-base cursor-pointer whitespace-nowrap transition-all" id="tab-articles" onclick="switchTab('articles')">
+                প্রকাশিত নিবন্ধ
+            </button>
+            <button class="py-4 px-1 font-bold text-base text-on-surface-variant cursor-pointer whitespace-nowrap hover:text-primary transition-all" id="tab-popular" onclick="switchTab('popular')">
+                সর্বাধিক পঠিত
+            </button>
+        </div>
+    </div>
+
+    {{-- Tab: Latest Articles (3-column grid) --}}
+    <div id="content-articles">
+        @if($news->count() > 0)
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach($news as $item)
+            <a href="{{ route('news.show', $item->slug) }}"
+               class="bg-white rounded-xl overflow-hidden border border-outline-variant shadow-sm hover:shadow-md transition-shadow group cursor-pointer block">
+                <div class="relative h-48">
+                    <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                         src="{{ $item->featured_image ? Storage::url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/600/400' }}"
+                         alt="{{ $item->title }}">
+                    @if($item->category)
+                    <div class="absolute top-3 left-3 bg-primary-container text-white text-[11px] px-2 py-1 rounded font-bold uppercase tracking-widest">
+                        {{ $item->category->name }}
+                    </div>
+                    @endif
+                </div>
+                <div class="p-5">
+                    <h3 class="font-semibold text-[17px] leading-snug text-on-surface group-hover:text-primary transition-colors line-clamp-2"
+                        style="font-family: 'Noto Serif Bengali', serif;">
+                        {{ $item->title }}
+                    </h3>
+                    @if($item->excerpt)
+                    <p class="text-sm text-on-surface-variant mt-2 line-clamp-2">{{ $item->excerpt }}</p>
+                    @endif
+                    <div class="flex items-center justify-between mt-4">
+                        <span class="text-xs text-outline flex items-center gap-1">
+                            <span class="material-symbols-outlined" style="font-size: 16px;">schedule</span>
+                            {{ $item->published_at?->diffForHumans() }}
+                        </span>
+                        <span class="material-symbols-outlined text-primary-container" style="font-size: 20px; font-variation-settings: 'FILL' 1;">bookmark</span>
+                    </div>
+                </div>
+            </a>
+            @endforeach
+        </div>
+
+        {{-- Pagination --}}
+        @if($news->hasPages())
+        <div class="mt-8">{{ $news->links() }}</div>
+        @endif
+
+        @else
+        <div class="text-center py-20">
+            <span class="material-symbols-outlined text-outline-variant" style="font-size: 80px;">article</span>
+            <p class="text-lg text-on-surface-variant mt-4">এই লেখকের কোনো নিবন্ধ নেই।</p>
+        </div>
+        @endif
+    </div>
+
+    {{-- Tab: Popular Articles --}}
+    <div id="content-popular" class="hidden flex flex-col gap-4">
+        @php
+            $popularByAuthor = \App\Models\News::where('author_id', $author->id)
+                ->where('status', 'published')
+                ->orderByDesc('views')
+                ->limit(10)
+                ->get();
+        @endphp
+        @forelse($popularByAuthor as $item)
+        <a href="{{ route('news.show', $item->slug) }}"
+           class="bg-white p-5 rounded-xl border border-outline-variant flex gap-5 items-center hover:bg-surface-container-low transition-colors cursor-pointer group">
+            <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                     src="{{ $item->featured_image ? Storage::url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/300/200' }}"
+                     alt="{{ $item->title }}">
+            </div>
+            <div class="flex-1 min-w-0">
+                <div class="flex items-center gap-2 mb-1">
+                    @if($item->category)
+                    <span class="bg-surface-variant text-on-surface-variant text-[10px] px-2 py-[2px] rounded font-bold uppercase tracking-tighter">
+                        {{ $item->category->name }}
+                    </span>
+                    @endif
+                    <span class="text-xs text-outline">{{ $item->published_at?->diffForHumans() }}</span>
+                </div>
+                <h4 class="font-semibold text-[16px] text-on-surface line-clamp-2 group-hover:text-primary transition-colors"
+                    style="font-family: 'Noto Serif Bengali', serif;">
+                    {{ $item->title }}
+                </h4>
+                <span class="text-xs text-outline flex items-center gap-1 mt-1">
+                    <span class="material-symbols-outlined" style="font-size: 14px;">visibility</span>
+                    {{ number_format($item->views ?? 0) }} পাঠক
+                </span>
+            </div>
+            <span class="material-symbols-outlined text-outline flex-shrink-0">chevron_right</span>
+        </a>
+        @empty
+        <div class="text-center py-16">
+            <p class="text-on-surface-variant">কোনো নিবন্ধ পাওয়া যায়নি।</p>
+        </div>
+        @endforelse
+    </div>
+
 </div>
 
-<!-- Articles + Sidebar -->
-<main class="max-w-container-max mx-auto px-gutter py-stack-lg">
-  <div class="grid grid-cols-1 lg:grid-cols-12 gap-stack-lg">
-
-    <!-- Article List (70%) -->
-    <div class="lg:col-span-8">
-      <div class="flex items-center justify-between mb-6">
-        <h2 class="font-headline-md text-xl text-primary">প্রকাশিত নিবন্ধসমূহ</h2>
-        <span class="font-meta-data text-meta-data text-on-surface-variant">মোট {{ $news->total() }} টি</span>
-      </div>
-
-      @forelse($news as $item)
-      <a href="{{ route('news.show', $item->slug) }}"
-         class="flex flex-col md:flex-row gap-5 py-6 border-b border-subtle group hover:bg-surface-container-low px-3 -mx-3 rounded transition-colors">
-        <div class="md:w-48 flex-shrink-0 overflow-hidden rounded aspect-video md:aspect-auto md:h-32">
-          <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-               src="{{ $item->featured_image ? \Storage::url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/300/200' }}"
-               alt="{{ $item->title }}"/>
-        </div>
-        <div class="flex-1 flex flex-col">
-          @if($item->category)
-          <span class="font-label-caps text-label-caps text-secondary mb-1">{{ $item->category->name }}</span>
-          @endif
-          <h3 class="font-headline-md text-[17px] leading-snug text-primary group-hover:text-secondary transition-colors mb-2 line-clamp-2">{{ $item->title }}</h3>
-          @if($item->excerpt)
-          <p class="font-body-sm text-body-sm text-on-surface-variant mb-3 line-clamp-2">{{ $item->excerpt }}</p>
-          @endif
-          <div class="mt-auto flex items-center gap-4 font-meta-data text-meta-data text-outline">
-            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">schedule</span> {{ $item->published_at?->diffForHumans() }}</span>
-            <span class="flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">visibility</span> {{ number_format($item->views ?? 0) }}</span>
-          </div>
-        </div>
-      </a>
-      @empty
-      <div class="text-center py-16">
-        <span class="material-symbols-outlined text-[80px] text-outline-variant">article</span>
-        <p class="font-headline-md mt-4 text-on-surface-variant">এই লেখকের কোনো নিবন্ধ নেই।</p>
-      </div>
-      @endforelse
-
-      <!-- Pagination -->
-      @if($news->hasPages())
-      <div class="pt-stack-lg">{{ $news->links() }}</div>
-      @endif
-    </div>
-
-    <!-- Sidebar (30%) -->
-    <aside class="lg:col-span-4 space-y-stack-lg">
-      @php $popularNews = \App\Models\News::where('status','published')->orderBy('views','desc')->limit(5)->get(); @endphp
-      @if($popularNews->count() > 0)
-      <div class="bg-surface-container-low p-stack-md border border-subtle rounded">
-        <h3 class="font-headline-md text-headline-md text-primary mb-4 border-l-4 border-secondary pl-3 flex items-center gap-2">
-          <span class="material-symbols-outlined text-secondary">trending_up</span> পাঠকপ্রিয় খবর
-        </h3>
-        <ol class="space-y-4">
-          @foreach($popularNews as $idx => $pn)
-          <li class="{{ $idx > 0 ? 'border-t border-subtle pt-4' : '' }}">
-            <a href="{{ route('news.show', $pn->slug) }}" class="flex gap-4 group">
-              <span class="font-headline-lg text-2xl text-outline-variant group-hover:text-secondary transition-colors flex-shrink-0 w-8">{{ str_pad($idx+1,2,'0',STR_PAD_LEFT) }}</span>
-              <p class="font-body-sm text-body-sm text-on-surface-variant group-hover:text-secondary transition-colors line-clamp-2">{{ $pn->title }}</p>
-            </a>
-          </li>
-          @endforeach
-        </ol>
-      </div>
-      @endif
-
-      <!-- Newsletter -->
-      <div class="bg-primary-container p-stack-lg rounded text-center">
-        <h3 class="font-headline-md text-headline-md text-white mb-2">খবরের আপডেট পেতে</h3>
-        <p class="font-body-sm text-on-primary-container mb-4 opacity-80">প্রতিদিন সেরা সব খবর সরাসরি ইমেইলে।</p>
-        <div class="flex flex-col gap-2">
-          <input class="w-full px-3 py-2 rounded border border-white/20 bg-white/10 text-white placeholder:text-white/60 outline-none focus:bg-white/20 transition-all" placeholder="আপনার ইমেইল" type="email"/>
-          <button class="w-full py-2 bg-secondary text-white font-label-caps text-label-caps rounded hover:bg-news-red-accent transition-colors">সাবস্ক্রাইব</button>
-        </div>
-      </div>
-    </aside>
-  </div>
-</main>
+@push('scripts')
+<script>
+    function switchTab(tabId) {
+        const tabs = ['articles', 'popular'];
+        tabs.forEach(t => {
+            const btn     = document.getElementById('tab-' + t);
+            const content = document.getElementById('content-' + t);
+            if (t === tabId) {
+                btn.classList.add('tab-active');
+                btn.classList.remove('text-on-surface-variant');
+                if (content) content.classList.remove('hidden');
+            } else {
+                btn.classList.remove('tab-active');
+                btn.classList.add('text-on-surface-variant');
+                if (content) content.classList.add('hidden');
+            }
+        });
+    }
+</script>
+@endpush
 
 @endsection
