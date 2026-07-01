@@ -17,10 +17,10 @@ class AnalyticsController extends Controller
     public function index()
     {
         // Get statistics
-        $totalViews = NewsAnalytics::sum('views') ?? 0;
-        $totalEngagement = NewsAnalytics::sum('engagement_score') ?? 0;
-        $averageReadTime = NewsAnalytics::avg('avg_time_on_page') ?? 0;
-        $totalClicks = NewsAnalytics::sum('clicks') ?? 0;
+        $totalViews = NewsAnalytics::sum('total_views') ?? 0;
+        $totalEngagement = NewsAnalytics::sum('social_shares') ?? 0;
+        $averageReadTime = NewsAnalytics::avg('average_time_on_page') ?? 0;
+        $totalClicks = NewsAnalytics::sum('daily_views') ?? 0;
 
         // Top performing news (by views)
         $topNews = News::with('category')
