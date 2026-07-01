@@ -77,7 +77,7 @@
 
             {{-- Category Filter --}}
             @php
-                $allCategories = \App\Models\Category::where('is_published', true)->withCount(['news' => fn($q) => $q->where('status','published')])->orderByDesc('news_count')->get();
+                $allCategories = \App\Models\Category::where('is_active', true)->withCount(['news' => fn($q) => $q->where('status','published')])->orderByDesc('news_count')->get();
                 $activeCategory = request('category');
             @endphp
             @if($allCategories->count())

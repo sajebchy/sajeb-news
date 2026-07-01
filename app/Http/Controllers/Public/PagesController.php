@@ -161,7 +161,7 @@ class PagesController extends Controller
             'og_url' => route('sitemap'),
         ];
 
-        $categories = Category::where('is_published', true)->get();
+        $categories = Category::where('is_active', true)->get();
         $recentNews = News::where('status', 'published')->latest()->take(50)->get();
 
         return view('public.pages.sitemap', compact('metaTags', 'categories', 'recentNews'));
@@ -217,7 +217,7 @@ class PagesController extends Controller
         }
 
         // Categories
-        $categories = Category::where('is_published', true)
+        $categories = Category::where('is_active', true)
             ->select('slug', 'updated_at')
             ->get();
 
@@ -261,7 +261,7 @@ class PagesController extends Controller
         }
 
         $content .= "## Categories\n";
-        $categories = Category::where('is_published', true)->get();
+        $categories = Category::where('is_active', true)->get();
         foreach ($categories as $category) {
             $content .= "- {$category->name}: " . route('category.show', ['category' => $category->slug]) . "\n";
         }
@@ -277,7 +277,7 @@ class PagesController extends Controller
 
         $content .= "\n## Website Statistics\n";
         $content .= "- Total News: " . News::where('status', 'published')->count() . "\n";
-        $content .= "- Total Categories: " . Category::where('is_published', true)->count() . "\n";
+        $content .= "- Total Categories: " . Category::where('is_active', true)->count() . "\n";
         $content .= "- Last Updated: " . now()->format('Y-m-d H:i:s') . "\n";
 
         return response($content)
