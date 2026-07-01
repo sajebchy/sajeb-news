@@ -55,6 +55,7 @@ class AdController extends Controller
             'sticky_sidebar_left' => '9️⃣ Sticky Sidebar Left (160x600 / 300x250)',
             'sticky_sidebar_right' => '9️⃣ Sticky Sidebar Right (160x600 / 300x250)',
             'popup_interstitial' => '🔟 Popup/Interstitial Ads',
+            'sticky_bottom' => '1️⃣1️⃣ Bottom Sticky Banner (320x50 / 728x90)',
         ];
 
         $types = [
@@ -110,7 +111,7 @@ class AdController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'placement' => 'required|in:header_top,navigation_sticky,homepage_top,sidebar_medium_rectangle,sidebar_half_page,article_2nd_paragraph,article_middle,article_conclusion,below_article,footer_banner,between_news_listings,sticky_sidebar_left,sticky_sidebar_right,popup_interstitial',
+            'placement' => 'required|in:header_top,navigation_sticky,homepage_top,sidebar_medium_rectangle,sidebar_half_page,article_2nd_paragraph,article_middle,article_conclusion,below_article,footer_banner,between_news_listings,sticky_sidebar_left,sticky_sidebar_right,popup_interstitial,sticky_bottom',
             'type' => 'required|in:banner,sidebar,inline,featured,header,responsive,sticky,popup',
             'ad_source' => 'required|in:offline,online',
             'ad_type' => 'nullable|in:standard,image,video',
@@ -258,6 +259,7 @@ class AdController extends Controller
             'sticky_sidebar_left' => '9️⃣ Sticky Sidebar Left (160x600 / 300x250)',
             'sticky_sidebar_right' => '9️⃣ Sticky Sidebar Right (160x600 / 300x250)',
             'popup_interstitial' => '🔟 Popup/Interstitial Ads',
+            'sticky_bottom' => '1️⃣1️⃣ Bottom Sticky Banner (320x50 / 728x90)',
         ];
 
         $types = [
@@ -315,7 +317,7 @@ class AdController extends Controller
     {
         $validated = $request->validate([
             'name' => 'required|string|max:255',
-            'placement' => 'required|in:header_top,navigation_sticky,homepage_top,sidebar_medium_rectangle,sidebar_half_page,article_2nd_paragraph,article_middle,article_conclusion,below_article,footer_banner,between_news_listings,sticky_sidebar_left,sticky_sidebar_right,popup_interstitial',
+            'placement' => 'required|in:header_top,navigation_sticky,homepage_top,sidebar_medium_rectangle,sidebar_half_page,article_2nd_paragraph,article_middle,article_conclusion,below_article,footer_banner,between_news_listings,sticky_sidebar_left,sticky_sidebar_right,popup_interstitial,sticky_bottom',
             'type' => 'required|in:banner,sidebar,inline,featured,header,responsive,sticky,popup',
             'ad_source' => 'required|in:offline,online',
             'ad_type' => 'nullable|in:standard,image,video',

@@ -88,14 +88,19 @@ class NewsController extends Controller
             // Create news post
             $news = auth()->user()->newsArticles()->create($validated);
 
-            // Attach tags
+            // Attach tags and auto-populate meta_keywords
             if (!empty($validated['tags'])) {
                 $tags = array_map('trim', explode(',', $validated['tags']));
-                $tagIds = collect($tags)->filter()->map(fn($name) => \App\Models\Tag::firstOrCreate(
+                $tagNames = collect($tags)->filter();
+                $tagIds = $tagNames->map(fn($name) => \App\Models\Tag::firstOrCreate(
                     ['slug' => \Str::slug($name)],
                     ['name' => $name]
                 ))->pluck('id');
                 $news->tags()->sync($tagIds);
+                // Auto-fill meta_keywords from topics if not manually set
+                if (empty($news->meta_keywords)) {
+                    $news->update(['meta_keywords' => $tagNames->implode(', ')]);
+                }
             }
 
             // Log the activity
@@ -190,14 +195,17 @@ class NewsController extends Controller
             // Update news post
             $news->update($validated);
 
-            // Update tags
+            // Update tags and auto-sync meta_keywords
             if (isset($validated['tags'])) {
                 $tags = array_map('trim', explode(',', $validated['tags']));
-                $tagIds = collect($tags)->filter()->map(fn($name) => \App\Models\Tag::firstOrCreate(
+                $tagNames = collect($tags)->filter();
+                $tagIds = $tagNames->map(fn($name) => \App\Models\Tag::firstOrCreate(
                     ['slug' => \Str::slug($name)],
                     ['name' => $name]
                 ))->pluck('id');
                 $news->tags()->sync($tagIds);
+                // Always keep meta_keywords in sync with topics
+                $news->update(['meta_keywords' => $tagNames->implode(', ')]);
             }
 
             // Log the activity with changes

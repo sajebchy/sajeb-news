@@ -3,6 +3,43 @@
 @section('title', $news->meta_title ?? $news->title . ' - সজীব নিউজ')
 @section('meta_description', $news->meta_description ?? $news->excerpt ?? Str::limit(strip_tags($news->content), 160))
 @section('canonical', route('news.show', $news->slug))
+@if($news->meta_keywords || $news->tags->count())
+@section('meta_keywords', $news->meta_keywords ?: $news->tags->pluck('name')->implode(', '))
+@endif
+
+@push('styles')
+@php
+  $imageUrl = $news->featured_image
+    ? (str_starts_with($news->featured_image,'http') ? $news->featured_image : asset($news->featured_image))
+    : null;
+@endphp
+{{-- Open Graph / Twitter meta --}}
+<meta property="og:type"               content="article">
+<meta property="og:title"              content="{{ $news->title }}">
+<meta property="og:description"        content="{{ $news->excerpt ?? Str::limit(strip_tags($news->content),160) }}">
+<meta property="og:url"                content="{{ route('news.show', $news->slug) }}">
+@if($imageUrl)
+<meta property="og:image"              content="{{ $imageUrl }}">
+<meta property="og:image:width"        content="1200">
+<meta property="og:image:height"       content="630">
+@endif
+<meta property="article:published_time" content="{{ $news->published_at?->toIso8601String() }}">
+<meta property="article:modified_time"  content="{{ $news->updated_at->toIso8601String() }}">
+@if($news->category)
+<meta property="article:section"        content="{{ $news->category->name }}">
+@endif
+<meta name="twitter:card"              content="summary_large_image">
+<meta name="twitter:title"             content="{{ $news->title }}">
+<meta name="twitter:description"       content="{{ $news->excerpt ?? Str::limit(strip_tags($news->content),160) }}">
+@if($imageUrl)<meta name="twitter:image" content="{{ $imageUrl }}">@endif
+@endpush
+
+@push('scripts')
+{{-- JSON-LD Schemas: NewsArticle + BreadcrumbList --}}
+@foreach($schema as $s)
+<script type="application/ld+json">{!! json_encode($s, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}</script>
+@endforeach
+@endpush
 
 @section('content')
 
@@ -17,22 +54,15 @@
 @endphp
 
 {{-- ══════════════════════════════════════════
-     LEADERBOARD AD BANNER (Desktop only)
+     LEADERBOARD / HEADER AD
 ═══════════════════════════════════════════ --}}
-<div class="hidden md:flex max-w-container-max mx-auto px-gutter py-stack-sm">
-  <div class="w-full h-24 bg-surface-container flex items-center justify-center border border-subtle rounded-lg overflow-hidden">
-    <span class="font-label-caps text-on-surface-variant opacity-50 tracking-widest uppercase text-xs">Advertisement – Leaderboard Banner</span>
-  </div>
+@php $adHeader = \App\Helpers\AdHelper::getRandomAdByPlacement('header_top'); @endphp
+@if($adHeader)
+<div class="w-full bg-surface-container-low border-b border-subtle py-2 text-center">
+  <p class="font-label-caps text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
+  {!! \App\Helpers\AdHelper::renderAd($adHeader) !!}
 </div>
-
-{{-- ══════════════════════════════════════════
-     MOBILE: Small banner ad below header
-═══════════════════════════════════════════ --}}
-<div class="flex md:hidden w-full bg-surface-container-low border-b border-subtle py-2 justify-center items-center">
-  <div class="w-[320px] h-[50px] bg-surface-variant flex items-center justify-center text-on-surface-variant font-label-caps text-[10px] border border-outline-variant">
-    ADVERTISEMENT
-  </div>
-</div>
+@endif
 
 {{-- ══════════════════════════════════════════
      MAIN CONTENT — 70/30 Grid (Desktop)
@@ -144,22 +174,47 @@
       </p>
       @endif
 
-      {{-- Article Body with Dropcap --}}
+      {{-- Article Body --}}
+      @php
+        // Split content into paragraphs to inject mid-article ad
+        $paragraphs = preg_split('/(<\/p>\s*)/i', $news->content, -1, PREG_SPLIT_DELIM_CAPTURE);
+        $total = count($paragraphs);
+        $midPoint = (int)($total / 2);
+        $midInjected = false;
+      @endphp
       <div class="article-prose space-y-stack-md font-body-main text-body-main leading-relaxed text-on-surface">
-        {!! $news->content !!}
+        @foreach($paragraphs as $i => $para)
+          {!! $para !!}
+          @if(!$midInjected && $i >= $midPoint && isset($adMiddle))
+            @php $midInjected = true; @endphp
+            <div style="margin:20px 0;text-align:center;">
+              <p style="font-size:10px;color:#aaa;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
+              {!! \App\Helpers\AdHelper::renderAd($adMiddle) !!}
+            </div>
+          @endif
+        @endforeach
       </div>
 
-      {{-- In-article Sponsored Ad (after content) --}}
-      <div class="my-stack-lg p-stack-md bg-surface-container-low border-y border-subtle flex flex-col items-center">
-        <span class="font-label-caps text-[10px] text-on-surface-variant mb-2 uppercase tracking-widest">বিজ্ঞাপন</span>
-        <div class="w-full max-w-md h-28 bg-surface-container flex items-center justify-center rounded border border-dashed border-outline-variant">
-          <span class="material-symbols-outlined text-outline-variant text-3xl">ads_click</span>
-        </div>
+      {{-- Article Conclusion Ad --}}
+      @if(isset($adConclusion) && $adConclusion)
+      <div style="margin:20px 0;text-align:center;">
+        <p style="font-size:10px;color:#aaa;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($adConclusion) !!}
       </div>
+      @endif
 
-      {{-- Tags --}}
+      {{-- Below Article Ad --}}
+      @if(isset($adBelowArticle) && $adBelowArticle)
+      <div style="margin:24px 0;text-align:center;padding:12px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
+        <p style="font-size:10px;color:#aaa;margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
+        {!! \App\Helpers\AdHelper::renderAd($adBelowArticle) !!}
+      </div>
+      @endif
+
+      {{-- Tags: hidden from display, used only for SEO (meta keywords) --}}
+      {{-- Tags are injected into <meta name="keywords"> and NewsArticle schema --}}
       @if($news->tags && $news->tags->count() > 0)
-      <div class="pt-stack-lg border-t border-subtle">
+      <div class="pt-stack-lg border-t border-subtle" style="display:none;" aria-hidden="true">
         <div class="flex flex-wrap gap-2 items-center">
           <span class="font-label-caps text-label-caps text-on-surface-variant">ট্যাগ:</span>
           @foreach($news->tags as $tag)

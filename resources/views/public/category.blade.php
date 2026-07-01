@@ -3,6 +3,16 @@
 @section('title', $category->name . ' - সজীব নিউজ')
 @section('meta_description', $category->description ?? $category->name . ' বিভাগের সর্বশেষ সংবাদ - সজীব নিউজ')
 
+@push('scripts')
+@php
+  $__seoSvc  = app(\App\Services\SeoService::class);
+  $__catSch  = $__seoSvc->getCategorySchema($category, $news);
+  $__breadSch= $__seoSvc->getBreadcrumbSchema([$category->name => route('category.show', $category->slug)]);
+@endphp
+<script type="application/ld+json">{!! json_encode($__catSch,  JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($__breadSch, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
+
 @section('content')
 
 <!-- Breaking Ticker -->
