@@ -91,7 +91,11 @@ class NewsController extends Controller
             // Attach tags
             if (!empty($validated['tags'])) {
                 $tags = array_map('trim', explode(',', $validated['tags']));
-                $news->attachTags($tags);
+                $tagIds = collect($tags)->filter()->map(fn($name) => \App\Models\Tag::firstOrCreate(
+                    ['slug' => \Str::slug($name)],
+                    ['name' => $name]
+                ))->pluck('id');
+                $news->tags()->sync($tagIds);
             }
 
             // Log the activity
@@ -189,7 +193,11 @@ class NewsController extends Controller
             // Update tags
             if (isset($validated['tags'])) {
                 $tags = array_map('trim', explode(',', $validated['tags']));
-                $news->syncTags($tags);
+                $tagIds = collect($tags)->filter()->map(fn($name) => \App\Models\Tag::firstOrCreate(
+                    ['slug' => \Str::slug($name)],
+                    ['name' => $name]
+                ))->pluck('id');
+                $news->tags()->sync($tagIds);
             }
 
             // Log the activity with changes
