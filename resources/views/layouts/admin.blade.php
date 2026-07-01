@@ -399,5 +399,15 @@
 </script>
 
 @stack('scripts')
+
+<script>
+    // Detect browser back-forward cache (bfcache) restore and force reload
+    // This prevents logged-out users from seeing the admin panel via browser back button
+    window.addEventListener('pageshow', function (event) {
+        if (event.persisted) {
+            window.location.reload();
+        }
+    });
+</script>
 </body>
 </html>

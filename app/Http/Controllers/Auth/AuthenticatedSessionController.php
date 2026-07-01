@@ -7,6 +7,7 @@ use App\Http\Requests\Auth\LoginRequest;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cookie;
 use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
@@ -14,9 +15,14 @@ class AuthenticatedSessionController extends Controller
     /**
      * Display the login view.
      */
-    public function create(): View
+    public function create(): \Illuminate\Http\Response
     {
-        return view('auth.login');
+        $response = response()->view('auth.login');
+        // Prevent browser from caching the login page or serving it from bfcache
+        $response->headers->set('Cache-Control', 'no-store, no-cache, must-revalidate');
+        $response->headers->set('Pragma', 'no-cache');
+        $response->headers->set('Expires', '0');
+        return $response;
     }
 
     /**
@@ -59,9 +65,16 @@ class AuthenticatedSessionController extends Controller
         Auth::guard('web')->logout();
 
         $request->session()->invalidate();
-
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        // Explicitly expire the remember_me cookie so the browser discards it
+        $rememberCookie = Cookie::forget(Auth::getRecallerName());
+
+        return redirect()->route('login')
+            ->withCookie($rememberCookie)
+            ->withHeaders([
+                'Cache-Control' => 'no-store, no-cache, must-revalidate',
+                'Pragma'        => 'no-cache',
+            ]);
     }
 }
