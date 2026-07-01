@@ -76,21 +76,21 @@ class AdHelper
     {
         if (!$ad) return '';
 
-        $html = '<div class="ad-wrapper" style="margin: 15px 0; text-align: center;">';
-        $html .= '<p style="font-size: 12px; color: #999; margin: 5px 0;">বিজ্ঞাপন</p>';
+        $html = '<div class="ad-wrapper" style="margin: 15px auto; text-align: center; width: 100%;">';
+        $html .= '<p style="font-size: 12px; color: #999; margin: 5px 0; text-align: center;">বিজ্ঞাপন</p>';
 
         if ($ad->image_url) {
             $imageUrl = str_starts_with($ad->image_url, 'http') ? $ad->image_url : asset($ad->image_url);
-            $html .= '<div style="margin: 5px 0;">';
-            $html .= '<a href="' . ($ad->ad_url ?: '#') . '" target="_blank" rel="noopener">';
-            $html .= '<img src="' . $imageUrl . '" alt="' . ($ad->alt_text ?? $ad->name) . '" style="max-width: 100%; height: auto; border-radius: 4px;">';
+            $html .= '<div style="margin: 5px 0; text-align: center;">';
+            $html .= '<a href="' . ($ad->ad_url ?: '#') . '" target="_blank" rel="noopener" style="display: inline-block;">';
+            $html .= '<img src="' . $imageUrl . '" alt="' . ($ad->alt_text ?? $ad->name) . '" style="max-width: 100%; height: auto; border-radius: 4px; display: block; margin: 0 auto;">';
             $html .= '</a></div>';
         } elseif ($ad->code) {
-            $html .= '<div style="margin: 10px auto;">';
+            $html .= '<div style="margin: 10px auto; text-align: center;">';
             $html .= $ad->code;
             $html .= '</div>';
         } else {
-            $html .= '<div style="background: #f0f0f0; padding: 15px; border-radius: 4px;">';
+            $html .= '<div style="background: #f0f0f0; padding: 15px; border-radius: 4px; text-align: center;">';
             $html .= '<a href="' . $ad->ad_url . '" target="_blank" rel="noopener" style="color: #0066cc; text-decoration: none; font-weight: 500;">';
             $html .= $ad->name;
             $html .= '</a></div>';

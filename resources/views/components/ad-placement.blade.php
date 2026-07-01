@@ -13,12 +13,12 @@
 @if($ads)
     @if($ads instanceof \Illuminate\Support\Collection || is_array($ads))
         @foreach($ads as $ad)
-            <div class="ad-placement {{ $class }}" style="margin: 20px 0;">
+            <div class="ad-placement {{ $class }}" style="margin: 20px auto; text-align: center; width: 100%;">
                 {!! \App\Helpers\AdHelper::renderAd($ad) !!}
             </div>
         @endforeach
     @else
-        <div class="ad-placement {{ $class }}" style="margin: 20px 0;">
+        <div class="ad-placement {{ $class }}" style="margin: 20px auto; text-align: center; width: 100%;">
             {!! \App\Helpers\AdHelper::renderAd($ads) !!}
         </div>
     @endif
