@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('name')->unique();
             $table->string('slug')->unique();
             $table->string('color')->default('#6c757d');
+            $table->unsignedInteger('order_column')->nullable();
             $table->timestamps();
         });
 
