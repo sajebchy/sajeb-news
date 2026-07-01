@@ -5,11 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
-use Spatie\Tags\HasTags;
 
 class Category extends Model
 {
-    use HasSlug, HasTags;
+    use HasSlug;
 
     protected $fillable = [
         'name',

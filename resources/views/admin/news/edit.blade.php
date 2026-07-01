@@ -53,11 +53,17 @@
                             @enderror
                         </div>
 
-                        <!-- Topics -->
+                        <!-- Topics / SEO Keywords -->
                         <div class="mb-3">
-                            <label for="tags" class="form-label">Topics</label>
-                            <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" value="{{ old('tags', $news->tags->pluck('name')->implode(', ') ?? '') }}">
-                            <small class="text-muted">Separate topics with commas</small>
+                            <label for="tags" class="form-label">
+                                Topics
+                                <span class="badge bg-success ms-1" style="font-size:10px;">SEO Keywords</span>
+                            </label>
+                            <input type="text" class="form-control @error('tags') is-invalid @enderror" id="tags" name="tags" value="{{ old('tags', $news->tags->pluck('name')->implode(', ') ?? '') }}" placeholder="ভূমিকম্প, বাংলাদেশ, আন্তর্জাতিক">
+                            <small class="text-muted">
+                                <i class="bi bi-info-circle"></i>
+                                কমা দিয়ে আলাদা করুন। এগুলো পোস্টে দেখাবে না — শুধু Google-এ keyword হিসেবে কাজ করবে।
+                            </small>
                             @error('tags')
                                 <div class="invalid-feedback">{{ $message }}</div>
                             @enderror

@@ -161,7 +161,7 @@ class PagesController extends Controller
             'og_url' => route('sitemap'),
         ];
 
-        $categories = Category::where('is_published', true)->get();
+        $categories = Category::where('is_active', true)->get();
         $recentNews = News::where('status', 'published')->latest()->take(50)->get();
 
         return view('public.pages.sitemap', compact('metaTags', 'categories', 'recentNews'));
@@ -217,7 +217,7 @@ class PagesController extends Controller
         }
 
         // Categories
-        $categories = Category::where('is_published', true)
+        $categories = Category::where('is_active', true)
             ->select('slug', 'updated_at')
             ->get();
 
@@ -261,7 +261,7 @@ class PagesController extends Controller
         }
 
         $content .= "## Categories\n";
-        $categories = Category::where('is_published', true)->get();
+        $categories = Category::where('is_active', true)->get();
         foreach ($categories as $category) {
             $content .= "- {$category->name}: " . route('category.show', ['category' => $category->slug]) . "\n";
         }
@@ -277,11 +277,89 @@ class PagesController extends Controller
 
         $content .= "\n## Website Statistics\n";
         $content .= "- Total News: " . News::where('status', 'published')->count() . "\n";
-        $content .= "- Total Categories: " . Category::where('is_published', true)->count() . "\n";
+        $content .= "- Total Categories: " . Category::where('is_active', true)->count() . "\n";
         $content .= "- Last Updated: " . now()->format('Y-m-d H:i:s') . "\n";
 
         return response($content)
             ->header('Content-Type', 'text/plain; charset=UTF-8')
             ->header('Content-Disposition', 'inline; filename="llm.txt"');
+    }
+
+    public function robotsTxt()
+    {
+        $host     = url('/');
+        $sitemap  = url('/sitemap.xml');
+        $llmTxt   = url('/llm.txt');
+
+        $content = <<<ROBOTS
+# Sajeb NEWS - Robots.txt
+# This file instructs web crawlers how to index our site
+
+User-agent: *
+Allow: /
+Allow: /news/
+Allow: /category/
+Allow: /tag/
+Allow: /author/
+Allow: /about
+Allow: /contact
+Allow: /privacy-policy
+Allow: /terms-and-conditions
+Allow: /sitemap
+Allow: /llm.txt
+
+# Disallow private/admin pages
+Disallow: /admin/
+Disallow: /login
+Disallow: /register
+Disallow: /password-reset
+Disallow: /dashboard
+Disallow: /profile
+Disallow: /api/admin/
+
+# Disallow search and filter pages that create duplicate content
+Disallow: /*?page=
+Disallow: /*?sort=
+Disallow: /*?filter=
+Disallow: /*?s=
+
+# Allow access to CSS, JS, and images
+Allow: /*.css$
+Allow: /*.js$
+Allow: /*.jpg$
+Allow: /*.jpeg$
+Allow: /*.png$
+Allow: /*.gif$
+Allow: /*.svg$
+Allow: /storage/
+
+# Sitemap location
+Sitemap: {$sitemap}
+Sitemap: {$llmTxt}
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1
+
+# Specific rules for known bots
+User-agent: Googlebot
+Crawl-delay: 0
+
+User-agent: Bingbot
+Crawl-delay: 1
+
+# Disallow bad bots
+User-agent: MJ12bot
+Disallow: /
+
+User-agent: AhrefsBot
+Crawl-delay: 10
+
+User-agent: SemrushBot
+Crawl-delay: 10
+ROBOTS;
+
+        return response($content)
+            ->header('Content-Type', 'text/plain; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age=86400');
     }
 }

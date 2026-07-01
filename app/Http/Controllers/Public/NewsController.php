@@ -64,18 +64,11 @@ class NewsController extends Controller
         $metaTags = $this->seoService->getNewsMetaTags($news);
         $schema = $this->seoService->getNewsSchema($news);
         
-        // Fetch active ads for within_news placement
-        $ads = Advertisement::where('placement', 'within_news')
-            ->where('is_active', true)
-            ->where('start_date', '<=', now())
-            ->where(function($query) {
-                $query->whereNull('end_date')
-                      ->orWhere('end_date', '>=', now());
-            })
-            ->inRandomOrder()
-            ->first();
+        $adMiddle       = \App\Helpers\AdHelper::getRandomAdByPlacement('article_middle');
+        $adConclusion   = \App\Helpers\AdHelper::getRandomAdByPlacement('article_conclusion');
+        $adBelowArticle = \App\Helpers\AdHelper::getRandomAdByPlacement('below_article');
 
-        return view('public.news.show-modern', compact('news', 'related', 'metaTags', 'schema', 'ads'));
+        return view('public.news.show-modern', compact('news', 'related', 'metaTags', 'schema', 'adMiddle', 'adConclusion', 'adBelowArticle'));
     }
 
     /**
@@ -89,8 +82,9 @@ class NewsController extends Controller
             'description' => $category->meta_description ?? $category->description,
             'keywords' => $category->meta_keywords,
         ];
+        $poll = \App\Models\Poll::getActive();
 
-        return view('public.category', compact('category', 'news', 'metaTags'));
+        return view('public.category', compact('category', 'news', 'metaTags', 'poll'));
     }
 
     /**

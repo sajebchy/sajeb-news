@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphToMany;
 
 class Tag extends Model
 {
-    protected $fillable = ['name', 'slug', 'color'];
+    protected $fillable = ['name', 'slug', 'color', 'description'];
 
     protected $casts = [
         'created_at' => 'datetime',

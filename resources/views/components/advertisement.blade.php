@@ -46,7 +46,10 @@
         .ad-container {
             display: flex;
             flex-direction: column;
+            align-items: center;
             gap: 15px;
+            width: 100%;
+            text-align: center;
         }
 
         .ad-wrapper {
@@ -54,6 +57,8 @@
             border-radius: 6px;
             overflow: hidden;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin: 0 auto;
+            text-align: center;
         }
 
         .ad-wrapper:hover {
@@ -73,8 +78,9 @@
 
         .ad-image {
             display: block;
-            width: 100%;
+            max-width: 100%;
             height: auto;
+            margin: 0 auto;
         }
 
         /* Placement-specific styles */

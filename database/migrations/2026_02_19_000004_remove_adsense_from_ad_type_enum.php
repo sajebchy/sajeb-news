@@ -25,16 +25,8 @@ return new class extends Migration
             $table->string('ad_type')->nullable()->change();
         });
 
-        // Add a check constraint for ad_type values (works on SQLite 3.37.0+)
-        // If your SQLite is older, this won't work, but the validation happens at application level
-        DB::statement('
-            CREATE TABLE advertisements_new AS
-            SELECT * FROM advertisements;
-        ');
-
-        // Drop the old table references and create new structure if needed
-        // For this migration, we'll just ensure the data is updated properly
-        // The application level validation will enforce the allowed values
+        // Remove stale copy table if it exists (leftover from SQLite-only migration)
+        Schema::dropIfExists('advertisements_new');
     }
 
     /**

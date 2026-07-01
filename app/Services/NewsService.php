@@ -60,7 +60,7 @@ class NewsService
     public function getNewsByTag($tag, $perPage = 15)
     {
         return News::published()
-            ->withAllTags([$tag])
+            ->whereHas('tags', fn($q) => $q->where('name', $tag)->orWhere('slug', $tag))
             ->with('category', 'author')
             ->orderBy('published_at', 'desc')
             ->paginate($perPage);

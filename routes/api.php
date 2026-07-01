@@ -3,12 +3,18 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Public\AdController;
+use App\Http\Controllers\Public\PollController;
 use App\Http\Controllers\Public\TrackingController;
 
 Route::middleware('api')->group(function () {
     // Visitor Analytics Tracking (Public)
     Route::prefix('tracking')->name('tracking.')->group(function () {
         Route::post('/visitor', [TrackingController::class, 'trackVisitor'])->name('visitor');
+    });
+
+    // Poll voting (Public)
+    Route::prefix('polls')->name('polls.')->group(function () {
+        Route::post('/{poll}/vote', [PollController::class, 'vote'])->name('vote');
     });
 
     // Advertisement APIs (Public)

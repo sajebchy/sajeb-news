@@ -21,6 +21,7 @@ Route::get('/terms-and-conditions', [PagesController::class, 'terms'])->name('te
 Route::get('/sitemap', [PagesController::class, 'sitemap'])->name('sitemap');
 Route::get('/sitemap.xml', [PagesController::class, 'sitemapXml'])->name('sitemap.xml');
 Route::get('/llm.txt', [PagesController::class, 'llmTxt'])->name('llm.txt');
+Route::get('/robots.txt', [PagesController::class, 'robotsTxt'])->name('robots.txt');
 
 // Live Stream Routes (Public)
 Route::get('/live', [\App\Http\Controllers\LiveStreamViewController::class, 'index'])->name('live.index');

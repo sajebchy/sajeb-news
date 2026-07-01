@@ -6,6 +6,7 @@
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
 <title>@yield('title', ($__layoutSeo?->site_name ?: 'সজীব নিউজ') . ' | নির্ভরযোগ্য খবরের ঠিকানা')</title>
 <meta name="description" content="@yield('meta_description', $__layoutSeo?->site_description ?: 'বাংলাদেশের নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')">
+@hasSection('meta_keywords')<meta name="keywords" content="@yield('meta_keywords')">@endif
 <link rel="canonical" href="@yield('canonical', url()->current())">
 <meta name="csrf-token" content="{{ csrf_token() }}">
 <!-- Google Fonts -->
@@ -420,5 +421,105 @@ window.addEventListener('scroll',()=>{const b=document.getElementById('reading-p
 document.querySelectorAll('.material-symbols-outlined').forEach(i=>{i.addEventListener('mouseover',()=>i.style.fontVariationSettings="'FILL' 1");i.addEventListener('mouseout',()=>i.style.fontVariationSettings="'FILL' 0");});
 </script>
 @stack('scripts')
+
+{{-- Bottom Sticky Ad --}}
+@php $__stickyBottomAd = \App\Helpers\AdHelper::getRandomAdByPlacement('sticky_bottom'); @endphp
+@if($__stickyBottomAd)
+<div id="bottom-sticky-ad"
+     style="position:fixed;bottom:0;left:0;right:0;z-index:9998;background:#f8f9fa;border-top:1px solid #dee2e6;box-shadow:0 -2px 10px rgba(0,0,0,.12);display:flex;align-items:center;justify-content:center;padding:6px 12px 6px 12px;min-height:62px;">
+  <button onclick="document.getElementById('bottom-sticky-ad').style.display='none'"
+          aria-label="বন্ধ করুন"
+          style="position:absolute;top:4px;right:8px;background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>
+  <div style="text-align:center;">
+    <p style="font-size:9px;color:#aaa;margin:0 0 2px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
+    @if($__stickyBottomAd->image_url)
+      <a href="{{ $__stickyBottomAd->ad_url ?: '#' }}" target="_blank" rel="noopener"
+         onclick="adTrackClick(event,{{ $__stickyBottomAd->id }},'{{ addslashes($__stickyBottomAd->ad_url ?? '') }}')"
+         style="display:inline-block;">
+        <img src="{{ str_starts_with($__stickyBottomAd->image_url, 'http') ? $__stickyBottomAd->image_url : asset($__stickyBottomAd->image_url) }}"
+             alt="{{ $__stickyBottomAd->alt_text ?? $__stickyBottomAd->name ?? 'বিজ্ঞাপন' }}"
+             style="max-height:60px;max-width:calc(100vw - 60px);width:auto;display:block;margin:0 auto;"/>
+      </a>
+    @elseif($__stickyBottomAd->ad_code ?? $__stickyBottomAd->code)
+      <div>{!! $__stickyBottomAd->ad_code ?? $__stickyBottomAd->code !!}</div>
+    @endif
+  </div>
+</div>
+{{-- Push content above sticky ad on mobile --}}
+<style>#bottom-sticky-ad~nav.fixed { bottom: 66px !important; }</style>
+@endif
+
+{{-- ── Global Schema: Organization (all pages) + WebSite (homepage) ── --}}
+@php
+  $__seoSvc = app(\App\Services\SeoService::class);
+  $__orgSchema = $__seoSvc->getOrganizationSchema();
+  $__isHome = request()->routeIs('home');
+@endphp
+<script type="application/ld+json">{!! json_encode($__orgSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+@if($__isHome)
+@php $__websiteSchema = $__seoSvc->getWebsiteSchema(); @endphp
+<script type="application/ld+json">{!! json_encode($__websiteSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
+
+{{-- Ensure adTrackClick is always available (popup may load before other ads) --}}
+<script>
+if (typeof adTrackClick === 'undefined') {
+  function adTrackClick(e, adId, dest) {
+    var token = document.querySelector('meta[name="csrf-token"]');
+    var csrfToken = token ? token.getAttribute('content') : '';
+    var url = '{{ url("/api/ads") }}/' + adId + '/click';
+    var data = JSON.stringify({ placement: document.location.pathname });
+    if (navigator.sendBeacon) {
+      var blob = new Blob([data], { type: 'application/json' });
+      navigator.sendBeacon(url, blob);
+    } else {
+      fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': csrfToken }, body: data, keepalive: true }).catch(function(){});
+    }
+  }
+}
+</script>
+
+{{-- Popup / Interstitial Ad --}}
+@php
+  $__popupAd = \App\Helpers\AdHelper::getRandomAdByPlacement('popup_interstitial');
+@endphp
+@if($__popupAd)
+<div id="popup-ad-overlay"
+     style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,.65);align-items:center;justify-content:center;">
+  <div style="position:relative;max-width:540px;width:90%;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4);">
+    <button onclick="closePopupAd()"
+            style="position:absolute;top:8px;right:10px;z-index:2;background:rgba(0,0,0,.55);color:#fff;border:none;border-radius:50%;width:32px;height:32px;font-size:18px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    @if($__popupAd->image_url)
+      <a href="{{ $__popupAd->ad_url ?: '#' }}" target="_blank" rel="noopener"
+         onclick="adTrackClick(event,{{ $__popupAd->id }},'{{ addslashes($__popupAd->ad_url ?? '') }}')"
+         style="display:block;">
+        <img src="{{ str_starts_with($__popupAd->image_url, 'http') ? $__popupAd->image_url : asset($__popupAd->image_url) }}"
+             alt="{{ $__popupAd->alt_text ?? $__popupAd->name ?? 'বিজ্ঞাপন' }}"
+             style="width:100%;display:block;"/>
+      </a>
+    @elseif($__popupAd->ad_code ?? $__popupAd->code)
+      <div style="padding:16px;">{!! $__popupAd->ad_code ?? $__popupAd->code !!}</div>
+    @endif
+    <p style="text-align:center;font-size:11px;color:#999;padding:6px 0 8px;">বিজ্ঞাপন · <button onclick="closePopupAd()" style="background:none;border:none;color:#bb0112;cursor:pointer;font-size:11px;">বন্ধ করুন</button></p>
+  </div>
+</div>
+<script>
+(function(){
+  var key = 'popup_ad_{{ $__popupAd->id }}_shown';
+  if (sessionStorage.getItem(key)) return;
+  setTimeout(function(){
+    var el = document.getElementById('popup-ad-overlay');
+    if (el) { el.style.display = 'flex'; sessionStorage.setItem(key, '1'); }
+  }, 2000);
+})();
+function closePopupAd(){
+  var el = document.getElementById('popup-ad-overlay');
+  if (el) el.style.display = 'none';
+}
+document.getElementById('popup-ad-overlay').addEventListener('click', function(e){
+  if (e.target === this) closePopupAd();
+});
+</script>
+@endif
 </body>
 </html>
