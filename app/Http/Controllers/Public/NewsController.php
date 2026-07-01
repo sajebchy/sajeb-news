@@ -89,8 +89,9 @@ class NewsController extends Controller
             'description' => $category->meta_description ?? $category->description,
             'keywords' => $category->meta_keywords,
         ];
+        $poll = \App\Models\Poll::getActive();
 
-        return view('public.category', compact('category', 'news', 'metaTags'));
+        return view('public.category', compact('category', 'news', 'metaTags', 'poll'));
     }
 
     /**

@@ -131,20 +131,99 @@
         </div>
       </div>
 
-      <!-- Poll / Sports Poll style -->
-      <div class="bg-primary p-stack-md rounded-lg text-white">
+      <!-- Poll -->
+      @if(isset($poll) && $poll)
+      <div class="bg-primary p-stack-md rounded-lg text-white"
+           x-data="pollWidget({{ $poll->id }}, {{ $poll->options->toJson() }})">
+
         <div class="flex items-center gap-2 mb-4">
           <span class="material-symbols-outlined text-secondary">how_to_vote</span>
           <h3 class="font-headline-md text-headline-md">আজকের জরিপ</h3>
         </div>
-        <p class="font-body-main text-body-main mb-6 leading-snug">আপনি কি সজীব নিউজের সংবাদ উপস্থাপনা পছন্দ করেন?</p>
-        <div class="space-y-3">
-          <button class="w-full text-left p-3 border border-white/20 rounded hover:bg-white/10 transition-colors">হ্যাঁ, অনেক ভালো লাগে</button>
-          <button class="w-full text-left p-3 border border-white/20 rounded hover:bg-white/10 transition-colors">মাঝারি মানের</button>
-          <button class="w-full text-left p-3 border border-white/20 rounded hover:bg-white/10 transition-colors">আরও উন্নত করা দরকার</button>
+
+        <p class="font-body-main text-body-main mb-6 leading-snug">{{ $poll->question }}</p>
+
+        <!-- Voting UI -->
+        <div x-show="!voted" class="space-y-3">
+          <template x-for="opt in options" :key="opt.id">
+            <button
+              @click="selectOption(opt.id)"
+              :class="selected === opt.id ? 'bg-white/20 border-white' : 'border-white/20 hover:bg-white/10'"
+              class="w-full text-left p-3 border rounded transition-colors flex items-center gap-2">
+              <span x-show="selected === opt.id" class="material-symbols-outlined text-sm">check_circle</span>
+              <span x-show="selected !== opt.id" class="material-symbols-outlined text-sm opacity-40">radio_button_unchecked</span>
+              <span x-text="opt.option_text"></span>
+            </button>
+          </template>
+
+          <button
+            @click="submitVote()"
+            :disabled="!selected || loading"
+            class="w-full mt-4 py-3 bg-secondary text-white font-label-caps text-label-caps rounded-full hover:brightness-110 transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed">
+            <span x-show="!loading">ভোট দিন</span>
+            <span x-show="loading">অপেক্ষা করুন...</span>
+          </button>
+
+          <p x-show="errorMsg" x-text="errorMsg" class="text-sm text-yellow-300 mt-2 text-center"></p>
         </div>
-        <button class="w-full mt-6 py-3 bg-secondary text-white font-label-caps text-label-caps rounded-full hover:brightness-110 transition-all shadow-lg">ভোট দিন</button>
+
+        <!-- Results UI -->
+        <div x-show="voted" class="space-y-3">
+          <p class="text-sm text-white/70 mb-3 text-center" x-text="successMsg"></p>
+          <template x-for="res in results" :key="res.id">
+            <div class="mb-2">
+              <div class="flex justify-between text-sm mb-1">
+                <span x-text="res.text"></span>
+                <span x-text="res.percent + '%'"></span>
+              </div>
+              <div class="w-full bg-white/20 rounded-full h-2">
+                <div class="bg-secondary h-2 rounded-full transition-all duration-700"
+                     :style="'width:' + res.percent + '%'"></div>
+              </div>
+              <div class="text-xs text-white/60 mt-1" x-text="res.votes + ' ভোট'"></div>
+            </div>
+          </template>
+        </div>
       </div>
+
+      <script>
+      function pollWidget(pollId, options) {
+        return {
+          pollId,
+          options,
+          selected: null,
+          voted: false,
+          loading: false,
+          results: [],
+          successMsg: '',
+          errorMsg: '',
+          selectOption(id) { this.selected = id; this.errorMsg = ''; },
+          submitVote() {
+            if (!this.selected) { this.errorMsg = 'একটি বিকল্প বেছে নিন।'; return; }
+            this.loading = true;
+            this.errorMsg = '';
+            var csrf = document.querySelector('meta[name="csrf-token"]');
+            fetch('/api/polls/' + this.pollId + '/vote', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrf ? csrf.getAttribute('content') : ''
+              },
+              body: JSON.stringify({ option_id: this.selected })
+            })
+            .then(r => r.json())
+            .then(data => {
+              this.results  = data.results;
+              this.voted    = true;
+              this.successMsg = data.success ? '✓ ভোট গৃহীত হয়েছে!' : data.message;
+            })
+            .catch(() => { this.errorMsg = 'নেটওয়ার্ক সমস্যা। আবার চেষ্টা করুন।'; })
+            .finally(() => { this.loading = false; });
+          }
+        }
+      }
+      </script>
+      @endif
 
       <!-- Newsletter -->
       <div class="bg-surface-container-high p-stack-md rounded-lg">
