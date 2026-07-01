@@ -6,11 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Sluggable\HasSlug;
 use Spatie\Sluggable\SlugOptions;
-use Spatie\Tags\HasTags;
-
+use App\Models\Tag;
 class News extends Model
 {
-    use HasSlug, SoftDeletes, HasTags;
+    use HasSlug, SoftDeletes;
 
     protected $table = 'news';
 
@@ -77,6 +76,11 @@ class News extends Model
     public function visitorAnalytics()
     {
         return $this->hasMany(VisitorAnalytic::class);
+    }
+
+    public function tags()
+    {
+        return $this->morphToMany(Tag::class, 'taggable');
     }
 
     public function comments()
