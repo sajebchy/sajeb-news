@@ -414,7 +414,7 @@ Need help? Check these resources:
 - Added `photo_card_logo` column to `seo_settings` table
 - Added `photo_card_logo` to SeoSetting model's `$fillable` array
 - Settings page: new "ফটোকার্ড লোগো" upload card in Logos & Images tab
-- Updated `sajeb_news_backup.sql` with latest database state
+- Updated database backup with latest database state
 
 ---
 
