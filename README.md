@@ -358,7 +358,7 @@ Need help? Check these resources:
 
 #### 🗄️ Database
 - Added social authentication column to users table
-- Updated `sajeb_news_backup.sql` with latest schema and data
+- Updated database backup with latest schema and data
 
 ---
 
