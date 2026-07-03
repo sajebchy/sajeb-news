@@ -48,7 +48,7 @@
 {{-- ===== Page Header ===== --}}
 <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">বিভাগ ব্যবস্থাপনা</h2>
+        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">বিভাগ ব্যবস্থাপনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">সজীব নিউজের সংবাদ বিভাগসমূহ পরিচালনা করুন।</p>
     </div>
     <a href="{{ route('admin.categories.create') }}"
@@ -113,7 +113,7 @@
                             <div class="w-3 h-3 rounded-full flex-shrink-0" style="background-color: {{ $category->color }}"></div>
                             @endif
                             <div>
-                                <span class="font-semibold text-primary text-base" style="font-family:'Noto Serif Bengali',serif;">
+                                <span class="font-semibold text-primary text-base" style="font-family:'SolaimanLipi',serif;">
                                     {{ $category->name }}
                                 </span>
                                 @if($category->featured_order)
@@ -177,7 +177,7 @@
                 <tr>
                     <td colspan="5" class="text-center py-20">
                         <span class="material-symbols-outlined text-outline-variant" style="font-size:64px;">category</span>
-                        <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'Noto Serif Bengali',serif;">কোনো বিভাগ পাওয়া যায়নি</p>
+                        <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'SolaimanLipi',serif;">কোনো বিভাগ পাওয়া যায়নি</p>
                         <a href="{{ route('admin.categories.create') }}"
                            class="inline-flex items-center gap-2 mt-4 bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">
                             <span class="material-symbols-outlined text-[18px]">add</span>

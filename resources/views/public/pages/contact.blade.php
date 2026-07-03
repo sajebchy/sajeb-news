@@ -4,6 +4,7 @@
 @section('meta_description', $metaTags['description'] ?? 'সজীব নিউজের সাথে যোগাযোগ করুন।')
 
 @section('content')
+@php $globalSeo = $globalSeo ?? \App\Models\SeoSetting::first(); @endphp
 
 <!-- Page Hero -->
 <div class="bg-primary text-white py-12 px-gutter">
@@ -80,31 +81,35 @@
     <!-- Contact Info (30%) -->
     <aside class="md:col-span-4 flex flex-col gap-stack-lg">
       <div class="bg-surface-muted border border-border-subtle p-stack-md">
-        <h3 class="font-headline-md text-headline-md text-primary mb-4">সজীব নিউজ সদর দফতর</h3>
+        <h3 class="font-headline-md text-headline-md text-primary mb-4">{{ $globalSeo?->site_name ?: 'সজীব নিউজ' }} সদর দফতর</h3>
         <div class="space-y-4">
+          @if($globalSeo?->office_address)
           <div class="flex gap-4">
             <span class="material-symbols-outlined text-secondary flex-shrink-0">location_on</span>
             <div class="font-body-sm text-on-surface-variant">
               <strong class="text-on-surface">ঠিকানা:</strong><br/>
-              ১২২/এ মতিঝিল বাণিজ্যিক এলাকা,<br/>
-              ঢাকা ১০০০, বাংলাদেশ
+              {{ $globalSeo->office_address }}
             </div>
           </div>
+          @endif
+          @if($globalSeo?->office_mobile)
           <div class="flex gap-4">
             <span class="material-symbols-outlined text-secondary flex-shrink-0">call</span>
             <div class="font-body-sm text-on-surface-variant">
               <strong class="text-on-surface">ফোন:</strong><br/>
-              +৮৮০ ২ ৯৫৫৫১২৩
+              {{ $globalSeo->office_mobile }}
             </div>
           </div>
+          @endif
+          @if($globalSeo?->office_email)
           <div class="flex gap-4">
             <span class="material-symbols-outlined text-secondary flex-shrink-0">mail</span>
             <div class="font-body-sm text-on-surface-variant">
               <strong class="text-on-surface">ইমেইল:</strong><br/>
-              editor@sajebnews.com<br/>
-              ads@sajebnews.com
+              {{ $globalSeo->office_email }}
             </div>
           </div>
+          @endif
         </div>
       </div>
 

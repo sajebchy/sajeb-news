@@ -40,11 +40,17 @@ class SettingController extends Controller
             'site_url' => 'nullable|url',
             'site_title' => 'nullable|string|max:255',
             'site_description' => 'nullable|string|max:500',
+            'editor_publisher' => 'nullable|string|max:255',
+            'office_address' => 'nullable|string|max:500',
+            'office_mobile' => 'nullable|string|max:100',
+            'office_email' => 'nullable|email|max:191',
             'meta_keywords' => 'nullable|string',
             'about_page_content' => 'nullable|string',
-            'logo' => 'nullable|image|max:5120',
-            'mobile_logo' => 'nullable|image|max:5120',
-            'og_image' => 'nullable|image|max:5120',
+            'logo' => 'nullable|image|max:1024',
+            'mobile_logo' => 'nullable|image|max:1024',
+            'og_image' => 'nullable|image|max:1024',
+            'default_featured_image' => 'nullable|image|max:1024',
+            'photo_card_logo' => 'nullable|image|max:1024',
             'favicon' => 'nullable|image|max:1024',
             'google_analytics_id' => 'nullable|string',
             'google_tag_manager_id' => 'nullable|string',
@@ -133,6 +139,26 @@ class SettingController extends Controller
                 $request->file('favicon'),
                 'favicon',
                 'settings'
+            );
+        }
+
+        // Handle default featured image upload
+        if ($request->hasFile('default_featured_image')) {
+            $optimizer = new ImageOptimizer();
+            $validated['default_featured_image'] = $optimizer->optimize(
+                $request->file('default_featured_image'),
+                'og_image',
+                'settings'
+            );
+        }
+
+        // Handle photo card logo upload
+        if ($request->hasFile('photo_card_logo')) {
+            $optimizer = new ImageOptimizer();
+            $validated['photo_card_logo'] = $optimizer->optimize(
+                $request->file('photo_card_logo'),
+                'logo',
+                'settings/logos'
             );
         }
 

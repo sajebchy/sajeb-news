@@ -7,7 +7,7 @@
 <!-- Success Alert -->
 @if (session('success'))
     <div class="alert alert-success alert-dismissible fade show" role="alert">
-        <i class="fas fa-check-circle"></i>
+        <i class="bi bi-check-circle"></i>
         <strong>✓ সাফল্য!</strong> {{ session('success') }}
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
@@ -16,7 +16,7 @@
 <!-- Error Alerts -->
 @if ($errors->any())
     <div class="alert alert-danger alert-dismissible fade show" role="alert">
-        <i class="fas fa-exclamation-circle"></i>
+        <i class="bi bi-exclamation-circle"></i>
         <strong>❌ সমস্যা হয়েছে!</strong>
         <ul class="mb-0 mt-2">
             @foreach ($errors->all() as $error)
@@ -156,7 +156,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="is_featured" name="is_featured" value="1" @checked(old('is_featured', $news->is_featured ?? false))>
                                 <label class="form-check-label" for="is_featured">
-                                    <i class="fas fa-star"></i> Featured News
+                                    <i class="bi bi-star-fill"></i> Featured News
                                 </label>
                             </div>
                         </div>
@@ -166,7 +166,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="is_breaking" name="is_breaking" value="1" @checked(old('is_breaking', $news->is_breaking ?? false))>
                                 <label class="form-check-label" for="is_breaking">
-                                    <i class="fas fa-fire"></i> Breaking News
+                                    <i class="bi bi-fire"></i> Breaking News
                                 </label>
                             </div>
                         </div>
@@ -176,7 +176,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="is_claim_review" name="is_claim_review" value="1" @checked(old('is_claim_review', $news->is_claim_review ?? false)) onchange="toggleClaimReviewFields()">
                                 <label class="form-check-label" for="is_claim_review">
-                                    <i class="fas fa-check-double"></i> Mark as Fact-Check Article
+                                    <i class="bi bi-check-all"></i> Mark as Fact-Check Article
                                 </label>
                             </div>
                         </div>
@@ -184,7 +184,7 @@
                         <!-- Claim Fields (shown when is_claim_review is checked) -->
                         <div id="claim-review-section" class="p-3 border border-info rounded bg-light" style="display: none;">
                             <h6 class="mb-3 text-info">
-                                <i class="fas fa-shield-alt"></i> Fact-Check Configuration
+                                <i class="bi bi-shield-lock"></i> Fact-Check Configuration
                             </h6>
 
                             <!-- Claim Being Reviewed -->
@@ -238,10 +238,10 @@
                         <!-- Submit -->
                         <div class="d-grid gap-2">
                             <button type="submit" class="btn btn-primary">
-                                <i class="fas fa-save"></i> {{ isset($news) ? 'Update' : 'Create' }} Post
+                                <i class="bi bi-save"></i> {{ isset($news) ? 'Update' : 'Create' }} Post
                             </button>
                             <a href="{{ route('admin.news.index') }}" class="btn btn-outline-secondary">
-                                <i class="fas fa-times"></i> Cancel
+                                <i class="bi bi-x-lg"></i> Cancel
                             </a>
                         </div>
                     </div>
@@ -252,7 +252,6 @@
 </div>
 
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;500;700&display=swap" rel="stylesheet">
 
 <script>
     // Update publish date field based on status selection
@@ -305,21 +304,21 @@
 
 <style>
     #title {
-        font-family: 'Noto Serif Bengali', serif;
+        font-family: 'SolaimanLipi', serif;
         font-weight: 400;
     }
     
     #excerpt {
-        font-family: 'Noto Serif Bengali', serif;
+        font-family: 'SolaimanLipi', serif;
         font-weight: 400;
     }
     
     #editor-container {
-        font-family: 'Noto Serif Bengali', serif;
+        font-family: 'SolaimanLipi', serif;
     }
     
     .ql-font-serif-bengali {
-        font-family: 'Noto Serif Bengali', serif;
+        font-family: 'SolaimanLipi', serif;
     }
 
     /* Responsive images and videos in editor */
@@ -351,12 +350,12 @@
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
 
 <script>
-    // Register only Noto Serif Bengali font in Quill
+    // Register only SolaimanLipi font in Quill
     const Font = Quill.import('formats/font');
     Font.whitelist = ['serif-bengali'];
     Quill.register(Font, true);
 
-    // Initialize Quill Editor with Noto Serif Bengali
+    // Initialize Quill Editor with SolaimanLipi
     const quill = new Quill('#editor-container', {
         theme: 'snow',
         placeholder: 'শুরু করুন লেখা... (Start writing...)',
@@ -380,7 +379,7 @@
         }
     });
 
-    // Set default font to Noto Serif Bengali
+    // Set default font to SolaimanLipi
     quill.format('font', 'serif-bengali');
 
     // Load existing content if available
@@ -587,7 +586,7 @@
                 
                 // Show loading indicator
                 submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ক্ষণ অপেক্ষা করুন... (Saving...)';
+                submitBtn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> ক্ষণ অপেক্ষা করুন... (Saving...)';
                 
                 return true;
             };

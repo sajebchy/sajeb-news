@@ -12,9 +12,65 @@ class FileManagerController extends Controller
     protected $disk = 'public';
     protected $baseFolder = 'news'; // News images folder only
 
+    // Only these extensions may be uploaded / renamed to (no php, phtml, exe, etc.)
+    protected array $allowedExtensions = [
+        'jpg', 'jpeg', 'png', 'gif', 'webp', 'svg', 'bmp', 'ico',
+        'pdf', 'doc', 'docx', 'xls', 'xlsx', 'csv', 'txt',
+        'mp4', 'webm', 'mp3',
+    ];
+
     public function __construct()
     {
         $this->middleware('admin');
+    }
+
+    /**
+     * Reject path traversal and absolute paths, keeping everything under baseFolder.
+     * Returns the sanitized relative path (without the base folder prefix) or null if invalid.
+     */
+    protected function sanitizeRelativePath(?string $path): ?string
+    {
+        $path = trim((string) $path);
+
+        if ($path === '') {
+            return '';
+        }
+
+        // Normalize separators, block traversal, null bytes, and absolute/UNC paths
+        $path = str_replace('\\', '/', $path);
+        if (str_contains($path, "\0") || str_contains($path, '..') || str_starts_with($path, '/')) {
+            return null;
+        }
+
+        return trim($path, '/');
+    }
+
+    /**
+     * Resolve an absolute storage path that is guaranteed to stay inside baseFolder.
+     * $fullPath is a path that already includes the base folder prefix (as sent to the client).
+     */
+    protected function isInsideBaseFolder(string $fullPath): bool
+    {
+        $fullPath = str_replace('\\', '/', trim($fullPath));
+        if (str_contains($fullPath, '..') || str_contains($fullPath, "\0")) {
+            return false;
+        }
+
+        return $fullPath === $this->baseFolder
+            || str_starts_with($fullPath, $this->baseFolder . '/');
+    }
+
+    /**
+     * Validate a single file/folder name segment.
+     */
+    protected function isValidName(string $name): bool
+    {
+        return $name !== ''
+            && !str_contains($name, '/')
+            && !str_contains($name, '\\')
+            && !str_contains($name, "\0")
+            && $name !== '.'
+            && $name !== '..';
     }
 
     /**
@@ -22,7 +78,10 @@ class FileManagerController extends Controller
      */
     public function list(Request $request)
     {
-        $path = $request->input('path', '');
+        $path = $this->sanitizeRelativePath($request->input('path', ''));
+        if ($path === null) {
+            return response()->json(['success' => false, 'message' => 'Invalid path'], 400);
+        }
         $fullPath = $this->baseFolder . ($path ? '/' . $path : '');
 
         try {
@@ -81,17 +140,30 @@ class FileManagerController extends Controller
         ]);
 
         try {
-            $path = $request->input('path', '');
+            $path = $this->sanitizeRelativePath($request->input('path', ''));
+            if ($path === null) {
+                return response()->json(['success' => false, 'message' => 'Invalid path'], 400);
+            }
             $fullPath = $this->baseFolder . ($path ? '/' . $path : '');
+
+            $file = $request->file('file');
+
+            // Block executable / dangerous file types (defense against RCE via uploads)
+            $extension = strtolower($file->getClientOriginalExtension());
+            if (!in_array($extension, $this->allowedExtensions, true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File type not allowed: .' . $extension,
+                ], 422);
+            }
 
             // Ensure directory exists
             if (!Storage::disk($this->disk)->exists($fullPath)) {
                 Storage::disk($this->disk)->makeDirectory($fullPath, 0755, true);
             }
 
-            $file = $request->file('file');
             $originalName = $file->getClientOriginalName();
-            $filename = time() . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.' . $file->getClientOriginalExtension();
+            $filename = time() . '_' . Str::slug(pathinfo($originalName, PATHINFO_FILENAME)) . '.' . $extension;
 
             $storagePath = $fullPath . '/' . $filename;
             Storage::disk($this->disk)->putFileAs($fullPath, $file, $filename);
@@ -126,19 +198,19 @@ class FileManagerController extends Controller
         try {
             $path = $request->input('path');
 
+            // Prevent traversal and deletion outside baseFolder
+            if (!$this->isInsideBaseFolder($path)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied',
+                ], 403);
+            }
+
             if (!Storage::disk($this->disk)->exists($path)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'File or folder not found',
                 ], 404);
-            }
-
-            // Prevent deletion outside baseFolder
-            if (!Str::startsWith($path, $this->baseFolder)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Access denied',
-                ], 403);
             }
 
             // Check if it's a directory
@@ -173,20 +245,37 @@ class FileManagerController extends Controller
         try {
             $oldPath = $request->input('path');
             $newName = $request->input('newName');
-            
+
+            // Prevent rename outside baseFolder
+            if (!$this->isInsideBaseFolder($oldPath)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Access denied',
+                ], 403);
+            }
+
+            // New name must be a single safe segment (no traversal / path separators)
+            if (!$this->isValidName($newName)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid name',
+                ], 422);
+            }
+
+            // If it has an extension, it must be an allowed one
+            $newExt = strtolower(pathinfo($newName, PATHINFO_EXTENSION));
+            if ($newExt !== '' && !in_array($newExt, $this->allowedExtensions, true)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'File type not allowed: .' . $newExt,
+                ], 422);
+            }
+
             if (!Storage::disk($this->disk)->exists($oldPath)) {
                 return response()->json([
                     'success' => false,
                     'message' => 'File or folder not found',
                 ], 404);
-            }
-
-            // Prevent rename outside baseFolder
-            if (!Str::startsWith($oldPath, $this->baseFolder)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Access denied',
-                ], 403);
             }
 
             $directory = dirname($oldPath);
@@ -218,8 +307,14 @@ class FileManagerController extends Controller
         ]);
 
         try {
-            $path = $request->input('path', '');
+            $path = $this->sanitizeRelativePath($request->input('path', ''));
+            if ($path === null) {
+                return response()->json(['success' => false, 'message' => 'Invalid path'], 400);
+            }
             $folderName = $request->input('folderName');
+            if (!$this->isValidName($folderName)) {
+                return response()->json(['success' => false, 'message' => 'Invalid folder name'], 422);
+            }
             $fullPath = $this->baseFolder . ($path ? '/' . $path : '') . '/' . $folderName;
 
             if (Storage::disk($this->disk)->exists($fullPath)) {

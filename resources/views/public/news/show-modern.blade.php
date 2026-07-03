@@ -51,6 +51,14 @@
   $trendingNews = \App\Models\News::where('status','published')
     ->where('id','!=',$news->id)
     ->orderBy('views','desc')->limit(5)->get();
+  // Topic (tag) based related news — shown mid-article
+  $topicTagIds = $news->tags->pluck('id');
+  $topicRelated = $topicTagIds->isNotEmpty()
+    ? \App\Models\News::where('status','published')
+        ->where('id','!=',$news->id)
+        ->whereHas('tags', fn($q) => $q->whereIn('tags.id', $topicTagIds))
+        ->latest('published_at')->limit(3)->get()
+    : collect();
 @endphp
 
 {{-- ══════════════════════════════════════════
@@ -153,7 +161,7 @@
       @php
         $heroImg = $news->featured_image
           ? (Str::startsWith($news->featured_image, 'http') ? $news->featured_image : asset('storage/' . $news->featured_image))
-          : 'https://picsum.photos/seed/' . $news->id . '/800/450';
+          : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')));
       @endphp
       <figure class="mb-stack-lg">
         <div class="aspect-video w-full overflow-hidden rounded-lg"
@@ -181,10 +189,30 @@
         $total = count($paragraphs);
         $midPoint = (int)($total / 2);
         $midInjected = false;
+        $topicBoxInjected = false;
       @endphp
       <div class="article-prose space-y-stack-md font-body-main text-body-main leading-relaxed text-on-surface">
         @foreach($paragraphs as $i => $para)
           {!! $para !!}
+          @if(!$topicBoxInjected && $i >= $midPoint && $topicRelated->count() > 0)
+            @php $topicBoxInjected = true; @endphp
+            <div class="my-6 p-4 bg-surface-container-low border-l-4 border-primary rounded-r-xl not-prose">
+              <h3 class="font-label-caps text-label-caps text-primary mb-3">সম্পর্কিত খবর</h3>
+              <div class="space-y-3">
+                @foreach($topicRelated as $tr)
+                <a href="{{ route('news.show', $tr->slug) }}" class="flex gap-3 items-start group">
+                  <img class="w-16 h-12 rounded-lg object-cover flex-shrink-0"
+                       src="{{ $tr->featured_image ? (Str::startsWith($tr->featured_image,'http') ? $tr->featured_image : asset('storage/'.$tr->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                       alt="{{ $tr->title }}" loading="lazy">
+                  <div class="min-w-0">
+                    <p class="font-body-main text-body-main font-semibold leading-snug group-hover:text-primary transition-colors">{{ $tr->title }}</p>
+                    <p class="text-meta-data font-meta-data text-on-surface-variant mt-1">{{ $tr->published_at?->diffForHumans() }}</p>
+                  </div>
+                </a>
+                @endforeach
+              </div>
+            </div>
+          @endif
           @if(!$midInjected && $i >= $midPoint && isset($adMiddle))
             @php $midInjected = true; @endphp
             <div style="margin:20px 0;text-align:center;">
@@ -232,19 +260,19 @@
         <h3 class="font-label-caps text-label-caps mb-stack-md text-on-surface-variant">এই সংবাদটি শেয়ার করুন</h3>
         <div class="flex flex-wrap gap-3">
           <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('news.show', $news->slug)) }}"
-             target="_blank" rel="noopener"
-             class="w-10 h-10 rounded-full bg-blue-600 flex items-center justify-center text-white hover:opacity-90 transition-opacity">
-            <span class="material-symbols-outlined text-[18px]">face_nod</span>
+             target="_blank" rel="noopener" aria-label="ফেসবুকে শেয়ার করুন"
+             class="w-10 h-10 rounded-full bg-[#1877F2] flex items-center justify-center text-white hover:opacity-90 transition-opacity">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M13.397 20.997v-8.196h2.765l.411-3.209h-3.176V7.548c0-.926.258-1.56 1.587-1.56h1.684V3.127A22.336 22.336 0 0 0 14.201 3c-2.444 0-4.122 1.492-4.122 4.231v2.355H7.332v3.209h2.753v8.202h3.312z"/></svg>
           </a>
           <a href="https://twitter.com/intent/tweet?url={{ urlencode(route('news.show', $news->slug)) }}&text={{ urlencode($news->title) }}"
-             target="_blank" rel="noopener"
-             class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center text-white hover:opacity-90 transition-opacity">
-            <span class="material-symbols-outlined text-[18px]">alternate_email</span>
+             target="_blank" rel="noopener" aria-label="এক্স (টুইটার)-এ শেয়ার করুন"
+             class="w-10 h-10 rounded-full bg-black flex items-center justify-center text-white hover:opacity-90 transition-opacity">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-[16px] h-[16px]" aria-hidden="true"><path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.638 7.584H.474l8.6-9.83L0 1.154h7.594l5.243 6.932ZM17.61 20.644h2.039L6.486 3.24H4.298Z"/></svg>
           </a>
           <a href="https://api.whatsapp.com/send?text={{ urlencode($news->title . ' ' . route('news.show', $news->slug)) }}"
-             target="_blank" rel="noopener"
-             class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white hover:opacity-90 transition-opacity">
-            <span class="material-symbols-outlined text-[18px]">chat</span>
+             target="_blank" rel="noopener" aria-label="হোয়াটসঅ্যাপে শেয়ার করুন"
+             class="w-10 h-10 rounded-full bg-[#25D366] flex items-center justify-center text-white hover:opacity-90 transition-opacity">
+            <svg viewBox="0 0 24 24" fill="currentColor" class="w-[18px] h-[18px]" aria-hidden="true"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/></svg>
           </a>
           <button onclick="navigator.clipboard.writeText(window.location.href).then(()=>{ this.classList.add('bg-green-600'); setTimeout(()=>this.classList.remove('bg-green-600'),2000); })"
                   class="w-10 h-10 rounded-full bg-on-surface flex items-center justify-center text-white hover:opacity-90 transition-all">
@@ -290,7 +318,7 @@
             </div>
             <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
               <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : 'https://picsum.photos/seed/'.$rn->id.'/200/200' }}"
+                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                    alt="{{ $rn->title }}" loading="lazy"/>
             </div>
           </a>
@@ -332,7 +360,7 @@
           <a href="{{ route('news.show', $rn->slug) }}" class="group flex gap-3 pb-stack-md border-b border-subtle cursor-pointer block">
             <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded bg-surface-container">
               <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : 'https://picsum.photos/seed/'.$rn->id.'/200/200' }}"
+                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                    alt="{{ $rn->title }}" loading="lazy"/>
             </div>
             <div class="flex flex-col justify-between">
@@ -401,6 +429,42 @@
 </main>
 
 {{-- ══════════════════════════════════════════
+     LATEST NEWS SECTION (below article)
+═══════════════════════════════════════════ --}}
+@php
+  $latestNews = \App\Models\News::where('status','published')
+    ->where('id','!=',$news->id)
+    ->latest('updated_at')
+    ->limit(4)->get();
+@endphp
+@if($latestNews->count() > 0)
+<section class="max-w-container-max mx-auto px-gutter py-section-padding">
+  <div class="flex items-center gap-3 mb-6">
+    <span class="w-1 h-8 bg-secondary rounded-full"></span>
+    <h2 class="font-headline-md text-2xl text-on-surface" style="font-family:'SolaimanLipi',serif;">সর্বশেষ আপডেট</h2>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    @foreach($latestNews as $ln)
+    <a href="{{ route('news.show', $ln->slug) }}" class="group block bg-surface-container-lowest border border-subtle rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <div class="aspect-[16/10] overflow-hidden bg-surface-container">
+        <img src="{{ $ln->featured_image ? (str_starts_with($ln->featured_image,'http') ? $ln->featured_image : asset('storage/'.$ln->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+             alt="{{ $ln->title }}"
+             class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"/>
+      </div>
+      <div class="p-4">
+        @if($ln->category)
+        <span class="font-label-caps text-[10px] text-secondary uppercase tracking-widest">{{ $ln->category->name }}</span>
+        @endif
+        <h3 class="font-headline-md text-[15px] leading-snug text-on-surface mt-1 line-clamp-2 group-hover:text-primary transition-colors" style="font-family:'SolaimanLipi',serif;">{{ $ln->title }}</h3>
+        <p class="font-meta-data text-[11px] text-outline mt-2">{{ $ln->updated_at->diffForHumans() }}</p>
+      </div>
+    </a>
+    @endforeach
+  </div>
+</section>
+@endif
+
+{{-- ══════════════════════════════════════════
      MOBILE: Anchor ad above bottom nav
 ═══════════════════════════════════════════ --}}
 <div class="fixed bottom-[64px] left-0 w-full z-40 flex justify-center items-center bg-surface/90 backdrop-blur-sm border-t border-subtle py-1 md:hidden">
@@ -416,13 +480,18 @@
 ═══════════════════════════════════════════ --}}
 <style>
 /* Article prose styling */
+.article-prose {
+  font-family: 'SolaimanLipi', serif;
+  font-size: 18px;
+  line-height: 1.8;
+}
 .article-prose h2 {
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 24px; font-weight: 700;
   margin: 2rem 0 0.75rem; color: #000;
 }
 .article-prose h3 {
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 20px; font-weight: 600;
   margin: 1.5rem 0 0.5rem; color: #000;
 }
@@ -432,7 +501,7 @@
   background: #F8FAFC;
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 20px;
   font-weight: 600;
   color: #000;
@@ -447,7 +516,7 @@
 
 /* Dropcap first letter */
 .article-prose > p:first-of-type::first-letter {
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 4.5rem;
   font-weight: 700;
   line-height: 0.8;

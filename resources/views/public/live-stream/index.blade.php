@@ -171,7 +171,7 @@
          class="flex gap-3 p-2 bg-surface-muted rounded border border-subtle hover:bg-surface-container-low transition-colors group">
         <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded">
           <img class="w-full h-full object-cover group-hover:scale-105 transition-transform"
-               src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : 'https://picsum.photos/seed/'.$rn->id.'/200/200' }}"
+               src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                alt="{{ $rn->title }}" loading="lazy"/>
         </div>
         <div class="flex flex-col justify-between py-1">

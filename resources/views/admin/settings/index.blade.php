@@ -5,8 +5,8 @@
 @section('content')
 <div class="container-fluid py-4">
     <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <h2 class="mb-0">
+    <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+        <h2 class="mb-0 h4 h-md-2">
             <i class="bi bi-gear"></i> Site Settings
         </h2>
     </div>
@@ -30,8 +30,9 @@
         </div>
     @endif
 
-    <!-- Tabs Navigation -->
-    <ul class="nav nav-tabs mb-4" id="settingsTabs" role="tablist">
+    <!-- Tabs Navigation (horizontally scrollable on mobile) -->
+    <div class="settings-tabs-scroll mb-4">
+    <ul class="nav nav-tabs flex-nowrap" id="settingsTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="basic-tab" data-bs-toggle="tab" data-bs-target="#basicSettings" type="button" role="tab" aria-controls="basicSettings" aria-selected="true">
                 <i class="bi bi-info-circle"></i> Basic Settings
@@ -68,6 +69,7 @@
             </button>
         </li>
     </ul>
+    </div>
 
     <!-- Tab Content -->
     <div class="tab-content" id="settingsTabContent">
@@ -117,6 +119,37 @@
                     @error('meta_keywords')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
+                </div>
+
+                {{-- ─── Publisher & Contact (shown in site footer) ─── --}}
+                <div class="col-12">
+                    <hr>
+                    <h6 class="mb-1"><i class="bi bi-person-vcard"></i> সম্পাদক ও যোগাযোগ (ফুটারে দেখাবে)</h6>
+                    <p class="text-muted small mb-0">এই তথ্যগুলো ওয়েবসাইটের ফুটারে প্রদর্শিত হবে।</p>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="editor_publisher" class="form-label">সম্পাদক ও প্রকাশক</label>
+                    <input type="text" class="form-control @error('editor_publisher') is-invalid @enderror" id="editor_publisher" name="editor_publisher" value="{{ old('editor_publisher', $seoSettings->editor_publisher ?? '') }}" placeholder="যেমন: সজীব রহমান">
+                    @error('editor_publisher')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-md-6">
+                    <label for="office_mobile" class="form-label">মোবাইল নম্বর</label>
+                    <input type="text" class="form-control @error('office_mobile') is-invalid @enderror" id="office_mobile" name="office_mobile" value="{{ old('office_mobile', $seoSettings->office_mobile ?? '') }}" placeholder="যেমন: +8801XXXXXXXXX">
+                    @error('office_mobile')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-md-6">
+                    <label for="office_email" class="form-label">ইমেইল</label>
+                    <input type="email" class="form-control @error('office_email') is-invalid @enderror" id="office_email" name="office_email" value="{{ old('office_email', $seoSettings->office_email ?? '') }}" placeholder="যেমন: info@example.com">
+                    @error('office_email')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                </div>
+
+                <div class="col-md-6">
+                    <label for="office_address" class="form-label">ঠিকানা</label>
+                    <input type="text" class="form-control @error('office_address') is-invalid @enderror" id="office_address" name="office_address" value="{{ old('office_address', $seoSettings->office_address ?? '') }}" placeholder="যেমন: ১২৩ নিউজ রোড, ঢাকা">
+                    @error('office_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
                 </div>
 
                 <div class="col-12">
@@ -268,6 +301,72 @@
                             @else
                                 <div class="alert alert-info alert-sm mb-0">
                                     <small><i class="bi bi-info-circle"></i> Using default favicon</small>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Default Featured Image -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-info bg-opacity-10">
+                            <h6 class="mb-0"><i class="bi bi-card-image"></i> ডিফল্ট ফিচার ইমেজ</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small mb-2">Recommended: 1200x630px (16:9)</p>
+                            <div class="mb-3">
+                                <label for="default_featured_image" class="form-label">Upload Image</label>
+                                <input type="file" class="form-control @error('default_featured_image') is-invalid @enderror" id="default_featured_image" name="default_featured_image" accept="image/*">
+                                <small class="text-muted d-block mt-1">যে সংবাদে ফিচার ইমেজ নেই সেখানে এই ছবি দেখাবে</small>
+                                @error('default_featured_image')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            @if ($seoSettings && $seoSettings->default_featured_image)
+                                <div class="preview-container">
+                                    <label class="form-label small">Current Image:</label>
+                                    <div class="border rounded p-2" style="background: #f8f9fa;">
+                                        <img src="{{ Storage::url($seoSettings->default_featured_image) }}" alt="Default Featured Image" style="max-width: 100%; max-height: 150px;">
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-info alert-sm mb-0">
+                                    <small><i class="bi bi-info-circle"></i> No default image uploaded</small>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Photo Card Logo -->
+                <div class="col-md-6">
+                    <div class="card h-100">
+                        <div class="card-header bg-danger bg-opacity-10">
+                            <h6 class="mb-0"><i class="bi bi-card-image"></i> ফটোকার্ড লোগো</h6>
+                        </div>
+                        <div class="card-body">
+                            <p class="text-muted small mb-2">ফটোকার্ড মেকারে ব্যবহৃত লোগো (PNG recommended)</p>
+                            <div class="mb-3">
+                                <label for="photo_card_logo" class="form-label">Upload Logo</label>
+                                <input type="file" class="form-control @error('photo_card_logo') is-invalid @enderror" id="photo_card_logo" name="photo_card_logo" accept="image/*">
+                                <small class="text-muted d-block mt-1">ফটোকার্ডে ছবির উপর এই লোগো অটো দেখাবে</small>
+                                @error('photo_card_logo')
+                                    <div class="invalid-feedback d-block">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            @if ($seoSettings && $seoSettings->photo_card_logo)
+                                <div class="preview-container">
+                                    <label class="form-label small">Current Logo:</label>
+                                    <div class="border rounded p-2" style="background: #f8f9fa;">
+                                        <img src="{{ Storage::url($seoSettings->photo_card_logo) }}" alt="Photo Card Logo" style="max-width: 100%; max-height: 150px;">
+                                    </div>
+                                </div>
+                            @else
+                                <div class="alert alert-info alert-sm mb-0">
+                                    <small><i class="bi bi-info-circle"></i> No photo card logo uploaded</small>
                                 </div>
                             @endif
                         </div>
@@ -855,6 +954,33 @@
 </div>
 
 <style>
+    /* ─── Mobile-responsive tabs: scroll horizontally instead of wrapping ─── */
+    .settings-tabs-scroll {
+        overflow-x: auto;
+        overflow-y: hidden;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: thin;
+    }
+    .settings-tabs-scroll::-webkit-scrollbar { height: 4px; }
+    .settings-tabs-scroll::-webkit-scrollbar-thumb { background: #c1c6d5; border-radius: 4px; }
+    .settings-tabs-scroll .nav-tabs {
+        flex-wrap: nowrap;
+        border-bottom: 1px solid #dee2e6;
+        min-width: max-content;
+    }
+    .settings-tabs-scroll .nav-link {
+        white-space: nowrap;
+        border-bottom: none;
+    }
+
+    @media (max-width: 767.98px) {
+        /* Full-width primary action buttons on phones */
+        #settingsTabContent button[type="submit"] { width: 100%; }
+        /* Tighter card headers/bodies on small screens */
+        .card-header h5, .card-header h6 { font-size: 0.95rem; }
+        .settings-tabs-scroll .nav-link { padding: 0.5rem 0.85rem; font-size: 0.9rem; }
+    }
+
     .alert-sm {
         padding: 0.375rem 0.75rem;
         font-size: 0.875rem;
@@ -895,7 +1021,6 @@
 
 <script src="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.js"></script>
 <link href="https://cdn.jsdelivr.net/npm/quill@2.0.0/dist/quill.snow.css" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -937,16 +1062,16 @@
             contentInput.value = JSON.stringify(aboutEditor.getContents());
         });
 
-        // Apply Noto Serif Bengali font
+        // Apply SolaimanLipi font
         const qlEditor = document.querySelector('.ql-editor-wrapper');
         if (qlEditor) {
-            qlEditor.style.fontFamily = "'Noto Serif Bengali', serif";
+            qlEditor.style.fontFamily = "'SolaimanLipi', serif";
         }
 
         // Bengali language support
         const editorContainer = aboutEditor.root;
         if (editorContainer) {
-            editorContainer.style.fontFamily = "'Noto Serif Bengali', serif";
+            editorContainer.style.fontFamily = "'SolaimanLipi', serif";
             editorContainer.setAttribute('lang', 'bn');
         }
     });

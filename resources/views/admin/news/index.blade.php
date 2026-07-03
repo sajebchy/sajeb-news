@@ -11,8 +11,9 @@
         color: #ffffff;
         border-color: #004e9f;
     }
-    .news-card { transition: box-shadow 0.2s, transform 0.2s; }
+    .news-card { transition: box-shadow 0.2s, transform 0.2s; position: relative; }
     .news-card:hover { box-shadow: 0 8px 24px rgba(0,0,0,0.10); transform: translateY(-2px); }
+    .news-card.menu-active { z-index: 60; transform: none; }
     .action-menu { display: none; }
     .action-menu.open { display: block; }
     .line-clamp-2 {
@@ -29,7 +30,7 @@
 {{-- ===== Page Header ===== --}}
 <div class="flex items-center justify-between mb-5">
     <div>
-        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">সংবাদ ব্যবস্থাপনা</h2>
+        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">সংবাদ ব্যবস্থাপনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">মোট {{ $news->total() ?? $news->count() }}টি সংবাদ</p>
     </div>
     <a href="{{ route('admin.news.create') }}"
@@ -159,7 +160,7 @@
         <div class="p-4 flex flex-col gap-3 flex-1">
             <div class="flex justify-between items-start gap-2">
                 <h3 class="font-semibold text-[15px] leading-snug text-on-surface line-clamp-2 flex-1 {{ $item->status === 'draft' ? 'italic text-on-surface-variant' : '' }}"
-                    style="font-family:'Noto Serif Bengali',serif;">
+                    style="font-family:'SolaimanLipi',serif;">
                     {{ $item->title }}
                 </h3>
 
@@ -272,7 +273,7 @@
 {{-- Empty state --}}
 <div class="text-center py-24 bg-surface-container-lowest rounded-xl border border-outline-variant">
     <span class="material-symbols-outlined text-outline-variant" style="font-size:72px;">article</span>
-    <h3 class="text-lg font-semibold text-on-surface-variant mt-4" style="font-family:'Noto Serif Bengali',serif;">
+    <h3 class="text-lg font-semibold text-on-surface-variant mt-4" style="font-family:'SolaimanLipi',serif;">
         @if(request('search') || request('status') || request('category'))
             কোনো সংবাদ পাওয়া যায়নি
         @else
@@ -316,17 +317,26 @@ function toggleFilters() {
 }
 
 function toggleMenu(btn) {
+    const menu = btn.nextElementSibling;
+    const card = btn.closest('.news-card');
     // Close all open menus first
     document.querySelectorAll('.action-menu.open').forEach(m => {
-        if (m !== btn.nextElementSibling) m.classList.remove('open');
+        if (m !== menu) {
+            m.classList.remove('open');
+            m.closest('.news-card')?.classList.remove('menu-active');
+        }
     });
-    btn.nextElementSibling.classList.toggle('open');
+    menu.classList.toggle('open');
+    card.classList.toggle('menu-active', menu.classList.contains('open'));
 }
 
 // Close menus on outside click
 document.addEventListener('click', function(e) {
     if (!e.target.closest('.relative')) {
-        document.querySelectorAll('.action-menu.open').forEach(m => m.classList.remove('open'));
+        document.querySelectorAll('.action-menu.open').forEach(m => {
+            m.classList.remove('open');
+            m.closest('.news-card')?.classList.remove('menu-active');
+        });
     }
 });
 

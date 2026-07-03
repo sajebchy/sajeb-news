@@ -7,7 +7,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h2 class="mb-0">
-                <i class="fas fa-video"></i> 
+                <i class="bi bi-camera-video"></i> 
                 {{ isset($stream) && $stream->id ? 'Edit Live Stream' : 'Create Live Stream' }}
             </h2>
         </div>
@@ -48,6 +48,18 @@
                             <div class="invalid-feedback">{{ $message }}</div>
                         @enderror
                     </div>
+                </div>
+
+                {{-- Embed Link (Facebook / YouTube) --}}
+                <div class="mb-3">
+                    <label for="embed_url" class="form-label">Facebook / YouTube Live Link <span class="text-danger">*</span></label>
+                    <textarea class="form-control @error('embed_url') is-invalid @enderror" id="embed_url" name="embed_url" rows="2" required placeholder="https://www.youtube.com/watch?v=xxxx  অথবা  https://www.facebook.com/username/videos/xxxx">{{ old('embed_url', $stream->embed_url ?? '') }}</textarea>
+                    <small class="form-text text-muted">
+                        YouTube বা Facebook এর লাইভ/ভিডিও লিংক অথবা পুরো <code>&lt;iframe&gt;</code> এমবেড কোড পেস্ট করুন। এটি সরাসরি ওয়েবসাইটে প্লে হবে।
+                    </small>
+                    @error('embed_url')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
                 </div>
 
                 {{-- Description --}}
@@ -123,7 +135,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="allow_comments" name="allow_comments" value="1" @checked(old('allow_comments', $stream->allow_comments ?? true))>
                                 <label class="form-check-label" for="allow_comments">
-                                    <i class="fas fa-comments"></i> Allow Comments After Stream
+                                    <i class="bi bi-chat-square-text"></i> Allow Comments After Stream
                                 </label>
                             </div>
                         </div>
@@ -131,7 +143,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="allow_chat" name="allow_chat" value="1" @checked(old('allow_chat', $stream->allow_chat ?? true))>
                                 <label class="form-check-label" for="allow_chat">
-                                    <i class="fas fa-comment-dots"></i> Enable Live Chat
+                                    <i class="bi bi-chat-dots"></i> Enable Live Chat
                                 </label>
                             </div>
                         </div>
@@ -141,10 +153,10 @@
                 {{-- Submit Buttons --}}
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{{ route('admin.live-streams.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="bi bi-x-lg"></i> Cancel
                     </a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> 
+                        <i class="bi bi-save"></i> 
                         {{ isset($stream) && $stream->id ? 'Update Stream' : 'Create Stream' }}
                     </button>
                 </div>
@@ -154,10 +166,15 @@
 
     {{-- Info Box --}}
     <div class="alert alert-info mt-4" role="alert">
-        <h5 class="alert-heading"><i class="fas fa-info-circle"></i> Broadcasting Instructions</h5>
-        <p class="mb-0">
-            After creating your stream, you'll get a unique <strong>Stream Key</strong> that you'll use with OBS Studio or similar streaming software. 
-            The stream will be accessible at <code class="bg-light p-2 rounded">{{ url('/live/{slug}') }}</code>
+        <h5 class="alert-heading"><i class="bi bi-info-circle"></i> কীভাবে কাজ করে</h5>
+        <p class="mb-1">
+            Facebook বা YouTube এ চলা লাইভ/ভিডিওর লিংক উপরের <strong>Live Link</strong> ঘরে দিন — সেটি সরাসরি ওয়েবসাইটে দেখাবে।
+            শিডিউল সময় না দিলে তৈরির সাথে সাথেই লাইভ হয়ে যাবে; সময় দিলে ততক্ষণে "Upcoming" হিসেবে থাকবে।
+        </p>
+        <p class="mb-0 small text-muted">
+            উদাহরণ: <code>https://youtu.be/VIDEO_ID</code>,
+            <code>https://www.youtube.com/watch?v=VIDEO_ID</code>,
+            <code>https://www.facebook.com/PAGE/videos/VIDEO_ID</code>
         </p>
     </div>
 </div>

@@ -4,7 +4,7 @@
             <div class="card shadow">
                 <div class="card-header bg-primary text-white">
                     <h4 class="mb-0">
-                        <i class="fas fa-bell"></i> পুশ নোটিফিকেশন গাইড
+                        <i class="bi bi-bell"></i> পুশ নোটিফিকেশন গাইড
                     </h4>
                 </div>
                 <div class="card-body">
@@ -81,7 +81,7 @@
                         <div class="col-lg-4">
                             <div class="card bg-light mb-3">
                                 <div class="card-header">
-                                    <h6 class="mb-0"><i class="fas fa-lightbulb"></i> টিপস</h6>
+                                    <h6 class="mb-0"><i class="bi bi-lightbulb"></i> টিপস</h6>
                                 </div>
                                 <div class="card-body small">
                                     <ul class="ps-3 mb-0">
@@ -94,7 +94,7 @@
 
                             <div class="card bg-info bg-opacity-10 mb-3">
                                 <div class="card-header bg-info text-white">
-                                    <h6 class="mb-0"><i class="fas fa-check-circle"></i> প্রস্তুতি</h6>
+                                    <h6 class="mb-0"><i class="bi bi-check-circle"></i> প্রস্তুতি</h6>
                                 </div>
                                 <div class="card-body small">
                                     @php
@@ -104,11 +104,11 @@
 
                                     @if($vapidConfigured)
                                         <div class="alert alert-success mb-0">
-                                            <i class="fas fa-check-circle"></i> VAPID Keys সকল সংরক্ষিত
+                                            <i class="bi bi-check-circle"></i> VAPID Keys সকল সংরক্ষিত
                                         </div>
                                     @else
                                         <div class="alert alert-warning mb-0">
-                                            <i class="fas fa-exclamation-triangle"></i> 
+                                            <i class="bi bi-exclamation-triangle"></i> 
                                             <a href="{{ route('admin.settings.index') }}" class="text-warning fw-bold">
                                                 VAPID Keys কনফিগার করুন
                                             </a>
@@ -119,14 +119,14 @@
 
                             <div class="card">
                                 <div class="card-header">
-                                    <h6 class="mb-0"><i class="fas fa-link"></i> দরকারী লিঙ্ক</h6>
+                                    <h6 class="mb-0"><i class="bi bi-link-45deg"></i> দরকারী লিঙ্ক</h6>
                                 </div>
                                 <div class="card-body small">
                                     <a href="{{ route('admin.settings.index') }}" class="btn btn-sm btn-outline-primary w-100 mb-2">
-                                        <i class="fas fa-cog"></i> সেটিংস
+                                        <i class="bi bi-gear"></i> সেটিংস
                                     </a>
                                     <a href="https://web.dev/push-notifications/" target="_blank" class="btn btn-sm btn-outline-secondary w-100">
-                                        <i class="fas fa-book"></i> ডক্স
+                                        <i class="bi bi-book"></i> ডক্স
                                     </a>
                                 </div>
                             </div>

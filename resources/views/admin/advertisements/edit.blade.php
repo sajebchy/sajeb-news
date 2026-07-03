@@ -32,7 +32,7 @@
         <span class="material-symbols-outlined text-[20px]">arrow_back</span>
     </a>
     <div>
-        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">বিজ্ঞাপন সম্পাদনা</h2>
+        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">বিজ্ঞাপন সম্পাদনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">{{ $ad->name }}</p>
     </div>
 </header>

@@ -7,7 +7,7 @@
     <div class="row mb-4">
         <div class="col-md-12">
             <h2 class="mb-0">
-                <i class="fas fa-video"></i> 
+                <i class="bi bi-camera-video"></i> 
                 Edit Live Stream
             </h2>
         </div>
@@ -108,7 +108,7 @@
                         <input type="datetime-local" class="form-control @error('scheduled_at') is-invalid @enderror" id="scheduled_at" name="scheduled_at" value="{{ old('scheduled_at', $stream->scheduled_at ? $stream->scheduled_at->format('Y-m-d H:i') : '') }}" @disabled($stream->isLive())>
                         <small class="form-text text-muted">
                             @if($stream->isLive())
-                                <i class="fas fa-info-circle"></i> Cannot reschedule a live stream
+                                <i class="bi bi-info-circle"></i> Cannot reschedule a live stream
                             @else
                                 Leave empty to start immediately
                             @endif
@@ -127,7 +127,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="allow_comments" name="allow_comments" value="1" @checked(old('allow_comments', $stream->allow_comments))>
                                 <label class="form-check-label" for="allow_comments">
-                                    <i class="fas fa-comments"></i> Allow Comments After Stream
+                                    <i class="bi bi-chat-square-text"></i> Allow Comments After Stream
                                 </label>
                             </div>
                         </div>
@@ -135,7 +135,7 @@
                             <div class="form-check">
                                 <input class="form-check-input" type="checkbox" id="allow_chat" name="allow_chat" value="1" @checked(old('allow_chat', $stream->allow_chat))>
                                 <label class="form-check-label" for="allow_chat">
-                                    <i class="fas fa-comment-dots"></i> Enable Live Chat
+                                    <i class="bi bi-chat-dots"></i> Enable Live Chat
                                 </label>
                             </div>
                         </div>
@@ -145,10 +145,10 @@
                 {{-- Submit Buttons --}}
                 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                     <a href="{{ route('admin.live-streams.show', $stream) }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="bi bi-x-lg"></i> Cancel
                     </a>
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> Update Stream
+                        <i class="bi bi-save"></i> Update Stream
                     </button>
                 </div>
             </form>

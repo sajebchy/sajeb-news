@@ -169,30 +169,51 @@ class SeoService
         $siteUrl  = $seo?->site_url  ?: url('/');
         $logoUrl  = $seo?->logo ? \Storage::url($seo->logo) : asset('images/logo.png');
 
-        return [
-            '@context' => 'https://schema.org',
-            '@type'    => 'NewsMediaOrganization',
-            'name'     => $siteName,
-            'url'      => $siteUrl,
-            'logo'     => [
+        $schema = [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'NewsMediaOrganization',
+            'name'        => $siteName,
+            'url'         => $siteUrl,
+            'description' => $seo?->site_description ?: null,
+            'logo'        => [
                 '@type'  => 'ImageObject',
                 'url'    => $logoUrl,
                 'width'  => 250,
                 'height' => 60,
             ],
-            'sameAs'   => array_filter([
+            'sameAs'      => array_filter([
                 $seo?->facebook_url  ?? null,
                 $seo?->twitter_url   ?? null,
                 $seo?->youtube_url   ?? null,
+                $seo?->instagram_url ?? null,
+                $seo?->youtube_url   ?? null,
+                $seo?->linkedin_url  ?? null,
             ]),
-            'contactPoint' => [
-                '@type'       => 'ContactPoint',
-                'contactType' => 'customer service',
-                'email'       => $seo?->contact_email ?? null,
-                'areaServed'  => 'BD',
-                'availableLanguage' => 'Bengali',
-            ],
         ];
+
+        if ($seo?->office_address) {
+            $schema['address'] = [
+                '@type'          => 'PostalAddress',
+                'streetAddress'  => $seo->office_address,
+                'addressCountry' => 'BD',
+            ];
+        }
+
+        $contactPoint = [
+            '@type'             => 'ContactPoint',
+            'contactType'       => 'customer service',
+            'areaServed'        => 'BD',
+            'availableLanguage' => 'Bengali',
+        ];
+        if ($seo?->office_email) {
+            $contactPoint['email'] = $seo->office_email;
+        }
+        if ($seo?->office_mobile) {
+            $contactPoint['telephone'] = $seo->office_mobile;
+        }
+        $schema['contactPoint'] = $contactPoint;
+
+        return array_filter($schema, fn($v) => $v !== null);
     }
 
     /** Category listing page schema */

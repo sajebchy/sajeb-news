@@ -39,7 +39,7 @@
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             <span class="text-primary">নিউজলেটার ব্যবস্থাপনা</span>
         </nav>
-        <h2 class="text-2xl font-bold text-primary" style="font-family:'Noto Serif Bengali',serif;">নিউজলেটার ব্যবস্থাপনা</h2>
+        <h2 class="text-2xl font-bold text-primary" style="font-family:'SolaimanLipi',serif;">নিউজলেটার ব্যবস্থাপনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">আপনার পাঠকদের সাথে সংযুক্ত থাকুন এবং কার্যক্রম পর্যবেক্ষণ করুন।</p>
     </div>
     <a href="{{ route('admin.news.create') }}"
@@ -112,7 +112,7 @@
 
         {{-- Table header + search --}}
         <div class="p-5 border-b border-outline-variant flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-            <h3 class="font-bold text-on-surface text-lg" style="font-family:'Noto Serif Bengali',serif;">সাবস্ক্রাইবার তালিকা</h3>
+            <h3 class="font-bold text-on-surface text-lg" style="font-family:'SolaimanLipi',serif;">সাবস্ক্রাইবার তালিকা</h3>
             <form method="GET" action="{{ route('admin.newsletters.index') }}" class="flex items-center gap-2 flex-wrap">
                 <div class="relative">
                     <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
@@ -210,7 +210,7 @@
                     <tr>
                         <td colspan="5" class="text-center py-16">
                             <span class="material-symbols-outlined text-outline-variant" style="font-size:56px">mail_off</span>
-                            <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'Noto Serif Bengali',serif;">কোনো সাবস্ক্রাইবার পাওয়া যায়নি</p>
+                            <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'SolaimanLipi',serif;">কোনো সাবস্ক্রাইবার পাওয়া যায়নি</p>
                         </td>
                     </tr>
                     @endforelse
@@ -265,7 +265,7 @@
         {{-- Growth Breakdown --}}
         <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
             <div class="px-5 py-4 border-b border-outline-variant">
-                <h3 class="font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">প্রবৃদ্ধির হার</h3>
+                <h3 class="font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">প্রবৃদ্ধির হার</h3>
             </div>
             <div class="p-5 space-y-4">
                 @php
@@ -317,7 +317,7 @@
         {{-- Recent Campaigns --}}
         <div class="bg-surface-container-lowest border border-outline-variant rounded-xl overflow-hidden">
             <div class="px-5 py-4 border-b border-outline-variant">
-                <h3 class="font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">সাম্প্রতিক ক্যাম্পেইন</h3>
+                <h3 class="font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">সাম্প্রতিক ক্যাম্পেইন</h3>
             </div>
             <div class="p-5 space-y-5">
                 @php
@@ -333,7 +333,7 @@
                         <span class="text-[10px] uppercase tracking-wider font-bold text-primary">পাঠানো: {{ $c['date'] }}</span>
                         <span class="material-symbols-outlined text-outline text-[18px] group-hover:text-primary transition-colors">open_in_new</span>
                     </div>
-                    <h4 class="text-sm font-semibold text-on-surface leading-snug mb-3" style="font-family:'Noto Serif Bengali',serif;">{{ $c['title'] }}</h4>
+                    <h4 class="text-sm font-semibold text-on-surface leading-snug mb-3" style="font-family:'SolaimanLipi',serif;">{{ $c['title'] }}</h4>
                     <div class="grid grid-cols-2 gap-3 bg-surface-container-low p-3 rounded-xl">
                         <div>
                             <p class="text-[10px] text-on-surface-variant uppercase font-bold">ওপেন রেট</p>

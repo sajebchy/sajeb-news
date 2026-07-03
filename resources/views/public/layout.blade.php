@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 @php $__layoutSeo = \App\Models\SeoSetting::first(); @endphp
-<html class="light" lang="bn">
+<html class="light" lang="bn" dir="ltr">
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
@@ -9,9 +9,54 @@
 @hasSection('meta_keywords')<meta name="keywords" content="@yield('meta_keywords')">@endif
 <link rel="canonical" href="@yield('canonical', url()->current())">
 <meta name="csrf-token" content="{{ csrf_token() }}">
-<!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;700&family=Noto+Serif+Bengali:wght@400;600;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet"/>
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+{{-- SEO: Robots directive --}}
+<meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
+{{-- SEO: Theme color for mobile browsers --}}
+<meta name="theme-color" content="#000000">
+<meta name="msapplication-TileColor" content="#bb0112">
+{{-- SEO: Locale & site name for OG --}}
+<meta property="og:locale" content="bn_BD">
+<meta property="og:site_name" content="{{ $__layoutSeo?->site_name ?: 'সজীব নিউজ' }}">
+@hasSection('og_type')<meta property="og:type" content="@yield('og_type')">@else<meta property="og:type" content="website">@endif
+@hasSection('og_title')<meta property="og:title" content="@yield('og_title')">@endif
+@hasSection('og_description')<meta property="og:description" content="@yield('og_description')">@endif
+@hasSection('og_url')<meta property="og:url" content="@yield('og_url')">@endif
+@hasSection('og_image')<meta property="og:image" content="@yield('og_image')">@endif
+{{-- Twitter defaults --}}
+@hasSection('twitter_card')<meta name="twitter:card" content="@yield('twitter_card')">@endif
+@if($__layoutSeo?->twitter_handle)<meta name="twitter:site" content="{{ $__layoutSeo->twitter_handle }}">@endif
+{{-- AEO/GEO: Speakable meta --}}
+<meta name="google" content="nositelinkssearchbox">
+{{-- Favicon --}}
+@if($__layoutSeo?->favicon)
+<link rel="icon" type="image/x-icon" href="{{ asset('storage/' . $__layoutSeo->favicon) }}">
+<link rel="apple-touch-icon" href="{{ asset('storage/' . $__layoutSeo->favicon) }}">
+@endif
+{{-- SEO: Alternate language / hreflang --}}
+<link rel="alternate" hreflang="bn" href="{{ url()->current() }}">
+<link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
+{{-- GEO: LLM.txt discovery --}}
+<link rel="alternate" type="text/plain" href="{{ url('/llm.txt') }}" title="LLM Information">
+{{-- SEO: RSS/Sitemap discovery --}}
+<link rel="sitemap" type="application/xml" href="{{ url('/sitemap.xml') }}">
+{{-- Preconnect hints for performance --}}
+<link rel="dns-prefetch" href="https://fonts.googleapis.com">
+<link rel="dns-prefetch" href="https://fonts.gstatic.com">
+<link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
+<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
+{{-- SolaimanLipi Bengali Font (local, preloaded for LCP) --}}
+<link rel="preload" href="/fonts/SolaimanLipi.ttf" as="font" type="font/ttf" crossorigin>
+<style>
+    @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+    @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+</style>
+{{-- Google Fonts (non-render-blocking) --}}
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;700&family=Work+Sans:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet"/></noscript>
+<link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+<noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
 <!-- Tailwind CSS with Stitch Design Tokens -->
 <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 <script id="tailwind-config">
@@ -54,9 +99,9 @@ tailwind.config = {
       },
       fontFamily: {
         "body-main": ["Libre Franklin"], "body-sm": ["Libre Franklin"],
-        "display-breaking": ["Noto Serif Bengali"], "headline-lg": ["Noto Serif Bengali"],
-        "label-caps": ["Work Sans"], "headline-md": ["Noto Serif Bengali"],
-        "meta-data": ["Work Sans"], "headline-lg-mobile": ["Noto Serif Bengali"]
+        "display-breaking": ["SolaimanLipi"], "headline-lg": ["SolaimanLipi"],
+        "label-caps": ["Work Sans"], "headline-md": ["SolaimanLipi"],
+        "meta-data": ["Work Sans"], "headline-lg-mobile": ["SolaimanLipi"]
       },
       fontSize: {
         "body-main": ["18px", {"lineHeight":"1.6","fontWeight":"400"}],
@@ -98,6 +143,9 @@ tailwind.config = {
   $siteNameEn = $globalSeo?->site_title ?: 'Sajeb News';
   $siteDesc  = $globalSeo?->site_description ?: '';
   $siteLogo  = $globalSeo?->logo ? \Storage::url($globalSeo->logo) : null;
+  $defaultFeaturedImage = $globalSeo?->default_featured_image
+      ? asset('storage/'.$globalSeo->default_featured_image)
+      : ($globalSeo?->logo ? asset('storage/'.$globalSeo->logo) : null);
 @endphp
 
 <!-- ═══════════════════════════════════════════════════════════
@@ -346,24 +394,41 @@ tailwind.config = {
       </ul>
     </div>
     <div>
-      <h4 class="font-headline-md text-lg mb-4 border-b border-subtle pb-2">মোবাইল অ্যাপ</h4>
-      <p class="text-body-sm text-on-surface-variant mb-4">আমাদের অ্যান্ড্রয়েড ও আইওএস অ্যাপ নামিয়ে নিন।</p>
-      <div class="space-y-3">
-        <a href="#" class="w-full flex items-center justify-center gap-3 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity">
-          <span class="material-symbols-outlined">phone_iphone</span>
-          <div class="text-left"><p class="text-[10px] uppercase leading-none opacity-70">Download on the</p><p class="text-sm font-semibold leading-none">App Store</p></div>
-        </a>
-        <a href="#" class="w-full flex items-center justify-center gap-3 py-2 bg-primary text-white rounded-lg hover:opacity-90 transition-opacity">
-          <span class="material-symbols-outlined">play_arrow</span>
-          <div class="text-left"><p class="text-[10px] uppercase leading-none opacity-70">Get it on</p><p class="text-sm font-semibold leading-none">Google Play</p></div>
-        </a>
-      </div>
+      {{-- যোগাযোগ / প্রকাশক তথ্য (Admin → Settings → Basic Settings থেকে এডিটযোগ্য) --}}
+      @if($globalSeo?->editor_publisher || $globalSeo?->office_address || $globalSeo?->office_mobile || $globalSeo?->office_email)
+      <h4 class="font-headline-md text-lg mb-4 border-b border-subtle pb-2">যোগাযোগ</h4>
+      <ul class="space-y-2 text-body-sm text-on-surface-variant mb-6">
+        @if($globalSeo?->editor_publisher)
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-[18px] text-outline mt-0.5">edit_note</span>
+          <span>সম্পাদক ও প্রকাশক: <span class="text-on-surface font-medium">{{ $globalSeo->editor_publisher }}</span></span>
+        </li>
+        @endif
+        @if($globalSeo?->office_address)
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-[18px] text-outline mt-0.5">location_on</span>
+          <span>{{ $globalSeo->office_address }}</span>
+        </li>
+        @endif
+        @if($globalSeo?->office_mobile)
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-[18px] text-outline mt-0.5">call</span>
+          <a href="tel:{{ preg_replace('/[^0-9+]/', '', $globalSeo->office_mobile) }}" class="hover:text-secondary transition-colors">{{ $globalSeo->office_mobile }}</a>
+        </li>
+        @endif
+        @if($globalSeo?->office_email)
+        <li class="flex items-start gap-2">
+          <span class="material-symbols-outlined text-[18px] text-outline mt-0.5">mail</span>
+          <a href="mailto:{{ $globalSeo->office_email }}" class="hover:text-secondary transition-colors break-all">{{ $globalSeo->office_email }}</a>
+        </li>
+        @endif
+      </ul>
+      @endif
     </div>
   </div>
   <div class="border-t border-subtle py-6 bg-surface-container-low">
-    <div class="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center text-meta-data text-outline gap-4">
+    <div class="max-w-container-max mx-auto px-gutter flex flex-col md:flex-row justify-between items-center text-meta-data text-outline gap-4 text-center md:text-left">
       <p>© {{ date('Y') }} {{ $siteName }}। সকল স্বত্ব সংরক্ষিত।</p>
-      <p>সম্পাদক ও প্রকাশক: সজীব রহমান</p>
     </div>
   </div>
 </footer>

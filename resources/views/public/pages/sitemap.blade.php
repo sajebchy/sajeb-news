@@ -9,7 +9,7 @@
 
 @push('styles')
 <style>
-    .bengali-text { font-family: 'Noto Serif Bengali', serif; }
+    .bengali-text { font-family: 'SolaimanLipi', serif; }
     .sitemap-link {
         position: relative;
         transition: all 0.2s ease;

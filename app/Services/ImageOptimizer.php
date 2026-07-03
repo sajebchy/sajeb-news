@@ -8,18 +8,16 @@ use Illuminate\Support\Str;
 
 class ImageOptimizer
 {
-    // Quality settings for different image types
     private const QUALITY_SETTINGS = [
-        'featured_image' => 85,
-        'logo' => 90,
-        'avatar' => 85,
-        'thumbnail' => 80,
-        'og_image' => 85,
+        'featured_image' => 82,
+        'logo' => 88,
+        'avatar' => 80,
+        'thumbnail' => 75,
+        'og_image' => 82,
         'favicon' => 90,
-        'news_content' => 85,
+        'news_content' => 80,
     ];
 
-    // Resize dimensions for different image types
     private const RESIZE_DIMENSIONS = [
         'featured_image' => ['width' => 1200, 'height' => 630],
         'logo' => ['width' => 500, 'height' => null],
@@ -29,76 +27,81 @@ class ImageOptimizer
         'favicon' => ['width' => 32, 'height' => 32],
     ];
 
-    public function __construct()
-    {
-        // No explicit initialization needed
-    }
+    private const MAX_FILE_SIZE = 1048576; // 1MB
 
-    /**
-     * Optimize and save an uploaded image
-     * 
-     * @param UploadedFile $file
-     * @param string $type Type of image (featured_image, logo, avatar, etc.)
-     * @param string $path Storage path
-     * @return string Optimized image path
-     */
     public function optimize(UploadedFile $file, string $type = 'featured_image', string $path = 'images'): string
     {
         try {
-            // Generate unique filename for the stored file
-            $filename = Str::random(40) . '.' . strtolower($file->getClientOriginalExtension());
-            
-            // Store the file to disk
-            $storedPath = $file->storeAs($path, $filename, 'public');
+            $image = $this->createImageFromFile($file);
 
-            return $storedPath;
+            if ($image === null) {
+                return $this->storeFallback($file, $path);
+            }
+
+            $dimensions = self::RESIZE_DIMENSIONS[$type] ?? null;
+            if ($dimensions) {
+                $image = $this->resizeImage($image, $dimensions['width'], $dimensions['height']);
+            }
+
+            $quality = self::QUALITY_SETTINGS[$type] ?? 82;
+            $filename = Str::random(40) . '.webp';
+            $fullPath = storage_path('app/public/' . $path);
+
+            if (!is_dir($fullPath)) {
+                mkdir($fullPath, 0755, true);
+            }
+
+            $outputFile = $fullPath . '/' . $filename;
+            $this->saveAsWebp($image, $outputFile, $quality);
+            imagedestroy($image);
+
+            return $path . '/' . $filename;
 
         } catch (\Exception $e) {
-            \Log::error('Image storage failed: ' . $e->getMessage(), [
+            \Log::error('Image optimization failed: ' . $e->getMessage(), [
                 'file' => $file->getClientOriginalName(),
                 'type' => $type,
             ]);
 
-            // Fallback: store with default method
-            return $file->store($path, 'public');
+            return $this->storeFallback($file, $path);
         }
     }
 
-    /**
-     * Optimize image with custom dimensions
-     * 
-     * @param UploadedFile $file
-     * @param int $width
-     * @param int $height
-     * @param int $quality
-     * @param string $path
-     * @return string
-     */
     public function optimizeWithDimensions(
         UploadedFile $file,
         int $width,
         ?int $height = null,
-        int $quality = 85,
+        int $quality = 82,
         string $path = 'images'
     ): string {
         try {
-            $filename = Str::random(40) . '.' . strtolower($file->getClientOriginalExtension());
-            $storedPath = $file->storeAs($path, $filename, 'public');
+            $image = $this->createImageFromFile($file);
 
-            return $storedPath;
+            if ($image === null) {
+                return $this->storeFallback($file, $path);
+            }
+
+            $image = $this->resizeImage($image, $width, $height);
+
+            $filename = Str::random(40) . '.webp';
+            $fullPath = storage_path('app/public/' . $path);
+
+            if (!is_dir($fullPath)) {
+                mkdir($fullPath, 0755, true);
+            }
+
+            $outputFile = $fullPath . '/' . $filename;
+            $this->saveAsWebp($image, $outputFile, $quality);
+            imagedestroy($image);
+
+            return $path . '/' . $filename;
 
         } catch (\Exception $e) {
-            \Log::error('Image storage with dimensions failed: ' . $e->getMessage());
-            return $file->store($path, 'public');
+            \Log::error('Image optimization with dimensions failed: ' . $e->getMessage());
+            return $this->storeFallback($file, $path);
         }
     }
 
-    /**
-     * Delete an optimized image
-     * 
-     * @param string $path
-     * @return bool
-     */
     public function delete(string $path): bool
     {
         if ($path && Storage::disk('public')->exists($path)) {
@@ -107,19 +110,91 @@ class ImageOptimizer
         return false;
     }
 
-    /**
-     * Get quality setting for image type
-     */
     public function getQuality(string $type): int
     {
-        return $this->QUALITY_SETTINGS[$type] ?? 85;
+        return self::QUALITY_SETTINGS[$type] ?? 82;
     }
 
-    /**
-     * Get dimensions for image type
-     */
     public function getDimensions(string $type): ?array
     {
-        return $this->RESIZE_DIMENSIONS[$type] ?? null;
+        return self::RESIZE_DIMENSIONS[$type] ?? null;
+    }
+
+    private function createImageFromFile(UploadedFile $file): ?\GdImage
+    {
+        $mime = $file->getMimeType();
+        $path = $file->getRealPath();
+
+        return match ($mime) {
+            'image/jpeg', 'image/jpg' => @imagecreatefromjpeg($path),
+            'image/png' => $this->createFromPngWithAlpha($path),
+            'image/gif' => @imagecreatefromgif($path),
+            'image/webp' => @imagecreatefromwebp($path),
+            'image/bmp', 'image/x-ms-bmp' => @imagecreatefrombmp($path),
+            default => null,
+        } ?: null;
+    }
+
+    private function createFromPngWithAlpha(string $path): ?\GdImage
+    {
+        $image = @imagecreatefrompng($path);
+        if (!$image) {
+            return null;
+        }
+        imagealphablending($image, true);
+        imagesavealpha($image, true);
+        return $image;
+    }
+
+    private function resizeImage(\GdImage $image, int $maxWidth, ?int $maxHeight): \GdImage
+    {
+        $origWidth = imagesx($image);
+        $origHeight = imagesy($image);
+
+        if ($maxHeight === null) {
+            if ($origWidth <= $maxWidth) {
+                return $image;
+            }
+            $ratio = $maxWidth / $origWidth;
+            $newWidth = $maxWidth;
+            $newHeight = (int) round($origHeight * $ratio);
+        } else {
+            if ($origWidth <= $maxWidth && $origHeight <= $maxHeight) {
+                return $image;
+            }
+            $ratioW = $maxWidth / $origWidth;
+            $ratioH = $maxHeight / $origHeight;
+            $ratio = min($ratioW, $ratioH);
+            $newWidth = (int) round($origWidth * $ratio);
+            $newHeight = (int) round($origHeight * $ratio);
+        }
+
+        $resized = imagecreatetruecolor($newWidth, $newHeight);
+        imagealphablending($resized, false);
+        imagesavealpha($resized, true);
+        $transparent = imagecolorallocatealpha($resized, 0, 0, 0, 127);
+        imagefill($resized, 0, 0, $transparent);
+
+        imagecopyresampled($resized, $image, 0, 0, 0, 0, $newWidth, $newHeight, $origWidth, $origHeight);
+        imagedestroy($image);
+
+        return $resized;
+    }
+
+    private function saveAsWebp(\GdImage $image, string $outputFile, int $quality): void
+    {
+        imagewebp($image, $outputFile, $quality);
+
+        // If file exceeds 1MB, reduce quality progressively
+        while (filesize($outputFile) > self::MAX_FILE_SIZE && $quality > 30) {
+            $quality -= 8;
+            imagewebp($image, $outputFile, $quality);
+        }
+    }
+
+    private function storeFallback(UploadedFile $file, string $path): string
+    {
+        $filename = Str::random(40) . '.' . strtolower($file->getClientOriginalExtension());
+        return $file->storeAs($path, $filename, 'public');
     }
 }

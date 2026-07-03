@@ -40,7 +40,7 @@
             <span class="material-symbols-outlined text-[14px]">chevron_right</span>
             <span class="text-primary">ব্যবহারকারী ব্যবস্থাপনা</span>
         </nav>
-        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">ব্যবহারকারী ব্যবস্থাপনা</h2>
+        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">ব্যবহারকারী ব্যবস্থাপনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">সজীব নিউজের সকল ব্যবহারকারী পরিচালনা করুন।</p>
     </div>
     <a href="{{ route('admin.users.create') }}"
@@ -211,7 +211,7 @@
                 <tr>
                     <td colspan="6" class="text-center py-20">
                         <span class="material-symbols-outlined text-outline-variant" style="font-size:64px;">group_off</span>
-                        <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'Noto Serif Bengali',serif;">কোনো ব্যবহারকারী পাওয়া যায়নি</p>
+                        <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'SolaimanLipi',serif;">কোনো ব্যবহারকারী পাওয়া যায়নি</p>
                         @if(!request()->hasAny(['search','role','status']))
                         <a href="{{ route('admin.users.create') }}"
                            class="inline-flex items-center gap-2 mt-4 bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-opacity">

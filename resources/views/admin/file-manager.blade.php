@@ -285,7 +285,7 @@
 
     <!-- Loader -->
     <div class="loader" id="loader">
-        <i class="fas fa-spinner fa-spin"></i> Loading files...
+        <i class="bi bi-arrow-repeat spin"></i> Loading files...
     </div>
 
     <!-- Main Content -->
@@ -374,7 +374,7 @@
         }
 
         if (displayItems.length === 0) {
-            fileList.innerHTML = '<div class="fm-empty"><i class="fas fa-folder-open"></i><p>No files or folders</p></div>';
+            fileList.innerHTML = '<div class="fm-empty"><i class="bi bi-folder2-open"></i><p>No files or folders</p></div>';
             return;
         }
 

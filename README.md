@@ -92,7 +92,7 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 ### 🌐 Multi-Language Support
 - ✅ Bengali (বাংলা) fully supported
 - ✅ English fallback
-- ✅ Proper font handling (Noto Serif Bengali)
+- ✅ Proper font handling (SolaimanLipi — local, no CDN dependency)
 - ✅ Right-to-left text support ready
 
 ---
@@ -100,17 +100,17 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 ## 📦 Tech Stack
 
 ### Backend
-- **Framework**: Laravel 11 (PHP 8.2+)
-- **Database**: MySQL 8.0 / PostgreSQL
+- **Framework**: Laravel 12 (PHP 8.3+)
+- **Database**: MySQL 8.4 / PostgreSQL
 - **Cache**: Redis / Memcached
 - **Queue**: Redis / Database
 - **Storage**: Local / S3 Compatible
 
 ### Frontend
-- **CSS Framework**: Bootstrap 5.3
+- **CSS Framework**: Tailwind CSS (Stitch Design System)
 - **JavaScript**: Vanilla JS + Quill Editor
-- **Icons**: Bootstrap Icons + FontAwesome
-- **Fonts**: Noto Serif Bengali, Google Fonts
+- **Icons**: Material Symbols Outlined
+- **Fonts**: SolaimanLipi (local), Libre Franklin, Work Sans
 
 ### Tools & Services
 - **Email**: SMTP / Mailtrap / SendGrid
@@ -324,6 +324,68 @@ Need help? Check these resources:
 ---
 
 ## 🎉 Changelog
+
+---
+
+### Version 3.1 (July 3, 2026) — Photo Card, Font Migration, SEO/Performance & Bug Fixes
+
+---
+
+#### 🖼️ Photo Card Maker (New Feature)
+- **Canvas-based photo card generator** at `/admin/photo-card` for social media
+- 5 preset sizes: Instagram Post (1080×1080), Instagram Story (1080×1920), Facebook (1200×630), Twitter (1200×675), YouTube (1280×720)
+- 6 color themes with drag & drop image upload
+- Calendar date picker with automatic Bengali date conversion
+- Logo auto-loaded from admin settings (photo_card_logo)
+- Logo positioned at image/headline junction for branding
+- Website URL auto-populated from settings
+- Crystal-clear PNG/JPG downloads at full resolution (canvas `imageSmoothingQuality: high`)
+- SolaimanLipi font rendered via FontFace API preloading
+
+#### 🔤 Font Migration: Noto Serif Bengali → SolaimanLipi
+- Replaced Google Fonts (Noto Serif Bengali) with locally hosted **SolaimanLipi** font across entire website
+- Removed all Google Fonts CDN dependencies for Bengali font — improved privacy and load time
+- Font files served from `/public/fonts/` (normal + bold weights)
+- Applied to all layouts: public, admin, guest, auth pages
+- News article body content (`.article-prose`) now uses SolaimanLipi
+
+#### 🔍 SEO / AEO / GEO Improvements
+- Added `robots` meta tag with `max-image-preview:large, max-snippet:-1, max-video-preview:-1`
+- Added `theme-color` and `msapplication-TileColor` meta tags
+- Added `og:locale`, `og:site_name`, `og:type` to global layout (all pages)
+- Added `og:title`, `og:description`, `og:url`, `og:image` section support in layout
+- Added `twitter:site` from settings (twitter handle)
+- Added `hreflang` tags (bn + x-default)
+- Added `<link rel="sitemap">` for XML sitemap discovery
+- Added `<link rel="alternate">` for LLM.txt discovery (GEO)
+- Added favicon and apple-touch-icon from settings
+
+#### ⚡ Performance / Lighthouse Improvements
+- Google Fonts (Libre Franklin, Work Sans, Material Symbols) now loaded **non-render-blocking** via `preload` + `onload` pattern
+- Added `dns-prefetch` and `preconnect` hints for fonts.googleapis.com, fonts.gstatic.com, cdn.tailwindcss.com
+- SolaimanLipi font preloaded with `<link rel="preload" as="font">`
+- All `@font-face` declarations use `font-display: swap`
+- Homepage hero image uses `fetchpriority="high"` for faster LCP
+- All non-hero images use `loading="lazy"` with explicit `width`/`height` attributes
+- Added image dimensions to homepage cards (hero, secondary, category, sidebar)
+
+#### 🐛 Bug Fixes
+- **Fixed meta tags appearing inside `<body>`** — removed UTF-8 BOM from 23 Blade files that caused browser HTML parser to break `<head>` structure
+- **Fixed homepage featured images not showing** — `$defaultFeaturedImage` now falls back to site logo when `default_featured_image` is not set; replaced all broken `asset('images/logo.png')` fallbacks across 7 public views
+- **Fixed AdController image upload** — update method and AJAX upload now use ImageOptimizer for WebP conversion (was using raw `$file->move()`)
+- **Fixed ad image validation** — reduced max upload size from 5MB to 1MB for advertisements
+
+#### 🗄️ Database Changes
+- Added `photo_card_logo` column to `seo_settings` table
+- Added `photo_card_logo` to SeoSetting model's `$fillable` array
+- Settings page: new "ফটোকার্ড লোগো" upload card in Logos & Images tab
+- Updated `sajeb_news_backup.sql` with latest database state
+
+#### 📁 New Files
+- `resources/views/admin/photo-card/index.blade.php` — Photo card maker UI
+- `public/fonts/SolaimanLipi.ttf` — Bengali font (normal weight)
+- `public/fonts/SolaimanLipi-Bold.ttf` — Bengali font (bold weight)
+- `database/migrations/2026_07_02_164005_add_photo_card_logo_to_seo_settings_table.php`
 
 ---
 
@@ -624,8 +686,8 @@ Ad slots are now live across the following areas:
 
 ---
 
-**Last Updated**: July 1, 2026
-**Current Version**: 3.0
+**Last Updated**: July 3, 2026
+**Current Version**: 3.1
 **Status**: ✅ Production Ready
 **Maintained By**: Sajeb Bahadur Shil
 

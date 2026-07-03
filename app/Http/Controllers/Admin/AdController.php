@@ -115,7 +115,7 @@ class AdController extends Controller
             'type' => 'required|in:banner,sidebar,inline,featured,header,responsive,sticky,popup',
             'ad_source' => 'required|in:offline,online',
             'ad_type' => 'nullable|in:standard,image,video',
-            'image_file' => 'nullable|file|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'image_file' => 'nullable|file|image|mimes:jpeg,jpg,png,gif,webp|max:1024',
             'image_url' => 'nullable|string|max:500',
             'alt_text' => 'nullable|string|max:255',
             'ad_url' => 'required_if:ad_type,standard,image,video|url',
@@ -197,15 +197,9 @@ class AdController extends Controller
 
         // Fallback: If image_url is empty but image_file was uploaded, process it
         if (empty($validated['image_url']) && $request->hasFile('image_file')) {
-            $file = $request->file('image_file');
-            $uploadDir = public_path('uploads/advertisements');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $extension = strtolower($file->getClientOriginalExtension());
-            $fileName = time() . '_' . Str::random(10) . '.' . $extension;
-            $file->move($uploadDir, $fileName);
-            $validated['image_url'] = 'uploads/advertisements/' . $fileName;
+            $optimizer = new \App\Services\ImageOptimizer();
+            $path = $optimizer->optimize($request->file('image_file'), 'featured_image', 'advertisements');
+            $validated['image_url'] = 'storage/' . $path;
         }
 
         $validated['created_by'] = auth()->id();
@@ -321,7 +315,7 @@ class AdController extends Controller
             'type' => 'required|in:banner,sidebar,inline,featured,header,responsive,sticky,popup',
             'ad_source' => 'required|in:offline,online',
             'ad_type' => 'nullable|in:standard,image,video',
-            'image_file' => 'nullable|file|image|mimes:jpeg,jpg,png,gif,webp|max:5120',
+            'image_file' => 'nullable|file|image|mimes:jpeg,jpg,png,gif,webp|max:1024',
             'image_url' => 'nullable|string|max:500',
             'alt_text' => 'nullable|string|max:255',
             'ad_url' => 'required_if:ad_type,standard,image,video|url',
@@ -406,15 +400,9 @@ class AdController extends Controller
 
         // Fallback: If image_url was not set and image_file was uploaded, process it
         if (!isset($validated['image_url']) && $request->hasFile('image_file')) {
-            $file = $request->file('image_file');
-            $uploadDir = public_path('uploads/advertisements');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
-            $extension = strtolower($file->getClientOriginalExtension());
-            $fileName = time() . '_' . Str::random(10) . '.' . $extension;
-            $file->move($uploadDir, $fileName);
-            $validated['image_url'] = 'uploads/advertisements/' . $fileName;
+            $optimizer = new \App\Services\ImageOptimizer();
+            $path = $optimizer->optimize($request->file('image_file'), 'featured_image', 'advertisements');
+            $validated['image_url'] = 'storage/' . $path;
         }
 
         $advertisement->update($validated);
@@ -545,42 +533,14 @@ class AdController extends Controller
         try {
             \Log::info('Upload request received', ['files' => $request->allFiles()]);
             
-            // Validate with just the 'image' rule
             $validated = $request->validate([
-                'image' => 'required|image|mimes:jpeg,jpg,png,gif,webp,bmp|max:5120'
+                'image' => 'required|image|mimes:jpeg,jpg,png,gif,webp,bmp|max:1024'
             ]);
 
-            $file = $request->file('image');
-            \Log::info('File validated', [
-                'filename' => $file->getClientOriginalName(), 
-                'mime' => $file->getMimeType(),
-                'size' => $file->getSize(),
-                'extension' => $file->getClientOriginalExtension()
-            ]);
-            
-            // Create uploads directory if it doesn't exist
-            $uploadDir = public_path('uploads/advertisements');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0755, true);
-            }
+            $optimizer = new \App\Services\ImageOptimizer();
+            $path = $optimizer->optimize($request->file('image'), 'featured_image', 'advertisements');
 
-            // Generate unique filename - use original extension
-            $extension = strtolower($file->getClientOriginalExtension());
-            $fileName = time() . '_' . Str::random(10) . '.' . $extension;
-            
-            // Store the file
-            $fullPath = $uploadDir . DIRECTORY_SEPARATOR . $fileName;
-            $file->move($uploadDir, $fileName);
-            
-            // Verify file was actually created
-            if (!file_exists($fullPath)) {
-                throw new \Exception('File was not saved to disk');
-            }
-            
-            \Log::info('File moved to uploads', ['path' => $fullPath, 'size' => filesize($fullPath)]);
-
-            // Return the relative path for storage (without leading /)
-            $imagePath = 'uploads/advertisements/' . $fileName;
+            $imagePath = 'storage/' . $path;
 
             return response()->json([
                 'success' => true,

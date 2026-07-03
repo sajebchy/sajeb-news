@@ -52,7 +52,7 @@
 {{-- ===== Header ===== --}}
 <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
     <div>
-        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">বিজ্ঞাপন ব্যবস্থাপনা</h2>
+        <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">বিজ্ঞাপন ব্যবস্থাপনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">সজীব নিউজের সকল বিজ্ঞাপন প্রচারণা পরিচালনা করুন।</p>
     </div>
     <a href="{{ route('admin.advertisements.create') }}"
@@ -268,7 +268,7 @@
                 <tr>
                     <td colspan="9" class="text-center py-20">
                         <span class="material-symbols-outlined text-outline-variant" style="font-size:64px;">campaign</span>
-                        <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'Noto Serif Bengali',serif;">
+                        <p class="text-on-surface-variant font-semibold mt-3" style="font-family:'SolaimanLipi',serif;">
                             কোনো বিজ্ঞাপন পাওয়া যায়নি
                         </p>
                         @if(!request()->hasAny(['search','placement','status']))
@@ -328,7 +328,7 @@
             <h3 class="text-sm font-bold text-on-surface uppercase tracking-wider">সেরা পারফর্মার</h3>
         </div>
         @if($topAd)
-        <p class="font-semibold text-on-surface text-base" style="font-family:'Noto Serif Bengali',serif;">{{ $topAd->name }}</p>
+        <p class="font-semibold text-on-surface text-base" style="font-family:'SolaimanLipi',serif;">{{ $topAd->name }}</p>
         <div class="flex items-center gap-4 mt-2">
             <span class="text-xs text-on-surface-variant flex items-center gap-1">
                 <span class="material-symbols-outlined text-[14px]">touch_app</span>

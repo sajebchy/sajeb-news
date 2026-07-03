@@ -3,35 +3,12 @@
 return [
     /*
     |--------------------------------------------------------------------------
-    | RTMP Server Configuration for Live Streaming
-    |--------------------------------------------------------------------------
-    |
-    | Configure your RTMP server details for live video streaming using OBS
-    | or other broadcasting software.
-    |
-    */
-
-    'rtmp' => [
-        // RTMP Server URL (e.g., rtmp://your-server.com)
-        'server_url' => env('RTMP_SERVER_URL', 'rtmp://localhost'),
-
-        // Application name on RTMP server
-        'app_name' => env('RTMP_APP_NAME', 'live'),
-
-        // RTMP server port
-        'port' => env('RTMP_PORT', 1935),
-
-        // HTTP-FLV port for viewing (if available)
-        'http_flv_port' => env('HTTP_FLV_PORT', 8081),
-
-        // HLS port for mobile viewing
-        'hls_port' => env('HLS_PORT', 8082),
-    ],
-
-    /*
-    |--------------------------------------------------------------------------
     | Live Stream Settings
     |--------------------------------------------------------------------------
+    |
+    | Live streaming is handled via external Facebook / YouTube embed links.
+    | (The previous RTMP/OBS broadcasting system has been removed.)
+    |
     */
 
     'live_stream' => [

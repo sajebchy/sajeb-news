@@ -13,11 +13,12 @@
         <!-- Navbar content -->
         <div class="collapse navbar-collapse" id="navbarNav">
             @php
-                $activeLiveStream = \App\Models\LiveStream::where('status', 'active')
-                    ->where('start_time', '<=', now())
+                $activeLiveStream = \App\Models\LiveStream::where('status', 'live')
+                    ->where('visibility', 'public')
+                    ->where('started_at', '<=', now())
                     ->where(function($query) {
-                        $query->whereNull('end_time')
-                              ->orWhere('end_time', '>', now());
+                        $query->whereNull('ended_at')
+                              ->orWhere('ended_at', '>', now());
                     })
                     ->first();
             @endphp

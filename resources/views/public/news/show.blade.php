@@ -125,7 +125,7 @@
       @php
         $heroImg = $news->featured_image
           ? (Str::startsWith($news->featured_image, 'http') ? $news->featured_image : asset('storage/' . $news->featured_image))
-          : 'https://picsum.photos/seed/' . $news->id . '/800/450';
+          : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')));
       @endphp
       <figure class="mb-stack-lg">
         <div class="aspect-video w-full overflow-hidden rounded-lg"
@@ -238,7 +238,7 @@
             </div>
             <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0 bg-surface-container">
               <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : 'https://picsum.photos/seed/'.$rn->id.'/200/200' }}"
+                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                    alt="{{ $rn->title }}" loading="lazy"/>
             </div>
           </a>
@@ -280,7 +280,7 @@
           <a href="{{ route('news.show', $rn->slug) }}" class="group flex gap-3 pb-stack-md border-b border-subtle cursor-pointer block">
             <div class="w-24 h-24 flex-shrink-0 overflow-hidden rounded bg-surface-container">
               <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : 'https://picsum.photos/seed/'.$rn->id.'/200/200' }}"
+                   src="{{ $rn->featured_image ? (Str::startsWith($rn->featured_image,'http') ? $rn->featured_image : asset('storage/'.$rn->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                    alt="{{ $rn->title }}" loading="lazy"/>
             </div>
             <div class="flex flex-col justify-between">
@@ -374,13 +374,18 @@
 ═══════════════════════════════════════════ --}}
 <style>
 /* Article prose styling */
+.article-prose {
+  font-family: 'SolaimanLipi', serif;
+  font-size: 18px;
+  line-height: 1.8;
+}
 .article-prose h2 {
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 24px; font-weight: 700;
   margin: 2rem 0 0.75rem; color: #000;
 }
 .article-prose h3 {
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 20px; font-weight: 600;
   margin: 1.5rem 0 0.5rem; color: #000;
 }
@@ -390,7 +395,7 @@
   background: #F8FAFC;
   padding: 1rem 1.5rem;
   margin: 1.5rem 0;
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 20px;
   font-weight: 600;
   color: #000;
@@ -405,7 +410,7 @@
 
 /* Dropcap first letter */
 .article-prose > p:first-of-type::first-letter {
-  font-family: 'Noto Serif Bengali', serif;
+  font-family: 'SolaimanLipi', serif;
   font-size: 4.5rem;
   font-weight: 700;
   line-height: 0.8;

@@ -78,7 +78,7 @@
 
                 <div class="mb-3">
                     <label for="icon" class="form-label">Icon (Font Awesome)</label>
-                    <input type="text" class="form-control @error('icon') is-invalid @enderror" id="icon" name="icon" value="{{ old('icon', $category->icon ?? '') }}" placeholder="e.g., fas fa-newspaper">
+                    <input type="text" class="form-control @error('icon') is-invalid @enderror" id="icon" name="icon" value="{{ old('icon', $category->icon ?? '') }}" placeholder="e.g., bi bi-newspaper">
                     @error('icon')
                         <div class="invalid-feedback">{{ $message }}</div>
                     @enderror
@@ -86,10 +86,10 @@
 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> {{ isset($category) ? 'Update' : 'Create' }} Category
+                        <i class="bi bi-save"></i> {{ isset($category) ? 'Update' : 'Create' }} Category
                     </button>
                     <a href="{{ route('admin.categories.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="bi bi-x-lg"></i> Cancel
                     </a>
                 </div>
             </form>

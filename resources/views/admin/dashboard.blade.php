@@ -87,7 +87,7 @@
   {{-- News Performance Chart --}}
   <section class="lg:col-span-2 bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30">
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">সংবাদ কার্যক্ষমতা</h2>
+      <h2 class="text-lg font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">সংবাদ কার্যক্ষমতা</h2>
       <span class="text-[11px] font-bold text-primary bg-primary/10 px-3 py-1 rounded-full uppercase tracking-wider">শেষ ৭ দিন</span>
     </div>
     <div class="relative h-48 w-full">
@@ -133,7 +133,7 @@
 
   {{-- Quick Actions --}}
   <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30 flex flex-col">
-    <h2 class="text-lg font-bold text-on-surface mb-4" style="font-family:'Noto Serif Bengali',serif;">দ্রুত অ্যাকশন</h2>
+    <h2 class="text-lg font-bold text-on-surface mb-4" style="font-family:'SolaimanLipi',serif;">দ্রুত অ্যাকশন</h2>
     <div class="grid grid-cols-2 gap-3 flex-1">
       @foreach([
         ['route' => 'admin.news.create',      'icon' => 'add_circle',  'label' => 'নতুন সংবাদ',    'color' => 'text-primary',   'bg' => 'bg-primary/10'],
@@ -157,7 +157,7 @@
 {{-- ===== Recent Articles ===== --}}
 <section class="mb-6">
   <div class="flex items-center justify-between mb-4">
-    <h2 class="text-lg font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">সাম্প্রতিক সংবাদ</h2>
+    <h2 class="text-lg font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">সাম্প্রতিক সংবাদ</h2>
     <a href="{{ route('admin.news.index') }}" class="text-primary font-bold text-[12px] uppercase tracking-wider hover:underline">সব দেখুন</a>
   </div>
   @php $recentNews = \App\Models\News::with(['category','author'])->latest()->limit(5)->get(); @endphp
@@ -170,7 +170,7 @@
              alt="{{ $article->title }}">
       </div>
       <div class="flex-1 flex flex-col justify-between min-w-0">
-        <h3 class="text-sm font-bold text-on-surface line-clamp-1" style="font-family:'Noto Serif Bengali',serif;">
+        <h3 class="text-sm font-bold text-on-surface line-clamp-1" style="font-family:'SolaimanLipi',serif;">
           {{ $article->title }}
         </h3>
         <div class="flex items-center justify-between gap-2 flex-wrap">
@@ -209,7 +209,7 @@
 
   {{-- System Logs --}}
   <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30">
-    <h2 class="text-lg font-bold text-on-surface mb-5" style="font-family:'Noto Serif Bengali',serif;">সাম্প্রতিক কার্যক্রম</h2>
+    <h2 class="text-lg font-bold text-on-surface mb-5" style="font-family:'SolaimanLipi',serif;">সাম্প্রতিক কার্যক্রম</h2>
     <div class="space-y-4">
       @php
         $latestPublished = \App\Models\News::where('status','published')->with('author')->latest('published_at')->first();
@@ -263,7 +263,7 @@
   {{-- Category Stats --}}
   <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30">
     <div class="flex items-center justify-between mb-5">
-      <h2 class="text-lg font-bold text-on-surface" style="font-family:'Noto Serif Bengali',serif;">বিভাগ পরিসংখ্যান</h2>
+      <h2 class="text-lg font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">বিভাগ পরিসংখ্যান</h2>
       <a href="{{ route('admin.categories.index') }}" class="text-primary font-bold text-[12px] uppercase tracking-wider hover:underline">সব দেখুন</a>
     </div>
     @php

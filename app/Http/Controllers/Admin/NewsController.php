@@ -52,7 +52,7 @@ class NewsController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'content' => 'required|string',
                 'excerpt' => 'nullable|string|max:500',
-                'featured_image' => 'nullable|image|max:5120',
+                'featured_image' => 'nullable|image|max:1024',
                 'status' => 'required|in:draft,published,scheduled',
                 'published_at' => 'required_if:status,published,scheduled|date|nullable',
                 'is_featured' => 'boolean',
@@ -152,7 +152,7 @@ class NewsController extends Controller
                 'category_id' => 'required|exists:categories,id',
                 'content' => 'required|string',
                 'excerpt' => 'nullable|string|max:500',
-                'featured_image' => 'nullable|image|max:5120',
+                'featured_image' => 'nullable|image|max:1024',
                 'status' => 'required|in:draft,published,scheduled',
                 'published_at' => 'required_if:status,published,scheduled|date|nullable',
                 'is_featured' => 'boolean',
@@ -261,7 +261,7 @@ class NewsController extends Controller
     public function uploadImage(Request $request)
     {
         $request->validate([
-            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:5120', // 5MB
+            'file' => 'required|image|mimes:jpeg,png,jpg,gif,webp|max:1024',
         ]);
 
         try {

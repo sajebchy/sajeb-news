@@ -19,8 +19,7 @@ class LiveStream extends Model
         'slug',
         'status',
         'thumbnail',
-        'stream_key',
-        'stream_url',
+        'embed_url',
         'visibility',
         'viewer_count',
         'peak_viewers',
@@ -108,26 +107,139 @@ class LiveStream extends Model
     }
 
     /**
-     * Generate unique stream key
-     */
-    public static function generateStreamKey(): string
-    {
-        return strtolower(substr(md5(uniqid(mt_rand(), true)), 0, 32));
-    }
-
-    /**
-     * Get the RTMP stream URL for OBS configuration
-     */
-    public function getRtmpUrl(): string
-    {
-        return config('broadcasting.rtmp.server_url') . '/' . config('broadcasting.rtmp.app_name');
-    }
-
-    /**
      * Get stream URL for viewing
      */
     public function getStreamUrl(): string
     {
         return route('live.watch', $this->slug);
+    }
+
+    /**
+     * Convert the admin-provided embed link (YouTube / Facebook URL or full
+     * <iframe> embed code) into a safe iframe `src` URL.
+     *
+     * Only YouTube and Facebook domains are allowed, so a pasted link cannot
+     * be turned into an arbitrary/hostile iframe source. Returns null when the
+     * link is empty or from an unsupported source.
+     */
+    public function getEmbedSrc(): ?string
+    {
+        $raw = trim((string) $this->embed_url);
+        if ($raw === '') {
+            return null;
+        }
+
+        // If a full <iframe ... src="..."> was pasted, pull out the src.
+        if (stripos($raw, '<iframe') !== false
+            && preg_match('/src\s*=\s*["\']([^"\']+)["\']/i', $raw, $m)) {
+            $raw = html_entity_decode($m[1]);
+        }
+
+        // Normalize protocol-relative URLs.
+        if (str_starts_with($raw, '//')) {
+            $raw = 'https:' . $raw;
+        }
+
+        // --- YouTube ---------------------------------------------------------
+        if (preg_match('~(?:youtube\.com|youtu\.be)~i', $raw)) {
+            $videoId = null;
+
+            if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~i', $raw, $m)) {
+                $videoId = $m[1];
+            } elseif (preg_match('~[?&]v=([A-Za-z0-9_-]{6,})~i', $raw, $m)) {
+                $videoId = $m[1];
+            } elseif (preg_match('~youtube\.com/(?:embed|live|shorts)/([A-Za-z0-9_-]{6,})~i', $raw, $m)) {
+                $videoId = $m[1];
+            }
+
+            if ($videoId) {
+                return 'https://www.youtube.com/embed/' . $videoId;
+            }
+
+            // Channel-level live URL (…/@handle/live or /channel/ID/live)
+            if (preg_match('~youtube\.com/(channel/[A-Za-z0-9_-]+|@[A-Za-z0-9_.-]+)~i', $raw)) {
+                return 'https://www.youtube.com/embed/live_stream?' . http_build_query([
+                    'channel' => $this->extractYoutubeChannel($raw),
+                ]);
+            }
+
+            return null;
+        }
+
+        // --- Facebook --------------------------------------------------------
+        if (preg_match('~(?:facebook\.com|fb\.watch|fb\.me)~i', $raw)) {
+            // Already a plugins embed URL → keep only if it is on facebook.com.
+            if (stripos($raw, 'facebook.com/plugins/video.php') !== false) {
+                return $raw;
+            }
+
+            return 'https://www.facebook.com/plugins/video.php?' . http_build_query([
+                'href'      => $raw,
+                'show_text' => 'false',
+                'autoplay'  => 'true',
+            ]);
+        }
+
+        return null;
+    }
+
+    /**
+     * Detect which supported platform the embed link belongs to.
+     */
+    /**
+     * Best preview image for admin/list cards:
+     *  - YouTube: the real video thumbnail derived from the embed link
+     *  - otherwise: the uploaded thumbnail (if any)
+     *  - otherwise: null (caller shows a placeholder)
+     */
+    public function getPreviewImage(): ?string
+    {
+        $id = $this->getYoutubeId();
+        if ($id) {
+            return 'https://img.youtube.com/vi/' . $id . '/hqdefault.jpg';
+        }
+
+        if ($this->thumbnail) {
+            return \Illuminate\Support\Str::startsWith($this->thumbnail, 'http')
+                ? $this->thumbnail
+                : asset('storage/' . $this->thumbnail);
+        }
+
+        return null;
+    }
+
+    /**
+     * Extract the YouTube video id from the normalized embed src, if any.
+     */
+    public function getYoutubeId(): ?string
+    {
+        $src = $this->getEmbedSrc();
+        if ($src && preg_match('~youtube\.com/embed/([A-Za-z0-9_-]{6,})~i', $src, $m)) {
+            return $m[1];
+        }
+        return null;
+    }
+
+    public function getEmbedPlatform(): ?string
+    {
+        $raw = strtolower((string) $this->embed_url);
+        if ($raw === '') {
+            return null;
+        }
+        if (str_contains($raw, 'youtube') || str_contains($raw, 'youtu.be')) {
+            return 'youtube';
+        }
+        if (str_contains($raw, 'facebook') || str_contains($raw, 'fb.watch') || str_contains($raw, 'fb.me')) {
+            return 'facebook';
+        }
+        return null;
+    }
+
+    private function extractYoutubeChannel(string $url): ?string
+    {
+        if (preg_match('~youtube\.com/channel/([A-Za-z0-9_-]+)~i', $url, $m)) {
+            return $m[1];
+        }
+        return null;
     }
 }

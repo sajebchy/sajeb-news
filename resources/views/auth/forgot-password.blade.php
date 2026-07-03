@@ -6,7 +6,11 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>পাসওয়ার্ড পুনরুদ্ধার - {{ config('app.name', 'Sajeb News') }}</title>
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <style>
+        @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+        @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+    </style>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
     <script>
         tailwind.config = {
@@ -46,7 +50,7 @@
                         "full": "0.75rem",
                     },
                     fontFamily: {
-                        "bengali": ["Noto Serif Bengali", "serif"],
+                        "bengali": ["SolaimanLipi", "serif"],
                         "sans": ["Inter", "sans-serif"],
                     },
                 }
@@ -55,7 +59,7 @@
     </script>
     <style>
         body { font-family: 'Inter', sans-serif; -webkit-font-smoothing: antialiased; min-height: max(884px, 100dvh); }
-        .bengali { font-family: 'Noto Serif Bengali', serif; }
+        .bengali { font-family: 'SolaimanLipi', serif; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; vertical-align: middle; }
         .card-elevation { box-shadow: 0px 2px 4px rgba(0,0,0,0.05); }
     </style>

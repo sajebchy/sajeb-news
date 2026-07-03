@@ -5,6 +5,23 @@
 
 @section('content')
 
+@if(session('success'))
+<div class="max-w-container-max mx-auto px-gutter mt-4">
+  <div class="p-4 bg-green-50 border border-green-200 text-green-800 rounded flex items-center gap-3">
+    <span class="material-symbols-outlined text-green-600">check_circle</span>
+    <p class="font-body-main">{{ session('success') }}</p>
+  </div>
+</div>
+@endif
+@if(session('error'))
+<div class="max-w-container-max mx-auto px-gutter mt-4">
+  <div class="p-4 bg-red-50 border border-red-200 text-red-800 rounded flex items-center gap-3">
+    <span class="material-symbols-outlined text-red-600">error</span>
+    <p class="font-body-main">{{ session('error') }}</p>
+  </div>
+</div>
+@endif
+
 @php
   $heroNews      = $featured->first() ?? $latest->first();
   $secondaryNews = $featured->skip(1)->take(4)->merge($latest->take(4))->unique('id')->take(4);
@@ -50,8 +67,8 @@
         <a href="{{ route('news.show', $heroNews->slug) }}">
           <div class="relative overflow-hidden rounded-xl aspect-[16/9] mb-stack-md">
             <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                 src="{{ $heroNews->featured_image ? \Storage::url($heroNews->featured_image) : 'https://picsum.photos/seed/'.($heroNews->id ?? 1).'/800/450' }}"
-                 alt="{{ $heroNews->title }}"/>
+                 src="{{ $heroNews->featured_image ? \Storage::url($heroNews->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                 alt="{{ $heroNews->title }}" width="1200" height="675" fetchpriority="high"/>
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-primary/90 to-transparent p-6 pt-20">
               @if($heroNews->category)
               <span class="inline-block bg-secondary text-white px-3 py-1 text-label-caps font-label-caps mb-3">{{ $heroNews->category->name }}</span>
@@ -82,8 +99,8 @@
         <a href="{{ route('news.show', $sn->slug) }}" class="flex gap-4 group cursor-pointer">
           <div class="flex-shrink-0 w-32 h-24 overflow-hidden rounded-lg">
             <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                 src="{{ $sn->featured_image ? \Storage::url($sn->featured_image) : 'https://picsum.photos/seed/'.($sn->id ?? rand()).'/300/200' }}"
-                 alt="{{ $sn->title }}"/>
+                 src="{{ $sn->featured_image ? \Storage::url($sn->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                 alt="{{ $sn->title }}" loading="lazy" width="128" height="96"/>
           </div>
           <div>
             <h3 class="font-headline-md text-primary leading-tight group-hover:text-secondary transition-colors line-clamp-2">{{ $sn->title }}</h3>
@@ -123,8 +140,8 @@
             <a href="{{ route('news.show', $firstNews->slug) }}" class="md:col-span-2 group block">
               <div class="relative aspect-[16/9] overflow-hidden rounded-xl mb-3">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                     src="{{ $firstNews->featured_image ? \Storage::url($firstNews->featured_image) : 'https://picsum.photos/seed/'.$firstNews->id.'/600/338' }}"
-                     alt="{{ $firstNews->title }}"/>
+                     src="{{ $firstNews->featured_image ? \Storage::url($firstNews->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                     alt="{{ $firstNews->title }}" loading="lazy" width="800" height="450"/>
                 @if($firstNews->is_breaking)
                 <span class="absolute top-3 left-3 bg-secondary text-white text-[10px] font-bold px-2 py-0.5 rounded uppercase tracking-wider">ব্রেকিং</span>
                 @endif
@@ -144,8 +161,8 @@
               <a href="{{ route('news.show', $cn->slug) }}" class="flex gap-3 group cursor-pointer border-b border-subtle pb-4 last:border-0 last:pb-0">
                 <div class="flex-shrink-0 w-20 h-16 overflow-hidden rounded-lg">
                   <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                       src="{{ $cn->featured_image ? \Storage::url($cn->featured_image) : 'https://picsum.photos/seed/'.$cn->id.'/200/150' }}"
-                       alt="{{ $cn->title }}"/>
+                       src="{{ $cn->featured_image ? \Storage::url($cn->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                       alt="{{ $cn->title }}" loading="lazy" width="80" height="64"/>
                 </div>
                 <div class="min-w-0">
                   <h4 class="font-headline-md text-sm leading-snug group-hover:text-secondary transition-colors line-clamp-2">{{ $cn->title }}</h4>
@@ -192,9 +209,9 @@
         <div class="relative z-10">
           <h3 class="font-headline-md text-xl mb-2">প্রতিদিনের খবর ইমেইলে পান</h3>
           <p class="text-body-sm opacity-80 mb-4">সেরা খবরগুলো মিস করবেন না। এখনই সাবস্ক্রাইব করুন।</p>
-          <form class="space-y-3" action="{{ route('contact.store') }}" method="POST">
+          <form class="space-y-3" action="{{ route('newsletter.subscribe') }}" method="POST">
             @csrf
-            <input name="email" type="email" class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:border-white focus:ring-1 focus:ring-white text-white placeholder:text-white/50" placeholder="আপনার ইমেইল অ্যাড্রেস"/>
+            <input name="email" type="email" required class="w-full px-4 py-2 bg-white/10 border border-white/20 rounded-lg focus:outline-none focus:border-white focus:ring-1 focus:ring-white text-white placeholder:text-white/50" placeholder="আপনার ইমেইল অ্যাড্রেস"/>
             <button type="submit" class="w-full bg-secondary hover:bg-news-red-accent transition-colors py-2 rounded-lg font-label-caps text-label-caps uppercase tracking-widest">নিউজলেটার সাবস্ক্রাইব</button>
           </form>
         </div>
@@ -278,7 +295,7 @@
     <a href="{{ route('news.show', $ln->slug) }}" class="group block">
       <div class="aspect-video overflow-hidden rounded-lg mb-3">
         <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-             src="{{ $ln->featured_image ? \Storage::url($ln->featured_image) : 'https://picsum.photos/seed/'.$ln->id.'/400/225' }}"
+             src="{{ $ln->featured_image ? \Storage::url($ln->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
              alt="{{ $ln->title }}"/>
       </div>
       @if($ln->category)

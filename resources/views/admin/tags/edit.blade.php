@@ -47,10 +47,10 @@
 
                 <div class="d-grid gap-2">
                     <button type="submit" class="btn btn-primary">
-                        <i class="fas fa-save"></i> {{ isset($tag) ? 'Update' : 'Create' }} Tag
+                        <i class="bi bi-save"></i> {{ isset($tag) ? 'Update' : 'Create' }} Tag
                     </button>
                     <a href="{{ route('admin.tags.index') }}" class="btn btn-outline-secondary">
-                        <i class="fas fa-times"></i> Cancel
+                        <i class="bi bi-x-lg"></i> Cancel
                     </a>
                 </div>
             </form>

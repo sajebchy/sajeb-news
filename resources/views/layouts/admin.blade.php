@@ -19,8 +19,13 @@
     <!-- Tailwind CSS (layout) -->
     <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
 
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Serif+Bengali:wght@400;600;700&display=swap" rel="stylesheet"/>
+    <!-- Google Fonts (Inter only) -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+    <!-- SolaimanLipi Bengali Font (local) -->
+    <style>
+        @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+        @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+    </style>
     <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
 
     <!-- Bootstrap 5 (inner content) -->
@@ -98,7 +103,7 @@
             "xxxl": "64px",
           },
           fontFamily: {
-            "display": ["Noto Serif Bengali", "serif"],
+            "display": ["SolaimanLipi", "serif"],
             "sans":    ["Inter", "sans-serif"],
           },
         }
@@ -107,8 +112,8 @@
     </script>
 
     <style>
-        body { font-family: 'Inter', 'Noto Serif Bengali', sans-serif; background: #fcf9f8; }
-        .font-display { font-family: 'Noto Serif Bengali', serif; }
+        body { font-family: 'Inter', 'SolaimanLipi', sans-serif; background: #fcf9f8; }
+        .font-display { font-family: 'SolaimanLipi', serif; }
         .material-symbols-outlined { font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24; vertical-align: middle; }
         .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
@@ -134,6 +139,10 @@
             transition: opacity 0.3s;
         }
         #sidebar-overlay.show { display: block; opacity: 1; }
+
+        /* Icon spin animation (replaces Font Awesome fa-spin) */
+        .spin { display: inline-block; animation: bi-spin 0.9s linear infinite; }
+        @keyframes bi-spin { to { transform: rotate(360deg); } }
 
         /* Bootstrap overrides inside content area */
         .content-area .table { font-size: 14px; }
@@ -176,7 +185,7 @@
         </a>
         {{-- Close button (mobile only) --}}
         <button onclick="closeSidebar()" class="lg:hidden w-8 h-8 flex items-center justify-center rounded-lg hover:bg-surface-variant text-on-surface-variant">
-            <span class="material-symbols-outlined text-[20px]">close</span>
+            <i class="bi bi-x-lg text-[20px]"></i>
         </button>
     </div>
 
@@ -193,45 +202,47 @@
                     ? $base . ' bg-primary-container text-on-primary-container font-bold shadow-sm'
                     : $base . ' text-on-surface-variant hover:bg-surface-variant hover:text-on-surface';
                 return '<a href="' . route($route) . '" class="' . $cls . '" onclick="if(window.innerWidth<1024)closeSidebar()">
-                            <span class=\"material-symbols-outlined text-[20px]\">' . $icon . '</span>
+                            <i class=\"bi ' . $icon . '\" style=\"font-size:20px;line-height:1;\"></i>
                             <span>' . $label . '</span>
                         </a>';
             }
         @endphp
 
-        {!! adminNavLink('admin.dashboard', 'dashboard', 'ড্যাশবোর্ড') !!}
-        {!! adminNavLink('admin.news.index', 'article', 'খবর', 'admin.news') !!}
-        {!! adminNavLink('admin.categories.index', 'category', 'বিভাগসমূহ', 'admin.categories') !!}
-        {!! adminNavLink('admin.tags.index', 'label', 'ট্যাগ', 'admin.tags') !!}
-        {!! adminNavLink('admin.advertisements.index', 'campaign', 'বিজ্ঞাপন', 'admin.advertisements') !!}
-        {!! adminNavLink('admin.users.index', 'group', 'ব্যবহারকারী', 'admin.users') !!}
-        {!! adminNavLink('admin.newsletters.index', 'mail', 'নিউজলেটার', 'admin.newsletters') !!}
-        {!! adminNavLink('admin.analytics', 'analytics', 'অ্যানালিটিক্স') !!}
-        {!! adminNavLink('admin.activities', 'history', 'অ্যাক্টিভিটি লগ') !!}
+        {!! adminNavLink('admin.dashboard', 'bi-speedometer2', 'ড্যাশবোর্ড') !!}
+        {!! adminNavLink('admin.news.index', 'bi-newspaper', 'খবর', 'admin.news') !!}
+        {!! adminNavLink('admin.categories.index', 'bi-grid-3x3-gap', 'বিভাগসমূহ', 'admin.categories') !!}
+        {!! adminNavLink('admin.tags.index', 'bi-tags', 'ট্যাগ', 'admin.tags') !!}
+        {!! adminNavLink('admin.advertisements.index', 'bi-megaphone', 'বিজ্ঞাপন', 'admin.advertisements') !!}
+        {!! adminNavLink('admin.users.index', 'bi-people', 'ব্যবহারকারী', 'admin.users') !!}
+        {!! adminNavLink('admin.newsletters.index', 'bi-envelope', 'নিউজলেটার', 'admin.newsletters') !!}
+        {!! adminNavLink('admin.analytics', 'bi-graph-up', 'অ্যানালিটিক্স') !!}
+        {!! adminNavLink('admin.activities', 'bi-clock-history', 'অ্যাক্টিভিটি লগ') !!}
 
         @if(auth()->user()->hasRole(['admin', 'super-admin']))
-        {!! adminNavLink('admin.live-streams.index', 'live_tv', 'লাইভ স্ট্রিমিং', 'admin.live-streams') !!}
+        {!! adminNavLink('admin.live-streams.index', 'bi-broadcast', 'লাইভ স্ট্রিমিং', 'admin.live-streams') !!}
         @endif
 
-        {!! adminNavLink('admin.settings', 'settings', 'সেটিংস') !!}
+        {!! adminNavLink('admin.photo-card.index', 'bi-card-image', 'ফটোকার্ড', 'admin.photo-card') !!}
+
+        {!! adminNavLink('admin.settings', 'bi-gear', 'সেটিংস') !!}
 
         <div class="border-t border-outline-variant my-3"></div>
 
         <a href="{{ route('home') }}" target="_blank"
            class="flex items-center gap-3 px-md py-sm rounded-xl text-sm text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all">
-            <span class="material-symbols-outlined text-[20px]">open_in_new</span>
+            <i class="bi bi-box-arrow-up-right text-[20px]"></i>
             <span>সাইট দেখুন</span>
         </a>
         <a href="{{ route('profile.edit') }}"
            class="flex items-center gap-3 px-md py-sm rounded-xl text-sm text-on-surface-variant hover:bg-surface-variant hover:text-on-surface transition-all {{ request()->routeIs('profile.*') ? 'bg-surface-variant text-on-surface font-semibold' : '' }}">
-            <span class="material-symbols-outlined text-[20px]">manage_accounts</span>
+            <i class="bi bi-person-gear text-[20px]"></i>
             <span>আমার প্রোফাইল</span>
         </a>
         <form method="POST" action="{{ route('logout') }}">
             @csrf
             <button type="submit"
                     class="w-full flex items-center gap-3 px-md py-sm rounded-xl text-sm text-error hover:bg-red-50 transition-all text-left">
-                <span class="material-symbols-outlined text-[20px]">logout</span>
+                <i class="bi bi-box-arrow-right text-[20px]"></i>
                 <span>লগআউট</span>
             </button>
         </form>
@@ -252,7 +263,7 @@
         </div>
         <a href="{{ route('admin.news.create') }}"
            class="w-full bg-primary text-on-primary py-sm rounded-xl text-sm font-bold flex items-center justify-center gap-xs hover:opacity-90 transition-all active:scale-95">
-            <span class="material-symbols-outlined text-[18px]">add</span>
+            <i class="bi bi-plus-lg text-[18px]"></i>
             <span>নতুন পোস্ট</span>
         </a>
     </div>
@@ -289,7 +300,7 @@
                 <span class="hidden sm:block text-sm font-medium text-on-surface max-w-[120px] truncate">
                     {{ auth()->user()->name }}
                 </span>
-                <span class="material-symbols-outlined text-on-surface-variant text-[18px]">expand_more</span>
+                <i class="bi bi-chevron-down text-on-surface-variant text-[18px]"></i>
             </button>
 
             {{-- Dropdown --}}
@@ -297,12 +308,12 @@
                  class="hidden absolute right-0 mt-1 w-52 bg-surface rounded-xl border border-outline-variant shadow-lg py-1 z-50">
                 <a href="{{ route('profile.edit') }}"
                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container transition-colors">
-                    <span class="material-symbols-outlined text-[18px] text-on-surface-variant">manage_accounts</span>
+                    <i class="bi bi-person-gear text-[18px] text-on-surface-variant"></i>
                     আমার প্রোফাইল
                 </a>
                 <a href="{{ route('home') }}" target="_blank"
                    class="flex items-center gap-2 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container transition-colors">
-                    <span class="material-symbols-outlined text-[18px] text-on-surface-variant">open_in_new</span>
+                    <i class="bi bi-box-arrow-up-right text-[18px] text-on-surface-variant"></i>
                     সাইট দেখুন
                 </a>
                 <div class="border-t border-outline-variant my-1"></div>
@@ -310,7 +321,7 @@
                     @csrf
                     <button type="submit"
                             class="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-error hover:bg-red-50 transition-colors">
-                        <span class="material-symbols-outlined text-[18px]">logout</span>
+                        <i class="bi bi-box-arrow-right text-[18px]"></i>
                         লগআউট
                     </button>
                 </form>

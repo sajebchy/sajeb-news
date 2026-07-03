@@ -48,22 +48,29 @@ class LiveStreamController extends Controller
             'category' => 'nullable|string|max:100',
             'visibility' => 'required|in:public,private,unlisted',
             'scheduled_at' => 'nullable|date|after:now',
-            'thumbnail' => 'nullable|image|max:5120',
+            'embed_url' => 'required|string|max:5000',
+            'thumbnail' => 'nullable|image|max:1024',
             'stream_tags' => 'nullable|string',
             'allow_comments' => 'boolean',
             'allow_chat' => 'boolean',
         ]);
 
-        // Generate unique stream key
-        $validated['stream_key'] = LiveStream::generateStreamKey();
-        $validated['stream_url'] = config('services.rtmp.server_url');
+        // Validate that the embed link is a supported YouTube/Facebook link
+        $probe = new LiveStream(['embed_url' => $validated['embed_url']]);
+        if (!$probe->getEmbedSrc()) {
+            return back()->withInput()->withErrors([
+                'embed_url' => 'শুধুমাত্র YouTube বা Facebook এর ভিডিও/লাইভ লিংক অথবা এমবেড কোড ব্যবহার করুন।',
+            ]);
+        }
+
         $validated['user_id'] = auth()->id();
 
-        // Handle status
+        // Handle status: scheduled for later, otherwise go live immediately
         if ($validated['scheduled_at'] ?? null) {
             $validated['status'] = 'pending';
         } else {
-            $validated['status'] = 'draft';
+            $validated['status'] = 'live';
+            $validated['started_at'] = now();
         }
 
         // Handle thumbnail upload with optimization
@@ -88,7 +95,7 @@ class LiveStreamController extends Controller
         $this->logActivity('created', 'LiveStream', $stream->id, [
             'title' => $stream->title,
             'status' => $stream->status,
-            'stream_key' => substr($stream->stream_key, 0, 10) . '***',
+            'platform' => $stream->getEmbedPlatform(),
         ]);
 
         return redirect()
@@ -141,11 +148,20 @@ class LiveStreamController extends Controller
             'description' => 'nullable|string|max:5000',
             'category' => 'nullable|string|max:100',
             'visibility' => 'required|in:public,private,unlisted',
-            'thumbnail' => 'nullable|image|max:5120',
+            'embed_url' => 'required|string|max:5000',
+            'thumbnail' => 'nullable|image|max:1024',
             'stream_tags' => 'nullable|string',
             'allow_comments' => 'boolean',
             'allow_chat' => 'boolean',
         ]);
+
+        // Validate that the embed link is a supported YouTube/Facebook link
+        $probe = new LiveStream(['embed_url' => $validated['embed_url']]);
+        if (!$probe->getEmbedSrc()) {
+            return back()->withInput()->withErrors([
+                'embed_url' => 'শুধুমাত্র YouTube বা Facebook এর ভিডিও/লাইভ লিংক অথবা এমবেড কোড ব্যবহার করুন।',
+            ]);
+        }
 
         // Handle thumbnail upload with optimization
         if ($request->hasFile('thumbnail')) {
@@ -207,7 +223,7 @@ class LiveStreamController extends Controller
             'started_at' => $stream->started_at,
         ]);
 
-        return back()->with('success', 'Live stream started! You can now broadcast using the stream key.');
+        return back()->with('success', 'Live stream is now live on the website!');
     }
 
     /**
@@ -238,34 +254,6 @@ class LiveStreamController extends Controller
         ]);
 
         return back()->with('success', 'Live stream ended successfully!');
-    }
-
-    /**
-     * Regenerate stream key.
-     */
-    public function regenerateKey(LiveStream $stream)
-    {
-        // Check authorization
-        if ($stream->user_id !== auth()->id() && !auth()->user()->hasRole('admin')) {
-            abort(403);
-        }
-
-        if ($stream->status === 'live') {
-            return back()->with('error', 'Cannot regenerate key while stream is live.');
-        }
-
-        $oldKey = $stream->stream_key;
-        $stream->update([
-            'stream_key' => LiveStream::generateStreamKey(),
-        ]);
-
-        // Log activity
-        $this->logActivity('regenerated_key', 'LiveStream', $stream->id, [
-            'title' => $stream->title,
-            'old_key' => substr($oldKey, 0, 10) . '***',
-        ]);
-
-        return back()->with('success', 'Stream key regenerated successfully!');
     }
 
     /**
@@ -316,25 +304,5 @@ class LiveStreamController extends Controller
         return redirect()
             ->route('admin.live-streams.index')
             ->with('success', 'Live stream deleted successfully!');
-    }
-
-    /**
-     * Get OBS broadcaster settings
-     */
-    public function obsSettings(LiveStream $stream)
-    {
-        // Check authorization
-        if ($stream->user_id !== auth()->id() && !auth()->user()->hasRole('admin')) {
-            abort(403);
-        }
-
-        $rtmpUrl = $stream->getRtmpUrl();
-        $streamKey = $stream->stream_key;
-
-        return view('admin.live-streams.obs-settings', [
-            'stream' => $stream,
-            'rtmp_url' => $rtmpUrl,
-            'stream_key' => $streamKey,
-        ]);
     }
 }
