@@ -1,6 +1,6 @@
 # Sajeb NEWS - Bangladesh News Portal
 
-A complete professional, dynamic, and SEO-optimized news portal platform built for Bangladesh. Built with **Laravel 11**, **Bootstrap 5**, and modern web technologies.
+A complete professional, dynamic, and SEO-optimized news portal platform built for Bangladesh. Built with **Laravel 12**, **Tailwind CSS (Stitch Design System)**, and modern web technologies.
 
 **Live Demo**: Coming Soon  
 **Admin Panel**: `/admin` (Login credentials provided in server setup)
@@ -16,6 +16,9 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 ✅ **Activity Logging** - Track all user actions for security  
 ✅ **Push Notifications** - Send real-time notifications to subscribers  
 ✅ **Advertisement Management** - Multiple ad placements and scheduling  
+✅ **Photo Card Maker** - Canvas-based social media photo card generator (5 sizes, 6 themes)  
+✅ **File Manager** - Upload and manage media files  
+✅ **Live Stream Management** - Embed-based live TV streaming  
 
 ### 📰 News Management
 - ✅ Hierarchical categories and tags system
@@ -25,6 +28,8 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 - ✅ Related news auto-suggestions
 - ✅ Full-text search capability
 - ✅ News analytics and performance tracking
+- ✅ Automatic WebP image optimization on upload
+- ✅ Automated newsletter email on publish
 
 ### 🎨 Dynamic Pages (Editable from Admin)
 - ✅ **About Page** - Rich text editor, fully customizable from `/admin/settings`
@@ -34,25 +39,32 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 - ✅ **Sitemap Page** - HTML sitemap with categories and recent news
 - ✅ **Error Pages** - Custom 404, 419, 423, 500 error pages
 
-### 🔍 Enterprise-Grade SEO
+### 🔍 Enterprise-Grade SEO / AEO / GEO
 - ✅ **Dynamic Sitemaps** - XML & HTML sitemaps auto-generated
-- ✅ **Meta Tags** - Title, Description, Keywords per page
-- ✅ **Open Graph Tags** - Social media sharing optimization
-- ✅ **Twitter Cards** - Twitter-specific social sharing
-- ✅ **JSON-LD Schema** - Organization, News Article, Contact schemas
+- ✅ **Meta Tags** - Title, Description, Keywords, Robots per page
+- ✅ **Open Graph Tags** - og:locale, og:site_name, og:type, og:image on all pages
+- ✅ **Twitter Cards** - Twitter-specific social sharing with site handle
+- ✅ **JSON-LD Schema** - Organization, NewsArticle, BreadcrumbList, WebSite, CollectionPage
 - ✅ **Canonical URLs** - Prevent duplicate content issues
-- ✅ **Robots.txt** - Search engine crawling guidance
-- ✅ **LLM.txt File** - AI/LLM friendly content format
+- ✅ **Hreflang Tags** - Multi-language SEO (bn + x-default)
+- ✅ **Robots.txt** - Dynamic, bot-specific crawling rules
+- ✅ **LLM.txt File** - AI/LLM friendly content format (GEO)
 - ✅ **Breadcrumb Navigation** - Improved user experience & SEO
+- ✅ **Favicon & Apple Touch Icon** - From admin settings
+- ✅ **Theme Color** - Mobile browser theming
 
 ### ⚡ Performance Features
+- ✅ Non-render-blocking font loading (preload + onload pattern)
+- ✅ DNS prefetch & preconnect hints for external origins
+- ✅ Local Bengali font (SolaimanLipi) with font-display: swap
+- ✅ Image lazy loading with explicit width/height attributes
+- ✅ Hero image fetchpriority="high" for faster LCP
+- ✅ Automatic WebP image conversion (GD library)
 - ✅ GZIP compression (all text assets)
 - ✅ Browser caching strategies (1 year for static, 1 hour for dynamic)
-- ✅ Image optimization service
 - ✅ Redis caching support
 - ✅ Database query optimization
 - ✅ CDN-ready structure
-- ✅ Lazy loading for images
 
 ### 📊 Visitor Tracking & Analytics
 - ✅ **Real-time Visitor Tracking** - Track every visitor's activity on news articles
@@ -83,10 +95,11 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 
 ### 📱 Responsive Design
 - ✅ Mobile-first approach
-- ✅ Bootstrap 5 grid system
+- ✅ Tailwind CSS responsive grid system
 - ✅ Touch-friendly interface
+- ✅ Sticky header with hamburger drawer navigation
+- ✅ Mobile bottom navigation bar
 - ✅ Optimized for all devices
-- ✅ Fast loading times
 - ✅ Accessibility compliant
 
 ### 🌐 Multi-Language Support
@@ -125,8 +138,8 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 
 ### Prerequisites
 ```bash
-- PHP 8.2 or higher
-- MySQL 8.0 or PostgreSQL 13+
+- PHP 8.3 or higher
+- MySQL 8.4 or PostgreSQL 13+
 - Node.js 16+ (for assets)
 - Composer
 ```
@@ -380,12 +393,6 @@ Need help? Check these resources:
 - Added `photo_card_logo` to SeoSetting model's `$fillable` array
 - Settings page: new "ফটোকার্ড লোগো" upload card in Logos & Images tab
 - Updated `sajeb_news_backup.sql` with latest database state
-
-#### 📁 New Files
-- `resources/views/admin/photo-card/index.blade.php` — Photo card maker UI
-- `public/fonts/SolaimanLipi.ttf` — Bengali font (normal weight)
-- `public/fonts/SolaimanLipi-Bold.ttf` — Bengali font (bold weight)
-- `database/migrations/2026_07_02_164005_add_photo_card_logo_to_seo_settings_table.php`
 
 ---
 
