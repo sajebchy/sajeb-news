@@ -84,7 +84,9 @@ A complete professional, dynamic, and SEO-optimized news portal platform built f
 - ✅ **Traffic Source Analysis** - Understand where your visitors come from
 - ✅ **User Behavior Metrics** - Track engagement and reading patterns
 
-### 🔒 Security Features
+### 🔐 Authentication & Security
+- ✅ **Social Login** - Google & Facebook OAuth authentication
+- ✅ Email/password login with password visibility toggle
 - ✅ CSRF token protection
 - ✅ XSS prevention (Blade escaping)
 - ✅ SQL injection prevention (Eloquent ORM)
@@ -337,6 +339,26 @@ Need help? Check these resources:
 ---
 
 ## 🎉 Changelog
+
+---
+
+### Version 3.2 (July 3, 2026) — Social Login, Code Cleanup & Security Hardening
+
+---
+
+#### 🔐 Social Authentication
+- **Google login** — users can now sign in with their Google account
+- **Facebook login** — UI updated with branded buttons and proper OAuth flow
+- Login page branding updated to show website logo from admin settings
+
+#### 🧹 Codebase Cleanup
+- Removed 14 unused files: deprecated backup views, development test scripts, orphaned service classes, and standalone utility scripts
+- Removed legacy view templates that were superseded by modern implementations
+- Reduced codebase by ~3,600 lines of dead code
+
+#### 🗄️ Database
+- Added social authentication column to users table
+- Updated `sajeb_news_backup.sql` with latest schema and data
 
 ---
 
@@ -694,7 +716,7 @@ Ad slots are now live across the following areas:
 ---
 
 **Last Updated**: July 3, 2026
-**Current Version**: 3.1
+**Current Version**: 3.2
 **Status**: ✅ Production Ready
 **Maintained By**: Sajeb Bahadur Shil
 

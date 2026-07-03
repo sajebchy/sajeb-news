@@ -26,6 +26,8 @@ class User extends Authenticatable
         'avatar',
         'bio',
         'is_active',
+        'facebook_user_id',
+        'google_user_id',
         'two_factor_enabled',
         'two_factor_secret',
     ];
