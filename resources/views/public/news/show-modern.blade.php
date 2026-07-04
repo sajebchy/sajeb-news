@@ -67,7 +67,6 @@
 @php $adHeader = \App\Helpers\AdHelper::getRandomAdByPlacement('header_top'); @endphp
 @if($adHeader)
 <div class="w-full bg-surface-container-low border-b border-subtle py-2 text-center">
-  <p class="font-label-caps text-[10px] text-outline-variant uppercase tracking-widest mb-1">বিজ্ঞাপন</p>
   {!! \App\Helpers\AdHelper::renderAd($adHeader) !!}
 </div>
 @endif
@@ -216,7 +215,6 @@
           @if(!$midInjected && $i >= $midPoint && isset($adMiddle))
             @php $midInjected = true; @endphp
             <div style="margin:20px 0;text-align:center;">
-              <p style="font-size:10px;color:#aaa;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
               {!! \App\Helpers\AdHelper::renderAd($adMiddle) !!}
             </div>
           @endif
@@ -226,7 +224,6 @@
       {{-- Article Conclusion Ad --}}
       @if(isset($adConclusion) && $adConclusion)
       <div style="margin:20px 0;text-align:center;">
-        <p style="font-size:10px;color:#aaa;margin:0 0 4px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
         {!! \App\Helpers\AdHelper::renderAd($adConclusion) !!}
       </div>
       @endif
@@ -234,7 +231,6 @@
       {{-- Below Article Ad --}}
       @if(isset($adBelowArticle) && $adBelowArticle)
       <div style="margin:24px 0;text-align:center;padding:12px 0;border-top:1px solid #e5e7eb;border-bottom:1px solid #e5e7eb;">
-        <p style="font-size:10px;color:#aaa;margin:0 0 6px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
         {!! \App\Helpers\AdHelper::renderAd($adBelowArticle) !!}
       </div>
       @endif
@@ -403,7 +399,6 @@
 
       {{-- Sidebar Ad Slot --}}
       <section class="bg-surface-container-low p-stack-lg rounded-xl flex flex-col items-center justify-center min-h-[250px] border border-subtle">
-        <span class="font-label-caps text-on-surface-variant opacity-50 mb-2 text-xs">বিজ্ঞাপন</span>
         <div class="w-full h-48 bg-surface-container-highest rounded flex items-center justify-center border border-dashed border-outline-variant">
           <span class="material-symbols-outlined text-outline-variant text-3xl">ads_click</span>
         </div>
@@ -484,6 +479,7 @@
   font-family: 'SolaimanLipi', serif;
   font-size: 18px;
   line-height: 1.8;
+  max-width: 780px;
 }
 .article-prose h2 {
   font-family: 'SolaimanLipi', serif;

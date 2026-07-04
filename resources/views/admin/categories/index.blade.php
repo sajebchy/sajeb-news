@@ -51,11 +51,13 @@
         <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">বিভাগ ব্যবস্থাপনা</h2>
         <p class="text-sm text-on-surface-variant mt-0.5">সজীব নিউজের সংবাদ বিভাগসমূহ পরিচালনা করুন।</p>
     </div>
+    @if(auth()->user()->hasRole(['super-admin', 'admin']))
     <a href="{{ route('admin.categories.create') }}"
        class="bg-primary-container text-on-primary-container px-6 py-2.5 rounded-xl font-bold text-sm flex items-center gap-2 hover:opacity-90 shadow-sm transition-all active:scale-95 whitespace-nowrap">
         <span class="material-symbols-outlined text-[18px]">add_circle</span>
         নতুন বিভাগ যোগ করুন
     </a>
+    @endif
 </header>
 
 {{-- ===== Search & Filter Bar ===== --}}
@@ -114,11 +116,24 @@
                             @endif
                             <div>
                                 <span class="font-semibold text-primary text-base" style="font-family:'SolaimanLipi',serif;">
+                                    @if($category->parent_id)
+                                    <span class="text-on-surface-variant text-xs">↳</span>
+                                    @endif
                                     {{ $category->name }}
                                 </span>
+                                @if($category->parent)
+                                <span class="ml-1 bg-blue-50 text-blue-600 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                    {{ $category->parent->name }}-এর সাবক্যাটাগরি
+                                </span>
+                                @endif
                                 @if($category->featured_order)
                                 <span class="ml-2 bg-yellow-100 text-yellow-700 text-[10px] font-bold px-1.5 py-0.5 rounded uppercase">
                                     ⭐ #{{ $category->featured_order }}
+                                </span>
+                                @endif
+                                @if($category->children->count() > 0)
+                                <span class="ml-1 bg-green-50 text-green-600 text-[10px] font-bold px-1.5 py-0.5 rounded">
+                                    {{ $category->children->count() }}টি সাবক্যাটাগরি
                                 </span>
                                 @endif
                                 @if($category->description)
@@ -142,6 +157,7 @@
 
                     {{-- Status Toggle --}}
                     <td class="px-6 py-5">
+                        @if(auth()->user()->hasRole(['super-admin', 'admin']))
                         <form method="POST" action="{{ route('admin.categories.toggle', $category) }}" class="inline">
                             @csrf
                             <button type="submit" class="flex items-center gap-2 group" title="স্ট্যাটাস পরিবর্তন করুন">
@@ -151,11 +167,18 @@
                                 </span>
                             </button>
                         </form>
+                        @else
+                        <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold {{ $category->is_active ? 'bg-tertiary/10 text-tertiary' : 'bg-error/10 text-error' }}">
+                            <span class="w-1.5 h-1.5 rounded-full {{ $category->is_active ? 'bg-tertiary' : 'bg-error' }}"></span>
+                            {{ $category->is_active ? 'সক্রিয়' : 'নিষ্ক্রিয়' }}
+                        </span>
+                        @endif
                     </td>
 
                     {{-- Actions --}}
                     <td class="px-6 py-5">
                         <div class="flex justify-end gap-2">
+                            @if(auth()->user()->hasRole(['super-admin', 'admin']))
                             <a href="{{ route('admin.categories.edit', $category) }}"
                                class="p-2 text-on-surface-variant hover:text-primary hover:bg-primary-fixed rounded-lg transition-all"
                                title="সম্পাদনা">
@@ -170,6 +193,7 @@
                                     <span class="material-symbols-outlined text-[20px]">delete</span>
                                 </button>
                             </form>
+                            @endif
                         </div>
                     </td>
                 </tr>

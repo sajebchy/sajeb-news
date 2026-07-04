@@ -28,7 +28,7 @@ class DummyAdsSeeder extends Seeder
                 'advertiser_email'=> 'ads@example.com',
             ],
             'homepage_top' => [
-                'image_url'       => 'https://placehold.co/970x250/005e2c/ffffff?text=Homepage+Top+Banner+970×250',
+                'image_url'       => 'https://placehold.co/970x90/005e2c/ffffff?text=Homepage+Top+Banner+970×90',
                 'ad_url'          => 'https://example.com',
                 'alt_text'        => 'হোমপেইজ টপ ব্যানার',
                 'code'            => '',

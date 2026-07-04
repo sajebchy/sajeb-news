@@ -70,60 +70,85 @@ Route::middleware('auth')->group(function () {
     Route::delete('/news/comments/{comment}', [\App\Http\Controllers\CommentController::class, 'destroy'])->name('news.comments.destroy');
 });
 
-// Dashboard - Redirect to admin panel
+// Dashboard - Redirect based on role
 Route::get('/dashboard', function () {
-    return redirect('/admin');
+    if (auth()->user()->hasRole(['super-admin', 'admin', 'editor', 'reporter'])) {
+        return redirect('/admin');
+    }
+    return redirect('/');
 })->middleware(['auth', 'verified'])->name('dashboard');
 
-// Admin Routes
-Route::middleware(['auth', 'verified', 'no-back-history'])->prefix('admin')->name('admin.')->group(function () {
+// Admin Routes (super-admin, admin, editor, reporter)
+Route::middleware(['auth', 'verified', 'no-back-history', 'role:super-admin|admin|editor|reporter'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
-    // News Management
+    // News Management — all admin roles
     Route::resource('news', \App\Http\Controllers\Admin\NewsController::class);
     Route::post('/news/upload-image', [\App\Http\Controllers\Admin\NewsController::class, 'uploadImage'])->name('news.upload-image');
 
-    // Category Management
-    Route::resource('categories', \App\Http\Controllers\Admin\CategoryController::class);
-    Route::post('categories/{category}/toggle', [\App\Http\Controllers\Admin\CategoryController::class, 'togglePublished'])->name('categories.toggle');
+    // Photo Card Maker — all admin roles
+    Route::get('/photo-card', function () {
+        $seoSettings = \App\Models\SeoSetting::first();
+        return view('admin.photo-card.index', ['seoSettings' => $seoSettings]);
+    })->name('photo-card.index');
 
-    // Tag Management
-    Route::resource('tags', \App\Http\Controllers\Admin\TagController::class);
+    // Live Streams — view only (all admin roles)
+    Route::get('/live-streams', [\App\Http\Controllers\Admin\LiveStreamController::class, 'index'])->name('live-streams.index');
+    Route::get('/live-streams/{stream}', [\App\Http\Controllers\Admin\LiveStreamController::class, 'show'])->name('live-streams.show');
 
-    // User Management
-    Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-    Route::put('/users/{user}/change-password', [\App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('users.change-password');
+    // Category & Tag — create/edit/delete (super-admin, admin only) — must be before {category} wildcard
+    Route::middleware('role:super-admin|admin')->group(function () {
+        Route::get('categories/create', [\App\Http\Controllers\Admin\CategoryController::class, 'create'])->name('categories.create');
+        Route::post('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'store'])->name('categories.store');
+        Route::get('categories/{category}/edit', [\App\Http\Controllers\Admin\CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('categories/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'update'])->name('categories.update');
+        Route::patch('categories/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'update']);
+        Route::delete('categories/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'destroy'])->name('categories.destroy');
+        Route::post('categories/{category}/toggle', [\App\Http\Controllers\Admin\CategoryController::class, 'togglePublished'])->name('categories.toggle');
 
-    // Analytics
-    Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
-    Route::get('/analytics/{news}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'show'])->name('analytics.show');
-    Route::get('/analytics/{news}/visitor/{visitor}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'visitorDetail'])->name('analytics.visitor-detail');
+        Route::get('tags/create', [\App\Http\Controllers\Admin\TagController::class, 'create'])->name('tags.create');
+        Route::post('tags', [\App\Http\Controllers\Admin\TagController::class, 'store'])->name('tags.store');
+        Route::get('tags/{tag}/edit', [\App\Http\Controllers\Admin\TagController::class, 'edit'])->name('tags.edit');
+        Route::put('tags/{tag}', [\App\Http\Controllers\Admin\TagController::class, 'update'])->name('tags.update');
+        Route::patch('tags/{tag}', [\App\Http\Controllers\Admin\TagController::class, 'update']);
+        Route::delete('tags/{tag}', [\App\Http\Controllers\Admin\TagController::class, 'destroy'])->name('tags.destroy');
+    });
 
-    // Settings
-    Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings');
-    Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
-    Route::put('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update']);
+    // Category & Tag — view only (super-admin, admin, editor)
+    Route::middleware('role:super-admin|admin|editor')->group(function () {
+        Route::get('categories', [\App\Http\Controllers\Admin\CategoryController::class, 'index'])->name('categories.index');
+        Route::get('categories/{category}', [\App\Http\Controllers\Admin\CategoryController::class, 'show'])->name('categories.show');
+        Route::get('tags', [\App\Http\Controllers\Admin\TagController::class, 'index'])->name('tags.index');
+        Route::get('tags/{tag}', [\App\Http\Controllers\Admin\TagController::class, 'show'])->name('tags.show');
+    });
 
-    // Activity Logs
-    Route::get('/activities', [\App\Http\Controllers\Admin\ActivityController::class, 'index'])->name('activities');
+    // Admin-level features — super-admin, admin only
+    Route::middleware('role:super-admin|admin')->group(function () {
+        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
+        Route::put('/users/{user}/change-password', [\App\Http\Controllers\Admin\UserController::class, 'changePassword'])->name('users.change-password');
 
-    // Newsletter Subscribers
-    Route::get('/newsletters', [\App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletters.index');
-    Route::delete('/newsletters/{subscriber}', [\App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('newsletters.destroy');
+        Route::get('/analytics', [\App\Http\Controllers\Admin\AnalyticsController::class, 'index'])->name('analytics');
+        Route::get('/analytics/{news}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'show'])->name('analytics.show');
+        Route::get('/analytics/{news}/visitor/{visitor}', [\App\Http\Controllers\Admin\AnalyticsController::class, 'visitorDetail'])->name('analytics.visitor-detail');
 
-    // Advertisement Management
-    Route::get('/advertisements/export/csv', [\App\Http\Controllers\Admin\AdController::class, 'export'])->name('advertisements.export');
-    Route::post('/advertisements/upload', [\App\Http\Controllers\Admin\AdController::class, 'uploadAdvertisementImage'])->name('upload-advertisement-image');
-    Route::resource('advertisements', \App\Http\Controllers\Admin\AdController::class);
-    Route::post('/advertisements/{advertisement}/toggle-status', [\App\Http\Controllers\Admin\AdController::class, 'toggleStatus'])->name('advertisements.toggle-status');
-    Route::get('/advertisements/{advertisement}/statistics', [\App\Http\Controllers\Admin\AdController::class, 'statistics'])->name('advertisements.statistics');
+        Route::get('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'index'])->name('settings');
+        Route::post('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update'])->name('settings.update');
+        Route::put('/settings', [\App\Http\Controllers\Admin\SettingController::class, 'update']);
 
-    // Live Stream Management - Only for Admins
-    Route::middleware('admin')->group(function () {
-        Route::get('/live-streams', [\App\Http\Controllers\Admin\LiveStreamController::class, 'index'])->name('live-streams.index');
+        Route::get('/activities', [\App\Http\Controllers\Admin\ActivityController::class, 'index'])->name('activities');
+
+        Route::get('/newsletters', [\App\Http\Controllers\Admin\NewsletterController::class, 'index'])->name('newsletters.index');
+        Route::delete('/newsletters/{subscriber}', [\App\Http\Controllers\Admin\NewsletterController::class, 'destroy'])->name('newsletters.destroy');
+
+        Route::get('/advertisements/export/csv', [\App\Http\Controllers\Admin\AdController::class, 'export'])->name('advertisements.export');
+        Route::post('/advertisements/upload', [\App\Http\Controllers\Admin\AdController::class, 'uploadAdvertisementImage'])->name('upload-advertisement-image');
+        Route::resource('advertisements', \App\Http\Controllers\Admin\AdController::class);
+        Route::post('/advertisements/{advertisement}/toggle-status', [\App\Http\Controllers\Admin\AdController::class, 'toggleStatus'])->name('advertisements.toggle-status');
+        Route::get('/advertisements/{advertisement}/statistics', [\App\Http\Controllers\Admin\AdController::class, 'statistics'])->name('advertisements.statistics');
+
+        // Live Streams — create/edit/delete (super-admin, admin only)
         Route::post('/live-streams', [\App\Http\Controllers\Admin\LiveStreamController::class, 'store'])->name('live-streams.store');
         Route::get('/live-streams/create', [\App\Http\Controllers\Admin\LiveStreamController::class, 'create'])->name('live-streams.create');
-        Route::get('/live-streams/{stream}', [\App\Http\Controllers\Admin\LiveStreamController::class, 'show'])->name('live-streams.show');
         Route::put('/live-streams/{stream}', [\App\Http\Controllers\Admin\LiveStreamController::class, 'update'])->name('live-streams.update');
         Route::patch('/live-streams/{stream}', [\App\Http\Controllers\Admin\LiveStreamController::class, 'update']);
         Route::delete('/live-streams/{stream}', [\App\Http\Controllers\Admin\LiveStreamController::class, 'destroy'])->name('live-streams.destroy');
@@ -132,31 +157,28 @@ Route::middleware(['auth', 'verified', 'no-back-history'])->prefix('admin')->nam
         Route::post('/live-streams/{stream}/stop', [\App\Http\Controllers\Admin\LiveStreamController::class, 'stop'])->name('live-streams.stop');
         Route::post('/live-streams/{stream}/toggle-featured', [\App\Http\Controllers\Admin\LiveStreamController::class, 'toggleFeatured'])->name('live-streams.toggle-featured');
 
-        // Live Stream Comments Moderation
         Route::post('/live-streams/{stream}/comments/{comment}/approve', [\App\Http\Controllers\StreamCommentController::class, 'approve'])->name('live-streams.comments.approve');
         Route::post('/live-streams/{stream}/comments/{comment}/reject', [\App\Http\Controllers\StreamCommentController::class, 'reject'])->name('live-streams.comments.reject');
         Route::post('/live-streams/{stream}/comments/{comment}/pin', [\App\Http\Controllers\StreamCommentController::class, 'pin'])->name('live-streams.comments.pin');
         Route::post('/live-streams/{stream}/comments/{comment}/unpin', [\App\Http\Controllers\StreamCommentController::class, 'unpin'])->name('live-streams.comments.unpin');
+
+        Route::get('/file-manager', function () {
+            return view('admin.file-manager');
+        })->name('file-manager.index');
+
+        Route::prefix('file-manager')->name('file-manager.')->group(function () {
+            Route::post('/upload', [\App\Http\Controllers\Admin\FileManagerController::class, 'upload'])->name('upload');
+            Route::post('/delete', [\App\Http\Controllers\Admin\FileManagerController::class, 'delete'])->name('delete');
+            Route::post('/rename', [\App\Http\Controllers\Admin\FileManagerController::class, 'rename'])->name('rename');
+            Route::post('/create-folder', [\App\Http\Controllers\Admin\FileManagerController::class, 'createFolder'])->name('create-folder');
+            Route::get('/list', [\App\Http\Controllers\Admin\FileManagerController::class, 'list'])->name('list');
+        });
     });
+});
 
-    // Photo Card Maker
-    Route::get('/photo-card', function () {
-        $seoSettings = \App\Models\SeoSetting::first();
-        return view('admin.photo-card.index', ['seoSettings' => $seoSettings]);
-    })->name('photo-card.index');
-
-    // File Manager Routes
-    Route::get('/file-manager', function () {
-        return view('admin.file-manager');
-    })->name('file-manager.index');
-
-    Route::prefix('file-manager')->name('file-manager.')->group(function () {
-        Route::post('/upload', [\App\Http\Controllers\Admin\FileManagerController::class, 'upload'])->name('upload');
-        Route::post('/delete', [\App\Http\Controllers\Admin\FileManagerController::class, 'delete'])->name('delete');
-        Route::post('/rename', [\App\Http\Controllers\Admin\FileManagerController::class, 'rename'])->name('rename');
-        Route::post('/create-folder', [\App\Http\Controllers\Admin\FileManagerController::class, 'createFolder'])->name('create-folder');
-        Route::get('/list', [\App\Http\Controllers\Admin\FileManagerController::class, 'list'])->name('list');
-    });
+// Reader Profile Routes
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my-profile', [\App\Http\Controllers\ReaderProfileController::class, 'index'])->name('reader.profile');
 });
 
 // Include authentication routes (login, register, password reset, etc.)

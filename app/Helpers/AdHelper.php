@@ -122,7 +122,6 @@ JS;
         $onclickJs  = "adTrackClick(event,{$ad->id},'" . addslashes($destUrl) . "')";
 
         $html  = '<div class="ad-wrapper" style="margin: 15px auto; text-align: center; width: 100%;">';
-        $html .= '<p style="font-size: 10px; color: #aaa; margin: 0 0 4px; text-align: center; text-transform: uppercase; letter-spacing: .05em;">বিজ্ঞাপন</p>';
 
         if ($ad->image_url) {
             $imageUrl = str_starts_with($ad->image_url, 'http') ? $ad->image_url : asset($ad->image_url);

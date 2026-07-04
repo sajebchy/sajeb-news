@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "Laravel Dev Server",
-      "runtimeExecutable": "php",
+      "runtimeExecutable": "C:\\laragon\\bin\\php\\php-8.3.30-Win32-vs16-x64\\php.exe",
       "runtimeArgs": ["artisan", "serve"],
       "port": 8000
     },

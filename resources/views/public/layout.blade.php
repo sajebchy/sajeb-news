@@ -94,8 +94,8 @@ tailwind.config = {
       },
       borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
       spacing: {
-        "container-max": "1280px", "stack-lg": "2rem", "stack-sm": "0.5rem",
-        "gutter": "1.5rem", "section-padding": "4rem", "stack-md": "1rem"
+        "container-max": "100%", "stack-lg": "2rem", "stack-sm": "0.5rem",
+        "gutter": "2rem", "section-padding": "4rem", "stack-md": "1rem"
       },
       fontFamily: {
         "body-main": ["Libre Franklin"], "body-sm": ["Libre Franklin"],
@@ -109,7 +109,7 @@ tailwind.config = {
         "display-breaking": ["48px", {"lineHeight":"1.1","letterSpacing":"-0.02em","fontWeight":"700"}],
         "headline-lg": ["32px", {"lineHeight":"1.2","fontWeight":"700"}],
         "label-caps": ["12px", {"lineHeight":"1","letterSpacing":"0.05em","fontWeight":"700"}],
-        "headline-md": ["20px", {"lineHeight":"1.3","fontWeight":"600"}],
+        "headline-md": ["20px", {"lineHeight":"1.3","fontWeight":"700"}],
         "meta-data": ["13px", {"lineHeight":"1","fontWeight":"400"}],
         "headline-lg-mobile": ["24px", {"lineHeight":"1.2","fontWeight":"700"}]
       }
@@ -118,7 +118,11 @@ tailwind.config = {
 }
 </script>
 <style>
+  #nav-drawer { transition: transform 0.3s ease-in-out; }
+  .nav-drawer-closed { transform: translateX(100%); }
+  .nav-drawer-open { transform: translateX(0) !important; }
   .ticker-scroll { animation: ticker 35s linear infinite; }
+  .ticker-scroll:hover { animation-play-state: paused; }
   @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
   .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; display: inline-block; vertical-align: middle; line-height: 1; }
   .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
@@ -129,6 +133,10 @@ tailwind.config = {
   #reading-progress { position: fixed; top: 0; left: 0; height: 3px; background: #bb0112; z-index: 9999; width: 0%; transition: width 0.1s ease; pointer-events: none; }
   .hover-lift { transition: transform 0.2s ease; }
   .hover-lift:hover { transform: translateY(-2px); }
+  .prose-readable { max-width: 800px; }
+  @media (min-width: 1600px) {
+    .max-w-container-max { padding-left: 3rem; padding-right: 3rem; }
+  }
 </style>
 @stack('styles')
 </head>
@@ -136,7 +144,7 @@ tailwind.config = {
 <div id="reading-progress"></div>
 
 @php
-  $navCategories = \App\Models\Category::where('is_active', true)->orderByRaw('featured_order IS NULL, featured_order ASC')->orderBy('name')->limit(8)->get();
+  $navCategories = \App\Models\Category::where('is_active', true)->whereNull('parent_id')->with(['children' => fn($q) => $q->where('is_active', true)->orderBy('name')])->orderByRaw('featured_order IS NULL, featured_order ASC')->orderBy('name')->limit(8)->get();
   $currentRouteName = optional(request()->route())->getName() ?? '';
   $globalSeo = $globalSeo ?? \App\Models\SeoSetting::first();
   $siteName = $globalSeo?->site_name ?: 'সজীব নিউজ';
@@ -159,8 +167,7 @@ tailwind.config = {
 
 {{-- Sidebar Drawer --}}
 <aside id="nav-drawer"
-       class="fixed top-0 left-0 h-full w-[300px] z-[70] bg-surface shadow-2xl flex flex-col
-              transform -translate-x-full transition-transform duration-300 ease-in-out overflow-y-auto">
+       class="fixed top-0 right-0 h-full w-[300px] z-[70] bg-surface shadow-2xl flex flex-col overflow-y-auto nav-drawer-closed">
 
   {{-- Drawer Header --}}
   <div class="flex items-center justify-between px-5 py-4 border-b border-subtle flex-shrink-0">
@@ -216,15 +223,41 @@ tailwind.config = {
       </li>
       @foreach($navCategories as $navCat)
       <li>
-        <a href="{{ route('category.show', $navCat->slug) }}" onclick="closeDrawer()"
-           class="flex items-center justify-between px-3 py-3 rounded-lg font-headline-md text-[16px]
-                  {{ (request()->route('category') && request()->route('category')->slug === $navCat->slug) ? 'bg-surface-container text-secondary' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-secondary' }} transition-colors group">
-          <span class="flex items-center gap-3">
-            <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary transition-colors">article</span>
-            {{ $navCat->name }}
-          </span>
-          <span class="material-symbols-outlined text-[18px] text-outline-variant">chevron_right</span>
-        </a>
+        <div class="flex items-center">
+          <a href="{{ route('category.show', $navCat->slug) }}" onclick="closeDrawer()"
+             class="flex-1 flex items-center justify-between px-3 py-3 rounded-lg font-headline-md text-[16px]
+                    {{ (request()->route('category') && request()->route('category')->slug === $navCat->slug) ? 'bg-surface-container text-secondary' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-secondary' }} transition-colors group">
+            <span class="flex items-center gap-3">
+              <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary transition-colors">article</span>
+              {{ $navCat->name }}
+            </span>
+            @if($navCat->children->isEmpty())
+            <span class="material-symbols-outlined text-[18px] text-outline-variant">chevron_right</span>
+            @endif
+          </a>
+          @if($navCat->children->isNotEmpty())
+          <button onclick="toggleSubcats({{ $navCat->id }})" class="w-9 h-9 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors text-on-surface-variant flex-shrink-0">
+            <span class="material-symbols-outlined text-[20px] transition-transform duration-200" id="subcat-arrow-{{ $navCat->id }}">expand_more</span>
+          </button>
+          @endif
+        </div>
+        @if($navCat->children->isNotEmpty())
+        <ul id="subcat-{{ $navCat->id }}" class="hidden ml-8 space-y-0.5 pb-1">
+          @foreach($navCat->children as $subCat)
+          <li>
+            <a href="{{ route('category.show', $subCat->slug) }}" onclick="closeDrawer()"
+               class="flex items-center justify-between px-3 py-2 rounded-lg font-headline-md text-[14px]
+                      {{ (request()->route('category') && request()->route('category')->slug === $subCat->slug) ? 'bg-surface-container text-secondary' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-secondary' }} transition-colors group">
+              <span class="flex items-center gap-2">
+                <span class="material-symbols-outlined text-[16px] text-outline group-hover:text-secondary transition-colors">subdirectory_arrow_right</span>
+                {{ $subCat->name }}
+              </span>
+              <span class="material-symbols-outlined text-[16px] text-outline-variant">chevron_right</span>
+            </a>
+          </li>
+          @endforeach
+        </ul>
+        @endif
       </li>
       @endforeach
     </ul>
@@ -257,12 +290,21 @@ tailwind.config = {
         </a>
       </li>
       @auth
-      <li>
-        <a href="{{ route('admin.dashboard') }}" onclick="closeDrawer()"
-           class="flex items-center gap-3 px-3 py-3 rounded-lg font-body-sm text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-colors group">
-          <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary">admin_panel_settings</span> অ্যাডমিন
-        </a>
-      </li>
+        @if(auth()->user()->hasRole(['super-admin', 'admin', 'editor', 'reporter']))
+        <li>
+          <a href="{{ route('admin.dashboard') }}" onclick="closeDrawer()"
+             class="flex items-center gap-3 px-3 py-3 rounded-lg font-body-sm text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-colors group">
+            <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary">admin_panel_settings</span> অ্যাডমিন
+          </a>
+        </li>
+        @else
+        <li>
+          <a href="{{ route('reader.profile') }}" onclick="closeDrawer()"
+             class="flex items-center gap-3 px-3 py-3 rounded-lg font-body-sm text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-colors group">
+            <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary">person</span> প্রোফাইল
+          </a>
+        </li>
+        @endif
       @endauth
     </ul>
   </nav>
@@ -288,7 +330,6 @@ tailwind.config = {
 @php $__headerAd = \App\Helpers\AdHelper::getRandomAdByPlacement('header_top'); @endphp
 @if($__headerAd)
 <div class="w-full bg-surface-container-low border-b border-subtle py-1 text-center">
-  <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-0.5">বিজ্ঞাপন</p>
   {!! \App\Helpers\AdHelper::renderAd($__headerAd) !!}
 </div>
 @endif
@@ -297,19 +338,11 @@ tailwind.config = {
 <header class="sticky top-0 w-full z-50 bg-surface/95 backdrop-blur-sm border-b border-subtle shadow-sm">
   <div class="max-w-container-max mx-auto px-gutter py-3 flex items-center justify-between gap-4">
 
-    {{-- LEFT: Hamburger button --}}
-    <button id="hamburger-btn" onclick="openDrawer()" aria-label="মেনু খুলুন"
-            class="flex flex-col justify-center items-center gap-[5px] w-10 h-10 rounded-lg hover:bg-surface-container-low transition-colors flex-shrink-0 group">
-      <span id="hb-line1" class="block w-5 h-[2px] bg-on-surface rounded-full transition-all duration-300 group-hover:bg-secondary"></span>
-      <span id="hb-line2" class="block w-4 h-[2px] bg-on-surface rounded-full transition-all duration-300 group-hover:bg-secondary group-hover:w-5"></span>
-      <span id="hb-line3" class="block w-5 h-[2px] bg-on-surface rounded-full transition-all duration-300 group-hover:bg-secondary"></span>
-    </button>
-
-    {{-- CENTER: Logo --}}
-    <div class="flex-1 text-center">
+    {{-- LEFT: Logo --}}
+    <div class="flex-shrink-0">
       <a href="{{ route('home') }}" class="inline-block group">
         @if($siteLogo)
-          <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="h-10 md:h-14 object-contain mx-auto group-hover:opacity-80 transition-opacity"/>
+          <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="h-10 md:h-14 object-contain group-hover:opacity-80 transition-opacity"/>
         @else
           <span class="font-headline-lg text-primary text-2xl md:text-4xl tracking-tight leading-none group-hover:text-secondary transition-colors">{{ $siteName }}</span>
           <span class="hidden md:block font-meta-data text-[10px] text-outline tracking-[0.3em] uppercase mt-0.5">{{ $siteNameEn }}</span>
@@ -317,7 +350,10 @@ tailwind.config = {
       </a>
     </div>
 
-    {{-- RIGHT: Search + Date (desktop) + Live --}}
+    {{-- CENTER: spacer --}}
+    <div class="flex-1"></div>
+
+    {{-- RIGHT: Date + Search + Live + Hamburger --}}
     <div class="flex items-center gap-2 flex-shrink-0">
       {{-- Date — desktop only --}}
       <span class="hidden lg:block font-meta-data text-[11px] text-on-surface-variant border-r border-subtle pr-3 mr-1" id="current-date"></span>
@@ -338,6 +374,17 @@ tailwind.config = {
          class="sm:hidden w-9 h-9 flex items-center justify-center rounded-full text-secondary">
         <span class="material-symbols-outlined text-[22px]">live_tv</span>
       </a>
+
+      {{-- Hamburger menu button --}}
+      <button id="hamburger-btn" onclick="openDrawer()" aria-label="মেনু খুলুন"
+              class="flex flex-col justify-center items-center w-10 rounded-lg hover:bg-surface-container-low transition-colors flex-shrink-0 group py-1">
+        <div class="flex flex-col justify-center items-center gap-[5px] h-6">
+          <span id="hb-line1" class="block w-5 h-[2px] bg-on-surface rounded-full transition-all duration-300 group-hover:bg-secondary"></span>
+          <span id="hb-line2" class="block w-4 h-[2px] bg-on-surface rounded-full transition-all duration-300 group-hover:bg-secondary group-hover:w-5"></span>
+          <span id="hb-line3" class="block w-5 h-[2px] bg-on-surface rounded-full transition-all duration-300 group-hover:bg-secondary"></span>
+        </div>
+        <span class="text-[9px] font-bold text-on-surface group-hover:text-secondary leading-none mt-0.5">Menu</span>
+      </button>
     </div>
   </div>
 </header>
@@ -354,7 +401,6 @@ tailwind.config = {
 @php $__footerAd = \App\Helpers\AdHelper::getRandomAdByPlacement('footer_banner'); @endphp
 @if($__footerAd)
 <div class="w-full bg-surface-container-low border-t border-subtle py-2 text-center">
-  <p class="text-[10px] text-outline-variant uppercase tracking-widest mb-0.5">বিজ্ঞাপন</p>
   {!! \App\Helpers\AdHelper::renderAd($__footerAd) !!}
 </div>
 @endif
@@ -462,7 +508,9 @@ if(_el)_el.textContent=`${_days[_now.getDay()]}, ${toBn(_now.getDate())} ${_mont
 function openDrawer() {
   const drawer = document.getElementById('nav-drawer');
   const overlay = document.getElementById('drawer-overlay');
-  drawer.classList.remove('-translate-x-full');
+  drawer.classList.remove('nav-drawer-closed');
+  void drawer.offsetHeight;
+  drawer.classList.add('nav-drawer-open');
   overlay.classList.remove('opacity-0','pointer-events-none');
   overlay.classList.add('opacity-100');
   document.body.style.overflow = 'hidden';
@@ -470,10 +518,23 @@ function openDrawer() {
 function closeDrawer() {
   const drawer = document.getElementById('nav-drawer');
   const overlay = document.getElementById('drawer-overlay');
-  drawer.classList.add('-translate-x-full');
+  drawer.classList.remove('nav-drawer-open');
+  void drawer.offsetHeight;
+  drawer.classList.add('nav-drawer-closed');
   overlay.classList.remove('opacity-100');
   overlay.classList.add('opacity-0','pointer-events-none');
   document.body.style.overflow = '';
+}
+function toggleSubcats(id) {
+  const list = document.getElementById('subcat-' + id);
+  const arrow = document.getElementById('subcat-arrow-' + id);
+  if (list.classList.contains('hidden')) {
+    list.classList.remove('hidden');
+    arrow.style.transform = 'rotate(180deg)';
+  } else {
+    list.classList.add('hidden');
+    arrow.style.transform = '';
+  }
 }
 // Close on Escape key
 document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); });
@@ -496,7 +557,6 @@ document.querySelectorAll('.material-symbols-outlined').forEach(i=>{i.addEventLi
           aria-label="বন্ধ করুন"
           style="position:absolute;top:4px;right:8px;background:rgba(0,0,0,.45);color:#fff;border:none;border-radius:50%;width:22px;height:22px;font-size:13px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;">✕</button>
   <div style="text-align:center;">
-    <p style="font-size:9px;color:#aaa;margin:0 0 2px;text-transform:uppercase;letter-spacing:.05em;">বিজ্ঞাপন</p>
     @if($__stickyBottomAd->image_url)
       <a href="{{ $__stickyBottomAd->ad_url ?: '#' }}" target="_blank" rel="noopener"
          onclick="adTrackClick(event,{{ $__stickyBottomAd->id }},'{{ addslashes($__stickyBottomAd->ad_url ?? '') }}')"
@@ -565,7 +625,7 @@ if (typeof adTrackClick === 'undefined') {
     @elseif($__popupAd->ad_code ?? $__popupAd->code)
       <div style="padding:16px;">{!! $__popupAd->ad_code ?? $__popupAd->code !!}</div>
     @endif
-    <p style="text-align:center;font-size:11px;color:#999;padding:6px 0 8px;">বিজ্ঞাপন · <button onclick="closePopupAd()" style="background:none;border:none;color:#bb0112;cursor:pointer;font-size:11px;">বন্ধ করুন</button></p>
+    <p style="text-align:center;font-size:11px;color:#999;padding:6px 0 8px;"><button onclick="closePopupAd()" style="background:none;border:none;color:#bb0112;cursor:pointer;font-size:11px;">বন্ধ করুন</button></p>
   </div>
 </div>
 <script>

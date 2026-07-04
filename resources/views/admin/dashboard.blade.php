@@ -135,19 +135,24 @@
   <section class="bg-surface-container-lowest p-5 rounded-xl shadow-[0px_2px_4px_rgba(0,0,0,0.06)] border border-outline-variant/30 flex flex-col">
     <h2 class="text-lg font-bold text-on-surface mb-4" style="font-family:'SolaimanLipi',serif;">দ্রুত অ্যাকশন</h2>
     <div class="grid grid-cols-2 gap-3 flex-1">
-      @foreach([
-        ['route' => 'admin.news.create',      'icon' => 'add_circle',  'label' => 'নতুন সংবাদ',    'color' => 'text-primary',   'bg' => 'bg-primary/10'],
-        ['route' => 'admin.news.index',        'icon' => 'article',     'label' => 'সংবাদ তালিকা', 'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
-        ['route' => 'admin.categories.index',  'icon' => 'category',    'label' => 'বিভাগসমূহ',    'color' => 'text-tertiary',  'bg' => 'bg-tertiary/10'],
-        ['route' => 'admin.users.index',       'icon' => 'group',       'label' => 'ব্যবহারকারী',  'color' => 'text-primary',   'bg' => 'bg-primary/10'],
-        ['route' => 'admin.tags.index',          'icon' => 'sell',        'label' => 'ট্যাগসমূহ',     'color' => 'text-secondary', 'bg' => 'bg-secondary/10'],
-        ['route' => 'admin.settings',          'icon' => 'settings',    'label' => 'সেটিংস',        'color' => 'text-tertiary',  'bg' => 'bg-tertiary/10'],
-      ] as $action)
+      @php
+        $quickActions = [
+            ['route' => 'admin.news.create', 'icon' => 'add_circle', 'label' => 'নতুন সংবাদ', 'color' => 'text-primary', 'bg' => 'bg-primary/10', 'roles' => ['super-admin','admin','editor','reporter']],
+            ['route' => 'admin.news.index', 'icon' => 'article', 'label' => 'সংবাদ তালিকা', 'color' => 'text-secondary', 'bg' => 'bg-secondary/10', 'roles' => ['super-admin','admin','editor','reporter']],
+            ['route' => 'admin.categories.index', 'icon' => 'category', 'label' => 'বিভাগসমূহ', 'color' => 'text-tertiary', 'bg' => 'bg-tertiary/10', 'roles' => ['super-admin','admin','editor']],
+            ['route' => 'admin.users.index', 'icon' => 'group', 'label' => 'ব্যবহারকারী', 'color' => 'text-primary', 'bg' => 'bg-primary/10', 'roles' => ['super-admin','admin']],
+            ['route' => 'admin.tags.index', 'icon' => 'sell', 'label' => 'ট্যাগসমূহ', 'color' => 'text-secondary', 'bg' => 'bg-secondary/10', 'roles' => ['super-admin','admin','editor']],
+            ['route' => 'admin.settings', 'icon' => 'settings', 'label' => 'সেটিংস', 'color' => 'text-tertiary', 'bg' => 'bg-tertiary/10', 'roles' => ['super-admin','admin']],
+        ];
+      @endphp
+      @foreach($quickActions as $action)
+      @if(auth()->user()->hasRole($action['roles']))
       <a href="{{ route($action['route']) }}"
          class="flex flex-col items-center justify-center gap-2 p-3 rounded-xl {{ $action['bg'] }} hover:opacity-80 transition-opacity text-center group">
         <span class="material-symbols-outlined {{ $action['color'] }} text-[24px]">{{ $action['icon'] }}</span>
         <span class="text-[11px] font-bold text-on-surface-variant group-hover:text-on-surface transition-colors leading-tight">{{ $action['label'] }}</span>
       </a>
+      @endif
       @endforeach
     </div>
   </section>

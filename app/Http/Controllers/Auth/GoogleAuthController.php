@@ -89,6 +89,9 @@ class GoogleAuthController extends Controller
                     'password' => bcrypt(bin2hex(random_bytes(16))),
                 ]);
 
+                $userRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+                $user->assignRole($userRole);
+
                 if ($picture) {
                     try {
                         $imageContent = file_get_contents($picture);

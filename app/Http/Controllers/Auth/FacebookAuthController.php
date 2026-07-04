@@ -122,6 +122,9 @@ class FacebookAuthController extends Controller
 
                 $user->save();
 
+                $userRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+                $user->assignRole($userRole);
+
                 Log::info('New user created via Facebook', [
                     'user_id' => $user->id,
                     'facebook_id' => $facebookId,

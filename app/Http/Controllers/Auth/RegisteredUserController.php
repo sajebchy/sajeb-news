@@ -41,6 +41,9 @@ class RegisteredUserController extends Controller
             'password' => Hash::make($request->password),
         ]);
 
+        $userRole = \Spatie\Permission\Models\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+        $user->assignRole($userRole);
+
         event(new Registered($user));
 
         Auth::login($user);

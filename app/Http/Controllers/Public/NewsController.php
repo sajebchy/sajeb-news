@@ -26,13 +26,12 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $featured = $this->newsService->getFeaturedNews(5);
-        $breaking = $this->newsService->getBreakingNews(3);
-        $latest = $this->newsService->getPublishedNews(9);
+        $featured = $this->newsService->getFeaturedNews(8);
+        $breaking = $this->newsService->getBreakingNews(5);
+        $latest = $this->newsService->getPublishedNews(12);
         $trending = $this->newsService->getTrendingNews(7, 10);
         $seoSettings = \App\Models\SeoSetting::first();
 
-        // All active categories with their latest 6 published news
         $allCategories = Category::where('is_active', true)
             ->withCount(['news' => fn($q) => $q->where('status', 'published')])
             ->orderByRaw("CASE WHEN featured_order IS NOT NULL THEN featured_order ELSE 999 END")
@@ -43,7 +42,7 @@ class NewsController extends Controller
                 $cat->setRelation('latestNews', \App\Models\News::where('status', 'published')
                     ->where('category_id', $cat->id)
                     ->latest('published_at')
-                    ->limit(6)
+                    ->limit(8)
                     ->get());
             });
 

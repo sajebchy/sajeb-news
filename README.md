@@ -342,6 +342,58 @@ Need help? Check these resources:
 
 ---
 
+### Version 3.3 (July 4, 2026) — UI/UX Overhaul, Subcategory System & Dense Layout
+
+---
+
+#### 🏗️ Homepage Dense Layout
+- Homepage completely redesigned for a denser, content-rich layout (inspired by professional news portals)
+- Hero section: large featured image + 3 stacked side stories
+- Secondary news strip: 4-column grid layout
+- Category sections: lead story + side list + extra row
+- Latest news: 4-column grid with 8 items
+- Increased per-category and latest news item counts for richer content display
+
+#### 📂 Subcategory System (New Feature)
+- Categories now support parent-child hierarchy via `parent_id`
+- Admin panel: parent category dropdown in create/edit forms
+- Admin category index: shows parent badge and subcategory count per category
+- Hamburger menu: subcategories appear as expandable/collapsible nested items under parent categories
+
+#### 🍔 Header & Navigation Redesign
+- Site logo moved to the left side of the header
+- Hamburger menu moved to the right side (next to Live button) with bold "Menu" label
+- Navigation drawer now slides in from the right side (matching hamburger position)
+- Drawer open/close with smooth CSS transition animation
+
+#### 📰 Breaking News Ticker Improvements
+- Ticker aligned with site content area (respects container padding)
+- Reduced gap between news items for denser display
+- Added `•` dot separator between headlines
+- Ticker pauses on mouse hover
+- Consistent ticker style across all pages (homepage, category, live stream)
+
+#### 🔠 Typography & Readability
+- All news headlines now use SolaimanLipi Bold (font-weight 700)
+- Headline font sizes increased to standard readable sizes across homepage
+- All category/date labels standardized
+
+#### 🌐 Full-Width Layout
+- Removed `max-width: 1280px` constraint — site is now full-width on all pages
+- Added extra padding for large screens (1600px+)
+- Article body text constrained to 780px max-width for readability
+
+#### 🧹 Cleanup
+- Removed all "বিজ্ঞাপন" ad labels from the website
+- Homepage top banner resized from 970×250 to 970×90
+- News ticker renamed from "সদ্য সংবাদ" to "ব্রেকিং নিউজ" with SolaimanLipi font
+- Live stream page ticker now uses dynamic breaking news from database
+
+#### 🗄️ Database
+- Updated database backup with latest schema and data
+
+---
+
 ### Version 3.2 (July 3, 2026) — Social Login, Code Cleanup & Security Hardening
 
 ---

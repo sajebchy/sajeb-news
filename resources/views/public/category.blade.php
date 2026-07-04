@@ -18,13 +18,15 @@
 <!-- Breaking Ticker -->
 @php $catBreaking = \App\Models\News::where('status','published')->where('is_breaking',true)->latest('published_at')->limit(3)->get(); @endphp
 @if($catBreaking->count() > 0)
-<div class="w-full bg-primary text-white overflow-hidden h-10 flex items-center">
-  <div class="px-4 py-1 bg-secondary font-headline-md text-white whitespace-nowrap z-10 flex items-center gap-2 flex-shrink-0">
-    <span class="animate-pulse w-2 h-2 bg-white rounded-full inline-block"></span> সদ্য সংবাদ
-  </div>
-  <div class="overflow-hidden flex-1">
-    <div class="ticker-scroll whitespace-nowrap font-body-main text-body-sm flex gap-16 items-center">
-      @foreach($catBreaking as $bk)<a href="{{ route('news.show', $bk->slug) }}" class="hover:underline">{{ $bk->title }}</a>@endforeach
+<div class="w-full bg-primary text-white overflow-hidden h-10">
+  <div class="max-w-container-max mx-auto px-gutter h-full flex items-center">
+    <div class="py-1 bg-secondary px-4 font-headline-md text-white whitespace-nowrap z-10 flex items-center gap-2 flex-shrink-0 h-full">
+      <span class="animate-pulse w-2 h-2 bg-white rounded-full inline-block"></span> ব্রেকিং নিউজ
+    </div>
+    <div class="overflow-hidden flex-1 h-full flex items-center">
+      <div class="ticker-scroll whitespace-nowrap font-body-main text-body-sm flex gap-6 items-center" style="font-family:'SolaimanLipi',serif;">
+        @foreach($catBreaking as $bk)<a href="{{ route('news.show', $bk->slug) }}" class="hover:underline">{{ $bk->title }}</a><span class="text-white/50">•</span>@endforeach
+      </div>
     </div>
   </div>
 </div>

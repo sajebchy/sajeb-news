@@ -11,9 +11,11 @@
             </h2>
         </div>
         <div class="col-md-6 text-end">
+            @if(auth()->user()->hasRole(['super-admin', 'admin']))
             <a href="{{ route('admin.live-streams.create') }}" class="btn btn-primary">
                 <i class="bi bi-plus-lg"></i> Create New Stream
             </a>
+            @endif
         </div>
     </div>
 
@@ -116,6 +118,7 @@
                                     <i class="bi bi-eye"></i> View Details
                                 </a>
                             </div>
+                            @if(auth()->user()->hasRole(['super-admin', 'admin']))
                             <div class="row gap-2 mt-2">
                                 <div class="col">
                                     <a href="{{ route('admin.live-streams.edit', $stream) }}" class="btn btn-sm btn-outline-secondary w-100">
@@ -144,6 +147,7 @@
                                     @endif
                                 </div>
                             </div>
+                            @endif
                         </div>
                     </div>
                 </div>

@@ -43,7 +43,7 @@ class AdController extends Controller
         $placements = [
             'header_top' => '1️⃣ Header Top Banner (728x90 / 970x90)',
             'navigation_sticky' => '2️⃣ Navigation Bar Sticky (728x90)',
-            'homepage_top' => '3️⃣ Homepage Top (728x90 / Responsive)',
+            'homepage_top' => '3️⃣ Homepage Top (970x90)',
             'sidebar_medium_rectangle' => '4️⃣ Sidebar Medium Rectangle (300x250)',
             'sidebar_half_page' => '4️⃣ Sidebar Half Page (300x600)',
             'article_2nd_paragraph' => '5️⃣ Article 2nd Paragraph (300x250)',
@@ -241,7 +241,7 @@ class AdController extends Controller
         $placements = [
             'header_top' => '1️⃣ Header Top Banner (728x90 / 970x90)',
             'navigation_sticky' => '2️⃣ Navigation Bar Sticky (728x90)',
-            'homepage_top' => '3️⃣ Homepage Top (728x90 / Responsive)',
+            'homepage_top' => '3️⃣ Homepage Top (970x90)',
             'sidebar_medium_rectangle' => '4️⃣ Sidebar Medium Rectangle (300x250)',
             'sidebar_half_page' => '4️⃣ Sidebar Half Page (300x600)',
             'article_2nd_paragraph' => '5️⃣ Article 2nd Paragraph (300x250)',

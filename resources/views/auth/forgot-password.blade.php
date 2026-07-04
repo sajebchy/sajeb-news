@@ -153,7 +153,8 @@
 
         <!-- Footer -->
         <div class="mt-8 text-center opacity-40">
-            <p class="bengali text-[13px] text-on-surface-variant">© ২০২৪ সাজেব নিউজ | নির্ভরযোগ্য সংবাদের ঠিকানা</p>
+            @php $__fpSeo = \App\Models\SeoSetting::first(); @endphp
+            <p class="bengali text-[13px] text-on-surface-variant">© {{ date('Y') }} {{ $__fpSeo->site_name ?? 'Sajeb News' }}। সকল স্বত্ব সংরক্ষিত।</p>
         </div>
     </main>
 

@@ -82,11 +82,19 @@
                                 <label class="form-label fw-bold">
                                     <i class="bi bi-shield-check"></i> Roles & Permissions *
                                 </label>
+                                @if(auth()->id() === $user->id)
+                                <div class="alert alert-warning py-2 mb-2 small">
+                                    <i class="bi bi-info-circle"></i> আপনি নিজের রোল পরিবর্তন করতে পারবেন না।
+                                </div>
+                                @endif
                                 <div class="card border">
                                     <div class="card-body">
                                         @forelse ($roles as $role)
                                             <div class="form-check mb-2">
-                                                <input class="form-check-input" type="checkbox" id="role_{{ $role->id }}" name="roles[]" value="{{ $role->id }}" @checked($user->hasRole($role->name))>
+                                                <input class="form-check-input" type="checkbox" id="role_{{ $role->id }}" name="roles[]" value="{{ $role->id }}" @checked($user->hasRole($role->name)) @disabled(auth()->id() === $user->id)>
+                                                @if(auth()->id() === $user->id && $user->hasRole($role->name))
+                                                    <input type="hidden" name="roles[]" value="{{ $role->id }}">
+                                                @endif
                                                 <label class="form-check-label" for="role_{{ $role->id }}">
                                                     <strong>{{ ucfirst($role->name) }}</strong>
                                                     <small class="text-muted d-block" style="margin-left: 1.5rem;">

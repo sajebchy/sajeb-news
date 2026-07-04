@@ -109,32 +109,42 @@ class UserController extends Controller
      */
     public function update(Request $request, User $user)
     {
+        if ($user->hasRole('super-admin') && !auth()->user()->hasRole('super-admin')) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'সুপার অ্যাডমিন প্রোফাইল সম্পাদনা করার অনুমতি নেই!');
+        }
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email,' . $user->id,
             'phone' => 'nullable|string|max:20',
-            'is_active' => 'boolean',
-            'roles' => 'required|array|min:1',
+            'bio' => 'nullable|string|max:1000',
+            'roles' => 'nullable|array',
             'roles.*' => 'exists:roles,id',
         ]);
 
-        // Update user
         $user->update([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'phone' => $validated['phone'] ?? null,
-            'is_active' => $validated['is_active'] ?? true,
+            'bio' => $validated['bio'] ?? null,
+            'is_active' => $request->boolean('is_active'),
         ]);
 
-        // Convert role IDs to role names
-        $roleNames = Role::whereIn('id', $validated['roles'])->pluck('name')->toArray();
-        
-        // Update roles by name
-        $user->syncRoles($roleNames);
+        if (auth()->id() !== $user->id) {
+            if (!empty($validated['roles'])) {
+                $roleNames = Role::whereIn('id', $validated['roles'])->pluck('name')->toArray();
+            } else {
+                $userRole = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+                $roleNames = [$userRole->name];
+            }
+            $user->syncRoles($roleNames);
+        }
 
         return redirect()
             ->route('admin.users.index')
-            ->with('success', 'User updated successfully!');
+            ->with('success', 'ব্যবহারকারী সফলভাবে আপডেট হয়েছে!');
     }
 
     /**
@@ -142,11 +152,16 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        // Prevent deleting the current user
         if (auth()->id() === $user->id) {
             return redirect()
                 ->route('admin.users.index')
-                ->with('error', 'You cannot delete your own account!');
+                ->with('error', 'আপনি নিজের অ্যাকাউন্ট মুছতে পারবেন না!');
+        }
+
+        if ($user->hasRole('super-admin') && !auth()->user()->hasRole('super-admin')) {
+            return redirect()
+                ->route('admin.users.index')
+                ->with('error', 'সুপার অ্যাডমিন অ্যাকাউন্ট মুছে ফেলার অনুমতি নেই!');
         }
 
         $user->delete();

@@ -18,9 +18,13 @@ class NewsController extends Controller
      */
     public function index()
     {
-        $news = News::with(['category', 'author', 'tags'])
-            ->latest()
-            ->paginate(15);
+        $query = News::with(['category', 'author', 'tags']);
+
+        if (auth()->user()->hasRole('reporter')) {
+            $query->where('author_id', auth()->id());
+        }
+
+        $news = $query->latest()->paginate(15);
 
         return view('admin.news.index', [
             'news' => $news,
@@ -80,6 +84,12 @@ class NewsController extends Controller
                 );
             }
 
+            // Reporters can only save as draft (needs approval)
+            if (auth()->user()->hasRole('reporter')) {
+                $validated['status'] = 'draft';
+                $validated['published_at'] = null;
+            }
+
             // Set published_at to now if status is published and date not set
             if ($validated['status'] === 'published' && empty($validated['published_at'])) {
                 $validated['published_at'] = now();
@@ -132,6 +142,10 @@ class NewsController extends Controller
      */
     public function edit(News $news)
     {
+        if (auth()->user()->hasRole('reporter') && $news->author_id !== auth()->id()) {
+            abort(403, 'আপনি শুধুমাত্র নিজের সংবাদ সম্পাদনা করতে পারবেন।');
+        }
+
         $categories = Category::all();
 
         return view('admin.news.edit', [
@@ -145,6 +159,10 @@ class NewsController extends Controller
      */
     public function update(Request $request, News $news)
     {
+        if (auth()->user()->hasRole('reporter') && $news->author_id !== auth()->id()) {
+            abort(403, 'আপনি শুধুমাত্র নিজের সংবাদ সম্পাদনা করতে পারবেন।');
+        }
+
         try {
             $validated = $request->validate([
                 'title' => 'required|string|max:255|unique:news,title,' . $news->id,
@@ -187,6 +205,12 @@ class NewsController extends Controller
                     'featured_image',
                     'news'
                 );
+            }
+
+            // Reporters cannot publish — force draft
+            if (auth()->user()->hasRole('reporter')) {
+                $validated['status'] = 'draft';
+                $validated['published_at'] = null;
             }
 
             // Store old data for comparison
@@ -235,6 +259,10 @@ class NewsController extends Controller
      */
     public function destroy(News $news)
     {
+        if (auth()->user()->hasRole('reporter')) {
+            abort(403, 'রিপোর্টার সংবাদ মুছতে পারবেন না।');
+        }
+
         $newsId = $news->id;
         $newsTitle = $news->title;
 

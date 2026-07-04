@@ -13,7 +13,7 @@ class CategoryController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Category::withCount('news')->latest();
+        $query = Category::with(['parent', 'children'])->withCount('news')->latest();
 
         if ($request->filled('search')) {
             $query->where('name', 'like', '%' . $request->search . '%');

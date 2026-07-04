@@ -23,17 +23,25 @@
 {{-- ═══════════════════════════════════════
      BREAKING NEWS TICKER
 ═══════════════════════════════════════ --}}
-<div class="w-full bg-primary py-2 overflow-hidden border-b border-outline-variant">
-  <div class="flex items-center">
-    <span class="bg-secondary text-white px-3 py-1 font-label-caps text-label-caps z-10 shadow-md flex-shrink-0">ব্রেকিং নিউজ</span>
-    <div class="overflow-hidden flex-1">
-      <span class="animate-ticker text-white font-body-sm text-body-sm px-4">
-        @foreach($relatedNews->take(4) as $tn){{ $tn->title }} • @endforeach
-        নির্বাচনী প্রচারণায় সরগরম রাজধানী • আন্তর্জাতিক বাজারে তেলের দামের ব্যাপক পতন
-      </span>
+@php $liveBreaking = \App\Models\News::where('status','published')->where('is_breaking',true)->latest('published_at')->limit(5)->get(); @endphp
+@if($liveBreaking->count() > 0)
+<div class="w-full bg-primary text-white overflow-hidden h-10">
+  <div class="max-w-container-max mx-auto px-gutter h-full flex items-center">
+    <div class="py-1 bg-secondary px-4 font-headline-md text-white whitespace-nowrap z-10 flex items-center gap-2 flex-shrink-0 h-full">
+      <span class="animate-pulse w-2 h-2 bg-white rounded-full inline-block"></span>
+      ব্রেকিং নিউজ
+    </div>
+    <div class="overflow-hidden flex-1 h-full flex items-center">
+      <div class="ticker-scroll whitespace-nowrap font-body-main text-body-sm flex gap-6 items-center" style="font-family:'SolaimanLipi',serif;">
+        @foreach($liveBreaking as $bk)
+        <a href="{{ route('news.show', $bk->slug) }}" class="hover:underline">{{ $bk->title }}</a>
+        <span class="text-white/50">•</span>
+        @endforeach
+      </div>
     </div>
   </div>
 </div>
+@endif
 
 {{-- ═══════════════════════════════════════
      MAIN CONTENT (mobile-first, max-w-md center)

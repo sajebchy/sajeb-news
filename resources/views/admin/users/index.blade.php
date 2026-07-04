@@ -188,12 +188,14 @@
                     {{-- Actions --}}
                     <td class="px-6 py-4">
                         <div class="row-actions flex justify-end gap-1">
+                            @if(!$user->hasRole('super-admin') || auth()->user()->hasRole('super-admin'))
                             <a href="{{ route('admin.users.edit', $user) }}"
                                class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-colors"
                                title="সম্পাদনা">
                                 <span class="material-symbols-outlined text-[18px]">edit</span>
                             </a>
-                            @if(auth()->id() !== $user->id)
+                            @endif
+                            @if(auth()->id() !== $user->id && (!$user->hasRole('super-admin') || auth()->user()->hasRole('super-admin')))
                             <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
                                   onsubmit="return confirm('এই ব্যবহারকারীকে মুছে ফেলতে চান? এই কাজ পূর্বাবস্থায় ফেরানো যাবে না।')">
                                 @csrf @method('DELETE')

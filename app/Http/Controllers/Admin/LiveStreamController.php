@@ -18,9 +18,7 @@ class LiveStreamController extends Controller
      */
     public function index()
     {
-        $streams = LiveStream::where('user_id', auth()->id())
-            ->latest()
-            ->paginate(15);
+        $streams = LiveStream::latest()->paginate(15);
 
         return view('admin.live-streams.index', [
             'streams' => $streams,

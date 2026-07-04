@@ -210,21 +210,27 @@
 
         {!! adminNavLink('admin.dashboard', 'bi-speedometer2', 'ড্যাশবোর্ড') !!}
         {!! adminNavLink('admin.news.index', 'bi-newspaper', 'খবর', 'admin.news') !!}
+
+        @if(auth()->user()->hasRole(['super-admin', 'admin', 'editor']))
         {!! adminNavLink('admin.categories.index', 'bi-grid-3x3-gap', 'বিভাগসমূহ', 'admin.categories') !!}
         {!! adminNavLink('admin.tags.index', 'bi-tags', 'ট্যাগ', 'admin.tags') !!}
+        @endif
+
+        @if(auth()->user()->hasRole(['super-admin', 'admin']))
         {!! adminNavLink('admin.advertisements.index', 'bi-megaphone', 'বিজ্ঞাপন', 'admin.advertisements') !!}
         {!! adminNavLink('admin.users.index', 'bi-people', 'ব্যবহারকারী', 'admin.users') !!}
         {!! adminNavLink('admin.newsletters.index', 'bi-envelope', 'নিউজলেটার', 'admin.newsletters') !!}
         {!! adminNavLink('admin.analytics', 'bi-graph-up', 'অ্যানালিটিক্স') !!}
         {!! adminNavLink('admin.activities', 'bi-clock-history', 'অ্যাক্টিভিটি লগ') !!}
-
-        @if(auth()->user()->hasRole(['admin', 'super-admin']))
-        {!! adminNavLink('admin.live-streams.index', 'bi-broadcast', 'লাইভ স্ট্রিমিং', 'admin.live-streams') !!}
         @endif
+
+        {!! adminNavLink('admin.live-streams.index', 'bi-broadcast', 'লাইভ স্ট্রিমিং', 'admin.live-streams') !!}
 
         {!! adminNavLink('admin.photo-card.index', 'bi-card-image', 'ফটোকার্ড', 'admin.photo-card') !!}
 
+        @if(auth()->user()->hasRole(['super-admin', 'admin']))
         {!! adminNavLink('admin.settings', 'bi-gear', 'সেটিংস') !!}
+        @endif
 
         <div class="border-t border-outline-variant my-3"></div>
 

@@ -36,6 +36,22 @@
                     </div>
 
                     <div class="mb-3">
+                        <label for="parent_id" class="form-label">প্যারেন্ট বিভাগ (Parent Category)</label>
+                        <select class="form-control @error('parent_id') is-invalid @enderror" id="parent_id" name="parent_id">
+                            <option value="">-- মূল বিভাগ (কোনো প্যারেন্ট নেই) --</option>
+                            @foreach($parents as $parent)
+                            <option value="{{ $parent->id }}" {{ old('parent_id', $category->parent_id ?? '') == $parent->id ? 'selected' : '' }}>
+                                {{ $parent->name }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <small class="text-muted">সাবক্যাটাগরি করতে প্যারেন্ট বিভাগ নির্বাচন করুন। খালি রাখলে মূল বিভাগ হবে।</small>
+                        @error('parent_id')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
+                    <div class="mb-3">
                         <label for="description" class="form-label">Description</label>
                         <textarea class="form-control @error('description') is-invalid @enderror" id="description" name="description" rows="4">{{ old('description', $category->description ?? '') }}</textarea>
                         <small class="text-muted">Brief description of this category</small>

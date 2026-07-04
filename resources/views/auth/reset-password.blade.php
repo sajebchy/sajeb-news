@@ -198,7 +198,8 @@
 
     <!-- Footer -->
     <footer class="py-8 text-center opacity-40">
-        <p class="bengali text-[12px] text-on-surface-variant">© ২০২৪ সাজেব নিউজ পোর্টাল</p>
+        @php $__rpSeo = \App\Models\SeoSetting::first(); @endphp
+        <p class="bengali text-[12px] text-on-surface-variant">© {{ date('Y') }} {{ $__rpSeo->site_name ?? 'Sajeb News' }}। সকল স্বত্ব সংরক্ষিত।</p>
     </footer>
 
     <script>

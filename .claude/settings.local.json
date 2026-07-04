@@ -125,7 +125,27 @@
       "Bash(xxd)",
       "PowerShell(C:\\\\laragon\\\\bin\\\\mysql\\\\mysql-8.4.3-winx64\\\\bin\\\\mysqldump.exe --user=root --password=\"\" --host=localhost --port=3306 --default-character-set=utf8mb4 --single-transaction --routines --triggers --events sajeb_news > C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\sajeb_news_backup.sql)",
       "PowerShell(\\(Get-Item C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\sajeb_news_backup.sql\\).Length / 1KB)",
-      "Bash(\"C:/laragon/bin/mysql/mysql-8.4.3-winx64/bin/mysqldump.exe\" --user=root --password=\"\" --host=localhost --port=3306 --default-character-set=utf8mb4 --single-transaction --routines --triggers --events sajeb_news)"
+      "Bash(\"C:/laragon/bin/mysql/mysql-8.4.3-winx64/bin/mysqldump.exe\" --user=root --password=\"\" --host=localhost --port=3306 --default-character-set=utf8mb4 --single-transaction --routines --triggers --events sajeb_news)",
+      "Bash(cd \"C:\\\\laragon\\\\www\\\\sajeb-news-main\" && find resources/views -name \"*.blade.php\" -type f | sed 's|resources/views/||' | sed 's|\\\\.blade\\\\.php||' | sed 's|/|\\\\.|g' | sort > /tmp/all_views.txt && cat /tmp/all_views.txt | head -40)",
+      "Bash(cd \"C:\\\\laragon\\\\www\\\\sajeb-news-main\" && find resources/views -name \"*.blade.php\" -type f | sed 's|resources/views/||' | sed 's|\\\\.blade\\\\.php||' | sed 's|/|\\\\.|g' | sort > /tmp/all_views.txt && cat /tmp/all_views.txt | tail -20)",
+      "mcp__visualize__read_me",
+      "mcp__visualize__show_widget",
+      "PowerShell($php = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\"; $art = \"C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\artisan\"; & $php $art view:clear; & $php $art cache:clear; & $php $art route:clear; & $php $art config:clear)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://sajeb-news-main.test/)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://sajeb-news-main.test/admin)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://sajeb-news-main.test/news/test)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://sajeb-news-main.test/sitemap.xml)",
+      "Bash(curl -s -o /dev/null -w \"%{http_code}\" http://sajeb-news-main.test/robots.txt)",
+      "PowerShell(C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\artisan migrate)",
+      "PowerShell($php = \"C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe\"; $art = \"C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\artisan\"; & $php $art view:clear; & $php $art route:clear; & $php $art cache:clear)",
+      "Bash(curl -s http://sajeb-news-main.test/login)",
+      "Bash(gh repo *)",
+      "PowerShell(gh repo edit sajebchy/sajeb-news --description \"Sajeb News - A professional, SEO-optimized Bengali news portal built with Laravel 12, Tailwind CSS and Stitch Design System. Features: admin dashboard, social login \\(Google/Facebook\\), photo card maker, live streaming, push notifications, ad management, newsletter, visitor analytics, and JSON-LD structured data.\" --add-topic \"laravel,news-portal,bangladesh,bengali,seo,tailwindcss,php\")",
+      "Bash(\"C:\\\\laragon\\\\bin\\\\mysql\\\\mysql-8.4.3-winx64\\\\bin\\\\mysqldump.exe\" -u root sajeb_news --result-file=\"C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\sajeb_news_backup.sql\")",
+      "PowerShell(Get-Process mysqld -ErrorAction SilentlyContinue)",
+      "PowerShell(& \"C:\\\\laragon\\\\bin\\\\mysql\\\\mysql-8.4.3-winx64\\\\bin\\\\mysqldump.exe\" -u root sajeb_news --result-file=\"C:\\\\laragon\\\\www\\\\sajeb-news-main\\\\sajeb_news_backup.sql\" 2>&1)",
+      "PowerShell(cd C:\\\\laragon\\\\www\\\\sajeb-news-main; C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe artisan tinker --execute=\"$ad = \\\\App\\\\Models\\\\Advertisement::find\\(3\\); if\\($ad\\) { echo 'Found: ' . $ad->name . ' | placement: ' . $ad->placement . ' | image: ' . $ad->image_url; } else { echo 'Not found'; }\")",
+      "PowerShell(cd C:\\\\laragon\\\\www\\\\sajeb-news-main; C:\\\\laragon\\\\bin\\\\php\\\\php-8.3.30-Win32-vs16-x64\\\\php.exe artisan tinker --execute=\"echo 'Total news: ' . \\\\App\\\\Models\\\\News::count\\(\\) . \\\\\"\\\\n\\\\\"; echo 'Published: ' . \\\\App\\\\Models\\\\News::where\\('status','published'\\)->count\\(\\) . \\\\\"\\\\n\\\\\"; echo 'Categories: ' . \\\\App\\\\Models\\\\Category::where\\('is_active',true\\)->count\\(\\) . \\\\\"\\\\n\\\\\"; echo 'Featured: ' . \\\\App\\\\Models\\\\News::where\\('is_featured',true\\)->where\\('status','published'\\)->count\\(\\) . \\\\\"\\\\n\\\\\"; \\\\App\\\\Models\\\\Category::where\\('is_active',true\\)->get\\(\\)->each\\(function\\($c\\){ echo $c->name . ': ' . \\\\App\\\\Models\\\\News::where\\('category_id',$c->id\\)->where\\('status','published'\\)->count\\(\\) . \\\\\"\\\\n\\\\\"; }\\);\")"
     ]
   },
   "hooks": {

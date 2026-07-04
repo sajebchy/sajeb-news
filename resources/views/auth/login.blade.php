@@ -190,7 +190,7 @@
 {{-- Footer --}}
 <footer class="w-full py-4 px-4 border-t border-outline-variant bg-surface-container-low text-center">
     <p class="font-body-sm text-outline-variant">
-        © ২০২৪ সজীব নিউজ। সর্বস্বত্ব সংরক্ষিত।
+        © {{ date('Y') }} {{ $__loginSeo->site_name ?? 'Sajeb News' }}। সকল স্বত্ব সংরক্ষিত।
     </p>
 </footer>
 
