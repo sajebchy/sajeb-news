@@ -110,9 +110,14 @@
                     <div class="alert alert-success alert-sm py-2 mb-3">
                         <small><i class="bi bi-check-circle me-1"></i>ফটোকার্ড লোগো সেট আছে</small>
                     </div>
+                    @elseif($seoSettings?->logo)
+                    <div class="alert alert-info alert-sm py-2 mb-3">
+                        <small><i class="bi bi-info-circle me-1"></i>সাইট লোগো ব্যবহার হচ্ছে (আলাদা ফটোকার্ড লোগো সেট করতে:
+                        <a href="{{ route('admin.settings') }}#logosSettings">সেটিংস → Logos & Images</a>)</small>
+                    </div>
                     @else
                     <div class="alert alert-warning alert-sm py-2 mb-3">
-                        <small><i class="bi bi-exclamation-triangle me-1"></i>ফটোকার্ড লোগো সেট করুন:
+                        <small><i class="bi bi-exclamation-triangle me-1"></i>লোগো সেট করুন:
                         <a href="{{ route('admin.settings') }}#logosSettings">সেটিংস → Logos & Images</a></small>
                     </div>
                     @endif
@@ -159,7 +164,7 @@
     let uploadedImages = [];
     let logoImage = null;
     const siteUrl = @json($seoSettings->site_url ?? '');
-    const photoCardLogoUrl = @json($seoSettings?->photo_card_logo ? \Storage::url($seoSettings->photo_card_logo) : null);
+    const photoCardLogoUrl = @json($seoSettings?->photo_card_logo ? asset('storage/' . $seoSettings->photo_card_logo) : ($seoSettings?->logo ? asset('storage/' . $seoSettings->logo) : null));
 
     // High quality rendering settings
     ctx.imageSmoothingEnabled = true;
@@ -178,6 +183,7 @@
         const img = new Image();
         img.crossOrigin = 'anonymous';
         img.onload = () => { logoImage = img; render(); };
+        img.onerror = () => { console.warn('Logo load failed:', photoCardLogoUrl); };
         img.src = photoCardLogoUrl;
     }
 
