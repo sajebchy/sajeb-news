@@ -306,34 +306,70 @@ class PagesController extends Controller
      */
     public function llmTxt()
     {
-        $content = "# Sajeb NEWS - Large Language Model Information File\n\n";
-        $content .= "## Website Information\n";
-        $content .= "- Name: Sajeb NEWS\n";
-        $content .= "- URL: " . config('app.url') . "\n";
-        $content .= "- Description: বাংলাদেশের বিশ্বস্ত নিউজ পোর্টাল\n";
-        $content .= "- Language: Bengali (বাংলা)\n\n";
+        $seo = SeoSetting::first();
+        $siteName = $seo?->site_name ?: 'সজীব নিউজ';
+        $siteUrl = $seo?->site_url ?: config('app.url');
 
-        $content .= "## Latest News (Top 20)\n";
+        $content = "# {$siteName}\n\n";
+        $content .= "> {$seo?->site_description ?: 'বাংলাদেশের বিশ্বস্ত নিউজ পোর্টাল'}\n\n";
+
+        $content .= "## Overview\n";
+        $content .= "- **Name**: {$siteName}\n";
+        $content .= "- **URL**: {$siteUrl}\n";
+        $content .= "- **Language**: Bengali (বাংলা) / bn\n";
+        $content .= "- **Type**: Online News Portal\n";
+        $content .= "- **Country**: Bangladesh (BD)\n";
+        if ($seo?->editor_publisher) {
+            $content .= "- **Editor & Publisher**: {$seo->editor_publisher}\n";
+        }
+        $content .= "- **RSS Feed**: " . url('/feed') . "\n";
+        $content .= "- **Sitemap**: " . url('/sitemap.xml') . "\n\n";
+
+        $content .= "## Content Structure\n\n";
+
+        $categories = Category::where('is_active', true)
+            ->where('slug', 'not like', 'test%')
+            ->withCount(['news' => fn($q) => $q->where('status', 'published')])
+            ->orderByDesc('news_count')
+            ->get();
+
+        $content .= "### Categories ({$categories->count()})\n";
+        foreach ($categories as $category) {
+            $content .= "- **{$category->name}** ({$category->news_count} articles): " . route('category.show', $category->slug) . "\n";
+            if ($category->description) {
+                $content .= "  {$category->description}\n";
+            }
+        }
+
+        $content .= "\n### Authors\n";
+        $authors = \App\Models\User::whereHas('newsArticles', fn($q) => $q->where('status', 'published'))
+            ->withCount(['newsArticles' => fn($q) => $q->where('status', 'published')])
+            ->orderByDesc('news_articles_count')
+            ->get();
+        foreach ($authors as $author) {
+            $content .= "- **{$author->name}** ({$author->news_articles_count} articles): " . route('author.show', $author->id) . "\n";
+        }
+
+        $content .= "\n## Latest News (Top 20)\n\n";
         $latestNews = News::where('status', 'published')
+            ->with('category')
             ->orderBy('published_at', 'desc')
             ->take(20)
             ->get();
 
         foreach ($latestNews as $news) {
-            $categoryName = $news->category ? $news->category->name : 'N/A';
-            $content .= "- **{$news->title}** (Published: {$news->published_at->format('Y-m-d H:i')})\n";
-            $content .= "  Category: {$categoryName}\n";
-            $content .= "  URL: " . route('news.show', ['news' => $news->slug]) . "\n";
-            $content .= "  Views: {$news->views}\n\n";
+            $categoryName = $news->category?->name ?? 'N/A';
+            $content .= "### {$news->title}\n";
+            $content .= "- **Published**: {$news->published_at->format('Y-m-d H:i')}\n";
+            $content .= "- **Category**: {$categoryName}\n";
+            $content .= "- **URL**: " . route('news.show', $news->slug) . "\n";
+            if ($news->excerpt) {
+                $content .= "- **Summary**: {$news->excerpt}\n";
+            }
+            $content .= "\n";
         }
 
-        $content .= "## Categories\n";
-        $categories = Category::where('is_active', true)->get();
-        foreach ($categories as $category) {
-            $content .= "- {$category->name}: " . route('category.show', ['category' => $category->slug]) . "\n";
-        }
-
-        $content .= "\n## Important Pages\n";
+        $content .= "## Important Pages\n";
         $content .= "- Home: " . route('home') . "\n";
         $content .= "- About: " . route('about') . "\n";
         $content .= "- Contact: " . route('contact') . "\n";
@@ -342,10 +378,11 @@ class PagesController extends Controller
         $content .= "- Live Stream: " . route('live.index') . "\n";
         $content .= "- Sitemap: " . route('sitemap') . "\n";
 
-        $content .= "\n## Website Statistics\n";
-        $content .= "- Total News: " . News::where('status', 'published')->count() . "\n";
-        $content .= "- Total Categories: " . Category::where('is_active', true)->count() . "\n";
-        $content .= "- Last Updated: " . now()->format('Y-m-d H:i:s') . "\n";
+        $content .= "\n## Statistics\n";
+        $content .= "- Total Published Articles: " . News::where('status', 'published')->count() . "\n";
+        $content .= "- Active Categories: " . $categories->count() . "\n";
+        $content .= "- Active Authors: " . $authors->count() . "\n";
+        $content .= "- Last Updated: " . now()->format('Y-m-d H:i:s') . " (UTC+6)\n";
 
         return response($content)
             ->header('Content-Type', 'text/plain; charset=UTF-8')

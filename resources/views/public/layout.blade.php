@@ -21,7 +21,10 @@
 @hasSection('og_title')<meta property="og:title" content="@yield('og_title')">@endif
 @hasSection('og_description')<meta property="og:description" content="@yield('og_description')">@endif
 @hasSection('og_url')<meta property="og:url" content="@yield('og_url')">@endif
-@hasSection('og_image')<meta property="og:image" content="@yield('og_image')">@endif
+@hasSection('og_image')<meta property="og:image" content="@yield('og_image')">@else
+@if($__layoutSeo?->og_image)<meta property="og:image" content="{{ asset('storage/' . $__layoutSeo->og_image) }}">
+@elseif($__layoutSeo?->logo)<meta property="og:image" content="{{ asset('storage/' . $__layoutSeo->logo) }}">@endif
+@endif
 {{-- Twitter defaults --}}
 @hasSection('twitter_card')<meta name="twitter:card" content="@yield('twitter_card')">@endif
 @if($__layoutSeo?->twitter_handle)<meta name="twitter:site" content="{{ $__layoutSeo->twitter_handle }}">@endif

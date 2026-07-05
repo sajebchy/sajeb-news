@@ -35,10 +35,15 @@
 @endpush
 
 @push('scripts')
-{{-- JSON-LD Schemas: NewsArticle + BreadcrumbList --}}
+{{-- JSON-LD Schemas: NewsArticle + BreadcrumbList + ClaimReview --}}
 @foreach($schema as $s)
 <script type="application/ld+json">{!! json_encode($s, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT) !!}</script>
 @endforeach
+{{-- FAQ Schema (auto-extracted from content) --}}
+@php $__faqSchema = app(\App\Services\SeoService::class)->extractFaqSchema($news); @endphp
+@if($__faqSchema)
+<script type="application/ld+json">{!! json_encode($__faqSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+@endif
 @endpush
 
 @section('content')
@@ -79,7 +84,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
     {{-- ─────── LEFT: Article Content (70%) ─────── --}}
-    <article class="lg:col-span-8">
+    <article class="lg:col-span-8" itemscope itemtype="https://schema.org/NewsArticle">
 
       {{-- Breadcrumbs (Desktop only) --}}
       <nav class="hidden md:flex items-center gap-2 mb-stack-md text-on-surface-variant">
@@ -123,16 +128,17 @@
           </div>
           <div>
             @if($news->author)
-            <a href="{{ route('author.show', $news->author->id) }}"
+            <a href="{{ route('author.show', $news->author->id) }}" itemprop="author" itemscope itemtype="https://schema.org/Person"
                class="font-label-caps text-label-caps font-bold text-primary hover:text-secondary transition-colors">
-              {{ $news->author->name }}
+              <span itemprop="name">{{ $news->author->name }}</span>
             </a>
             @else
             <p class="font-label-caps text-label-caps font-bold">সজীব নিউজ ডেস্ক</p>
             @endif
             <p class="font-meta-data text-meta-data text-on-surface-variant">
-              প্রকাশিত: {{ $news->published_at ? $news->published_at->locale('bn')->isoFormat('D MMMM, YYYY [|] h:mm A') : '' }}
+              প্রকাশিত: <time itemprop="datePublished" datetime="{{ $news->published_at?->toIso8601String() }}">{{ $news->published_at ? $news->published_at->locale('bn')->isoFormat('D MMMM, YYYY [|] h:mm A') : '' }}</time>
             </p>
+            <meta itemprop="dateModified" content="{{ $news->updated_at->toIso8601String() }}">
           </div>
         </div>
         <div class="flex items-center gap-stack-md">
@@ -165,7 +171,7 @@
       <figure class="mb-stack-lg">
         <div class="aspect-video w-full overflow-hidden rounded-lg"
              style="box-shadow:0 4px 6px -1px rgba(0,0,0,.08),0 2px 4px -1px rgba(0,0,0,.04)">
-          <img class="w-full h-full object-cover" src="{{ $heroImg }}" alt="{{ $news->title }}"/>
+          <img itemprop="image" class="w-full h-full object-cover" src="{{ $heroImg }}" alt="{{ $news->title }}"/>
         </div>
         @if($news->og_description)
         <figcaption class="mt-stack-sm font-meta-data text-meta-data text-on-surface-variant italic text-center">
@@ -174,11 +180,17 @@
         @endif
       </figure>
 
-      {{-- Excerpt as lead paragraph --}}
+      {{-- TL;DR / Summary Box (AEO: helps AI extract key info) --}}
       @if($news->excerpt)
-      <p itemprop="description" class="font-body-main text-body-main text-on-surface-variant text-lg leading-relaxed mb-6 border-l-4 border-secondary pl-4 bg-surface-muted py-3 pr-3 rounded-r-lg">
-        {{ $news->excerpt }}
-      </p>
+      <div class="mb-6 bg-surface-container-low border border-subtle rounded-xl p-4 md:p-5">
+        <div class="flex items-center gap-2 mb-2">
+          <span class="material-symbols-outlined text-secondary text-[20px]">summarize</span>
+          <h2 class="font-label-caps text-label-caps text-secondary tracking-wider">সংক্ষেপে</h2>
+        </div>
+        <p itemprop="description" class="font-body-main text-body-main text-on-surface leading-relaxed">
+          {{ $news->excerpt }}
+        </p>
+      </div>
       @endif
 
       {{-- Article Body --}}
@@ -190,7 +202,7 @@
         $midInjected = false;
         $topicBoxInjected = false;
       @endphp
-      <div class="article-prose space-y-stack-md font-body-main text-body-main leading-relaxed text-on-surface">
+      <div itemprop="articleBody" class="article-prose space-y-stack-md font-body-main text-body-main leading-relaxed text-on-surface">
         @foreach($paragraphs as $i => $para)
           {!! $para !!}
           @if(!$topicBoxInjected && $i >= $midPoint && $topicRelated->count() > 0)

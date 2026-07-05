@@ -107,6 +107,18 @@ class SeoService
             $newsArticle['keywords']       = $news->meta_keywords ?? $news->category->name;
         }
 
+        $newsArticle['wordCount'] = str_word_count($articleBody);
+
+        $commentCount = $news->comments()->count();
+        if ($commentCount > 0) {
+            $newsArticle['commentCount'] = $commentCount;
+            $newsArticle['interactionStatistic'] = [
+                '@type'                => 'InteractionCounter',
+                'interactionType'      => 'https://schema.org/CommentAction',
+                'userInteractionCount' => $commentCount,
+            ];
+        }
+
         // Speakable — voice search / Google Assistant
         $speakableCss = ['[itemprop="headline"]', '[itemprop="description"]'];
         $newsArticle['speakable'] = [
@@ -325,6 +337,44 @@ class SeoService
         }
 
         return $schema;
+    }
+
+    /**
+     * Extract FAQ schema from article content.
+     * Detects patterns like <h2>...?</h2><p>answer</p> or <strong>Q:</strong>
+     */
+    public function extractFaqSchema(News $news): ?array
+    {
+        $content = $news->content ?? '';
+        if (empty($content)) return null;
+
+        $faqs = [];
+
+        // Pattern 1: headings ending with ? followed by paragraph(s)
+        if (preg_match_all('/<h[23][^>]*>\s*(.*?\?)\s*<\/h[23]>\s*((?:<p[^>]*>.*?<\/p>\s*)+)/is', $content, $matches, PREG_SET_ORDER)) {
+            foreach ($matches as $m) {
+                $question = strip_tags(trim($m[1]));
+                $answer   = trim(strip_tags($m[2]));
+                if (mb_strlen($question) > 10 && mb_strlen($answer) > 20) {
+                    $faqs[] = [
+                        '@type'          => 'Question',
+                        'name'           => $question,
+                        'acceptedAnswer' => [
+                            '@type' => 'Answer',
+                            'text'  => mb_substr($answer, 0, 500),
+                        ],
+                    ];
+                }
+            }
+        }
+
+        if (empty($faqs)) return null;
+
+        return [
+            '@context'   => 'https://schema.org',
+            '@type'      => 'FAQPage',
+            'mainEntity' => array_slice($faqs, 0, 10),
+        ];
     }
 
     private function claimRatingValue(?string $rating): int
