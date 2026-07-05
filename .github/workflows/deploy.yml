@@ -25,7 +25,7 @@ jobs:
       - name: Deploy to Hostinger via rsync
         uses: burnett01/rsync-deployments@7.0.1
         with:
-          switches: -avzr --delete --exclude='.git' --exclude='.github' --exclude='.env' --exclude='storage/logs/*' --exclude='storage/framework/cache/*' --exclude='storage/framework/sessions/*' --exclude='storage/framework/views/*' --exclude='storage/app/public/*' --exclude='node_modules' --exclude='tests' --exclude='public'
+          switches: -avzr --delete --exclude='.git' --exclude='.github' --exclude='.env' --exclude='storage/logs/*' --exclude='storage/framework/cache/*' --exclude='storage/framework/sessions/*' --exclude='storage/framework/views/*' --exclude='storage/app/public/*' --exclude='node_modules' --exclude='tests' --exclude='/public'
           path: ./
           remote_path: /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html/sajeb-news/
           remote_host: ${{ secrets.HOST }}
