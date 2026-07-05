@@ -252,8 +252,23 @@ class PagesController extends Controller
             ];
         }
 
+        // Tags with published articles
+        $tags = \App\Models\Tag::whereHas('news', fn($q) => $q->where('status', 'published'))
+            ->select('slug', 'updated_at')
+            ->get();
+
+        foreach ($tags as $tag) {
+            $urls[] = [
+                'url' => route('tag.show', $tag->slug),
+                'lastmod' => $tag->updated_at->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.5'
+            ];
+        }
+
         return response()->view('sitemap', ['urls' => $urls])
-            ->header('Content-Type', 'text/xml; charset=UTF-8');
+            ->header('Content-Type', 'text/xml; charset=UTF-8')
+            ->header('Cache-Control', 'public, max-age=3600');
     }
 
     /**
@@ -275,7 +290,8 @@ class PagesController extends Controller
         return response()->view('news-sitemap', [
             'news' => $news,
             'siteName' => $siteName,
-        ])->header('Content-Type', 'text/xml; charset=UTF-8');
+        ])->header('Content-Type', 'text/xml; charset=UTF-8')
+          ->header('Cache-Control', 'public, max-age=900');
     }
 
     /**
@@ -298,7 +314,8 @@ class PagesController extends Controller
             'siteName' => $siteName,
             'siteDescription' => $siteDescription,
             'siteUrl' => url('/'),
-        ])->header('Content-Type', 'application/rss+xml; charset=UTF-8');
+        ])->header('Content-Type', 'application/rss+xml; charset=UTF-8')
+          ->header('Cache-Control', 'public, max-age=1800');
     }
 
     /**

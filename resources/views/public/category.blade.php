@@ -1,7 +1,10 @@
 @extends('public.layout')
 
-@section('title', $category->name . ' - সজীব নিউজ')
-@section('meta_description', $category->description ?? $category->name . ' বিভাগের সর্বশেষ সংবাদ - সজীব নিউজ')
+@section('title', $category->meta_title ?? $category->name . ' - সজীব নিউজ')
+@section('meta_description', $category->meta_description ?? $category->description ?? $category->name . ' বিভাগের সর্বশেষ সংবাদ - সজীব নিউজ')
+@if($category->meta_keywords)
+@section('meta_keywords', $category->meta_keywords)
+@endif
 @section('canonical', $news->url($news->currentPage()))
 
 @push('styles')

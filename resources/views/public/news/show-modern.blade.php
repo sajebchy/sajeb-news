@@ -12,7 +12,13 @@
   $imageUrl = $news->featured_image
     ? (str_starts_with($news->featured_image,'http') ? $news->featured_image : asset($news->featured_image))
     : null;
+  $heroPreload = $news->featured_image
+    ? (Str::startsWith($news->featured_image, 'http') ? $news->featured_image : asset('storage/' . $news->featured_image))
+    : null;
 @endphp
+@if($heroPreload)
+<link rel="preload" as="image" href="{{ $heroPreload }}">
+@endif
 {{-- Open Graph / Twitter meta --}}
 <meta property="og:type"               content="article">
 <meta property="og:title"              content="{{ $news->title }}">
@@ -247,20 +253,52 @@
       </div>
       @endif
 
-      {{-- Tags: hidden from display, used only for SEO (meta keywords) --}}
-      {{-- Tags are injected into <meta name="keywords"> and NewsArticle schema --}}
+      {{-- Tags --}}
       @if($news->tags && $news->tags->count() > 0)
-      <div class="pt-stack-lg border-t border-subtle" style="display:none;" aria-hidden="true">
+      <div class="pt-stack-lg mt-stack-lg border-t border-subtle">
         <div class="flex flex-wrap gap-2 items-center">
-          <span class="font-label-caps text-label-caps text-on-surface-variant">ট্যাগ:</span>
+          <span class="material-symbols-outlined text-on-surface-variant text-[18px]">sell</span>
           @foreach($news->tags as $tag)
           <a href="{{ route('tag.show', $tag->slug) }}"
-             class="px-3 py-1 bg-surface-container-low border border-subtle rounded-full text-meta-data font-meta-data hover:bg-secondary hover:text-white hover:border-secondary transition-all">
+             class="px-3 py-1.5 bg-surface-container-low border border-subtle rounded-full text-meta-data font-meta-data hover:bg-secondary hover:text-white hover:border-secondary transition-all">
             {{ $tag->name }}
           </a>
           @endforeach
         </div>
       </div>
+      @endif
+
+      {{-- More from this Author (E-E-A-T internal linking) --}}
+      @if($news->author)
+      @php
+        $authorMore = \App\Models\News::where('status','published')
+          ->where('id','!=',$news->id)
+          ->where('author_id',$news->author_id)
+          ->latest('published_at')->limit(3)->get();
+      @endphp
+      @if($authorMore->count() > 0)
+      <div class="mt-stack-lg pt-stack-lg border-t border-subtle">
+        <div class="flex items-center gap-2 mb-stack-md">
+          <span class="material-symbols-outlined text-primary text-[20px]">person</span>
+          <h3 class="font-label-caps text-label-caps text-primary">
+            <a href="{{ route('author.show', $news->author->id) }}" class="hover:text-secondary transition-colors">{{ $news->author->name }}</a> এর আরও সংবাদ
+          </h3>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          @foreach($authorMore as $am)
+          <a href="{{ route('news.show', $am->slug) }}" class="group block">
+            <div class="aspect-[16/10] overflow-hidden rounded-lg bg-surface-container mb-2">
+              <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                   src="{{ $am->featured_image ? (Str::startsWith($am->featured_image,'http') ? $am->featured_image : asset('storage/'.$am->featured_image)) : ($defaultFeaturedImage ?? '') }}"
+                   alt="{{ $am->title }}" loading="lazy"/>
+            </div>
+            <h4 class="font-headline-md text-[14px] leading-snug line-clamp-2 group-hover:text-secondary transition-colors">{{ $am->title }}</h4>
+            <p class="font-meta-data text-[11px] text-outline mt-1">{{ $am->published_at?->diffForHumans() }}</p>
+          </a>
+          @endforeach
+        </div>
+      </div>
+      @endif
       @endif
 
       {{-- Social Sharing --}}
