@@ -20,10 +20,6 @@ class NewsController extends Controller
     {
         $query = News::with(['category', 'author', 'tags']);
 
-        if (auth()->user()->hasRole('reporter')) {
-            $query->where('author_id', auth()->id());
-        }
-
         $news = $query->latest()->paginate(15);
 
         return view('admin.news.index', [
