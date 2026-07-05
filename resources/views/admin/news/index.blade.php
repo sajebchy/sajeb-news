@@ -171,16 +171,19 @@
                         <span class="material-symbols-outlined text-outline text-[20px]">more_vert</span>
                     </button>
                     <div class="action-menu absolute right-0 top-9 w-44 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-xl z-50 py-1 overflow-hidden">
+                        @if(!auth()->user()->hasRole('reporter') || $item->author_id === auth()->id())
                         <a href="{{ route('admin.news.edit', $item) }}"
                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
                             <span class="material-symbols-outlined text-[18px] text-primary">edit</span>
                             সম্পাদনা
                         </a>
+                        @endif
                         <a href="{{ route('news.show', $item->slug) }}" target="_blank"
                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
                             <span class="material-symbols-outlined text-[18px] text-tertiary">open_in_new</span>
                             দেখুন
                         </a>
+                        @if(!auth()->user()->hasRole('reporter'))
                         <div class="h-px bg-outline-variant mx-3 my-1"></div>
                         <form method="POST" action="{{ route('admin.news.destroy', $item) }}"
                               onsubmit="return confirm('এই সংবাদটি মুছে ফেলতে চান?')">
@@ -191,6 +194,7 @@
                                 মুছে ফেলুন
                             </button>
                         </form>
+                        @endif
                     </div>
                 </div>
             </div>
