@@ -58,6 +58,8 @@ class SettingController extends Controller
             'gtm_tracking_id' => 'nullable|string',
             'facebook_pixel_id' => 'nullable|string',
             'enable_analytics' => 'nullable|boolean',
+            'analytics_head_code' => 'nullable|string',
+            'analytics_body_code' => 'nullable|string',
             'robots_txt' => 'nullable|string',
             'facebook_url' => 'nullable|url',
             'twitter_url' => 'nullable|url',

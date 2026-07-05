@@ -56,6 +56,8 @@ class SeoSetting extends Model
         'vapid_public_key',
         'vapid_private_key',
         'push_notifications_enabled',
+        'analytics_head_code',
+        'analytics_body_code',
     ];
 
     protected $casts = [

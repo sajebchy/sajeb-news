@@ -388,60 +388,26 @@
 
                 <div class="col-12">
                     <div class="alert alert-info">
-                        <i class="bi bi-info-circle"></i> Add your analytics tracking codes below
+                        <i class="bi bi-info-circle"></i> Google Analytics বা Facebook Pixel থেকে পাওয়া সম্পূর্ণ কোড নিচে পেস্ট করুন। কোড সরাসরি ওয়েবসাইটে ইনজেক্ট হবে।
                     </div>
                 </div>
 
                 <div class="col-12">
-                    <label for="google_analytics_id" class="form-label">Google Analytics ID (Legacy)</label>
-                    <input type="text" class="form-control @error('google_analytics_id') is-invalid @enderror" id="google_analytics_id" name="google_analytics_id" placeholder="UA-XXXXXXXXX-X" value="{{ old('google_analytics_id', $seoSettings->google_analytics_id ?? '') }}">
-                    <small class="text-muted">Format: UA-XXXXXXXXX-X (Deprecated)</small>
-                    @error('google_analytics_id')
+                    <label for="analytics_head_code" class="form-label"><i class="bi bi-code-slash"></i> Head Tracking Code (Google Analytics / GTM)</label>
+                    <textarea class="form-control font-monospace @error('analytics_head_code') is-invalid @enderror" id="analytics_head_code" name="analytics_head_code" rows="10" placeholder="<!-- Google Analytics 4 কোড এখানে পেস্ট করুন -->&#10;&lt;script async src=&quot;https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX&quot;&gt;&lt;/script&gt;&#10;&lt;script&gt;&#10;  window.dataLayer = window.dataLayer || [];&#10;  function gtag(){dataLayer.push(arguments);}&#10;  gtag('js', new Date());&#10;  gtag('config', 'G-XXXXXXXXXX');&#10;&lt;/script&gt;">{{ old('analytics_head_code', $seoSettings->analytics_head_code ?? '') }}</textarea>
+                    <small class="text-muted">এই কোড <code>&lt;/head&gt;</code> ট্যাগের আগে বসবে। Google Analytics 4, Google Tag Manager ইত্যাদি এখানে দিন।</small>
+                    @error('analytics_head_code')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
                 </div>
 
                 <div class="col-12">
-                    <label for="ga_tracking_id" class="form-label">Google Analytics 4 ID</label>
-                    <input type="text" class="form-control @error('ga_tracking_id') is-invalid @enderror" id="ga_tracking_id" name="ga_tracking_id" placeholder="G-XXXXXXXXXX" value="{{ old('ga_tracking_id', $seoSettings->ga_tracking_id ?? '') }}">
-                    <small class="text-muted">Format: G-XXXXXXXXXX</small>
-                    @error('ga_tracking_id')
+                    <label for="analytics_body_code" class="form-label"><i class="bi bi-code-square"></i> Body Tracking Code (Facebook Pixel / অন্যান্য)</label>
+                    <textarea class="form-control font-monospace @error('analytics_body_code') is-invalid @enderror" id="analytics_body_code" name="analytics_body_code" rows="10" placeholder="<!-- Facebook Pixel কোড এখানে পেস্ট করুন -->&#10;&lt;script&gt;&#10;  !function(f,b,e,v,n,t,s)...&#10;&lt;/script&gt;">{{ old('analytics_body_code', $seoSettings->analytics_body_code ?? '') }}</textarea>
+                    <small class="text-muted">এই কোড <code>&lt;body&gt;</code> ট্যাগের পরে বসবে। Facebook Pixel, GTM noscript ইত্যাদি এখানে দিন।</small>
+                    @error('analytics_body_code')
                         <div class="invalid-feedback d-block">{{ $message }}</div>
                     @enderror
-                </div>
-
-                <div class="col-12">
-                    <label for="google_tag_manager_id" class="form-label">Google Tag Manager ID</label>
-                    <input type="text" class="form-control @error('google_tag_manager_id') is-invalid @enderror" id="google_tag_manager_id" name="google_tag_manager_id" placeholder="GTM-XXXXXXX" value="{{ old('google_tag_manager_id', $seoSettings->google_tag_manager_id ?? '') }}">
-                    <small class="text-muted">Format: GTM-XXXXXXX</small>
-                    @error('google_tag_manager_id')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-12">
-                    <label for="gtm_tracking_id" class="form-label">Google Tag Manager Tracking ID</label>
-                    <input type="text" class="form-control @error('gtm_tracking_id') is-invalid @enderror" id="gtm_tracking_id" name="gtm_tracking_id" placeholder="GTM-XXXXXXX" value="{{ old('gtm_tracking_id', $seoSettings->gtm_tracking_id ?? '') }}">
-                    <small class="text-muted">Alternative GTM ID field</small>
-                    @error('gtm_tracking_id')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-12">
-                    <label for="facebook_pixel_id" class="form-label">Facebook Pixel ID</label>
-                    <input type="text" class="form-control @error('facebook_pixel_id') is-invalid @enderror" id="facebook_pixel_id" name="facebook_pixel_id" placeholder="1234567890" value="{{ old('facebook_pixel_id', $seoSettings->facebook_pixel_id ?? '') }}">
-                    <small class="text-muted">Your Facebook Pixel ID</small>
-                    @error('facebook_pixel_id')
-                        <div class="invalid-feedback d-block">{{ $message }}</div>
-                    @enderror
-                </div>
-
-                <div class="col-12">
-                    <label for="enable_analytics" class="form-check-label">
-                        <input type="checkbox" class="form-check-input" id="enable_analytics" name="enable_analytics" value="1" {{ old('enable_analytics', $seoSettings->enable_analytics ?? false) ? 'checked' : '' }}>
-                        Enable Analytics Tracking
-                    </label>
                 </div>
 
                 <div class="col-12">
