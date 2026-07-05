@@ -18,17 +18,16 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Force SEO files through Laravel (override Hostinger auto-generated files)
+    RewriteRule ^robots\.txt$ index.php [L]
+    RewriteRule ^sitemap\.xml$ index.php [L]
+    RewriteRule ^news-sitemap\.xml$ index.php [L]
+    RewriteRule ^llm\.txt$ index.php [L]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    # SEO Optimization - Canonical URLs
-    # Allow direct access to important SEO files
-    RewriteCond %{REQUEST_FILENAME} !^/sitemap\.xml$
-    RewriteCond %{REQUEST_FILENAME} !^/robots\.txt$
-    RewriteCond %{REQUEST_FILENAME} !^/llm\.txt$
-    RewriteCond %{REQUEST_FILENAME} !^/service-worker\.js$
 </IfModule>
 
 # Performance Optimization
