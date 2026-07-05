@@ -2,6 +2,17 @@
 
 @section('title', 'সজীব নিউজ | নির্ভরযোগ্য খবরের ঠিকানা')
 @section('meta_description', 'সজীব নিউজ - বাংলাদেশের সর্বশেষ সংবাদ, রাজনীতি, খেলাধুলা, বিনোদন ও প্রযুক্তির নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')
+@section('canonical', route('home'))
+
+@push('scripts')
+@php
+  $__seoSvc = app(\App\Services\SeoService::class);
+  $__websiteSchema = $__seoSvc->getWebsiteSchema();
+  $__orgSchema = $__seoSvc->getOrganizationSchema();
+@endphp
+<script type="application/ld+json">{!! json_encode($__websiteSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($__orgSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
 
 @section('content')
 

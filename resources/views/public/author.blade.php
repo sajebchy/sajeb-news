@@ -2,8 +2,40 @@
 
 @section('title', $author->name . ' - লেখক প্রোফাইল | সজীব নিউজ')
 @section('meta_description', $author->bio ?? $author->name . ' এর প্রকাশিত সব সংবাদ পড়ুন সজীব নিউজে।')
+@section('canonical', route('author.show', $author->id))
 
 @push('styles')
+{{-- OG tags for author page --}}
+<meta property="og:type" content="profile">
+<meta property="og:title" content="{{ $author->name }} - সজীব নিউজ">
+<meta property="og:description" content="{{ $author->bio ?? $author->name . ' এর সংবাদ পড়ুন সজীব নিউজে।' }}">
+<meta property="og:url" content="{{ route('author.show', $author->id) }}">
+@if($author->avatar)
+<meta property="og:image" content="{{ storage_image_url($author->avatar) }}">
+@endif
+<meta property="profile:username" content="{{ $author->name }}">
+@endpush
+
+@push('scripts')
+@php
+  $__seoSvc = app(\App\Services\SeoService::class);
+  $__totalPub = \App\Models\News::where('author_id', $author->id)->where('status', 'published')->count();
+  $__totalViews = \App\Models\News::where('author_id', $author->id)->sum('views');
+  $__authorSchema = $__seoSvc->getAuthorSchema($author, $__totalPub, $__totalViews);
+  $__breadSchema = $__seoSvc->getBreadcrumbSchema([$author->name => route('author.show', $author->id)]);
+@endphp
+<script type="application/ld+json">{!! json_encode($__authorSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+<script type="application/ld+json">{!! json_encode($__breadSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
+@endpush
+
+@push('styles')
+{{-- Pagination SEO --}}
+@if($news->previousPageUrl())
+<link rel="prev" href="{{ $news->previousPageUrl() }}">
+@endif
+@if($news->nextPageUrl())
+<link rel="next" href="{{ $news->nextPageUrl() }}">
+@endif
 <style>
     .tab-active {
         border-bottom: 3px solid #004e9f;

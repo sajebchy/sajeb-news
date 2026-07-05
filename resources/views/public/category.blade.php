@@ -2,6 +2,22 @@
 
 @section('title', $category->name . ' - সজীব নিউজ')
 @section('meta_description', $category->description ?? $category->name . ' বিভাগের সর্বশেষ সংবাদ - সজীব নিউজ')
+@section('canonical', $news->url($news->currentPage()))
+
+@push('styles')
+{{-- OG tags for category page --}}
+<meta property="og:type" content="website">
+<meta property="og:title" content="{{ $category->name }} - সজীব নিউজ">
+<meta property="og:description" content="{{ $category->description ?? $category->name . ' বিভাগের সর্বশেষ সংবাদ' }}">
+<meta property="og:url" content="{{ route('category.show', $category->slug) }}">
+{{-- Pagination SEO --}}
+@if($news->previousPageUrl())
+<link rel="prev" href="{{ $news->previousPageUrl() }}">
+@endif
+@if($news->nextPageUrl())
+<link rel="next" href="{{ $news->nextPageUrl() }}">
+@endif
+@endpush
 
 @push('scripts')
 @php

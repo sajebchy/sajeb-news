@@ -103,7 +103,7 @@
       @endif
 
       {{-- Headline --}}
-      <h1 class="font-headline-lg text-headline-lg md:text-4xl text-2xl mb-stack-md leading-tight text-primary">
+      <h1 itemprop="headline" class="font-headline-lg text-headline-lg md:text-4xl text-2xl mb-stack-md leading-tight text-primary">
         {{ $news->title }}
       </h1>
 
@@ -176,7 +176,7 @@
 
       {{-- Excerpt as lead paragraph --}}
       @if($news->excerpt)
-      <p class="font-body-main text-body-main text-on-surface-variant text-lg leading-relaxed mb-6 border-l-4 border-secondary pl-4 bg-surface-muted py-3 pr-3 rounded-r-lg">
+      <p itemprop="description" class="font-body-main text-body-main text-on-surface-variant text-lg leading-relaxed mb-6 border-l-4 border-secondary pl-4 bg-surface-muted py-3 pr-3 rounded-r-lg">
         {{ $news->excerpt }}
       </p>
       @endif

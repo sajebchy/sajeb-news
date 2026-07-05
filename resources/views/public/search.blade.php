@@ -1,6 +1,7 @@
 @extends('public.layout')
 
 @section('title', $query ? 'ফলাফল: "' . $query . '" — সজীব নিউজ' : 'অনুসন্ধান — সজীব নিউজ')
+@section('robots', 'noindex, follow')
 
 @push('styles')
 <style>

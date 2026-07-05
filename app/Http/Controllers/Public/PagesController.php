@@ -221,8 +221,11 @@ class PagesController extends Controller
             $urls[] = $entry;
         }
 
-        // Categories
+        // Categories (exclude test/dummy categories)
         $categories = Category::where('is_active', true)
+            ->where('slug', 'not like', 'test%')
+            ->where('slug', 'not like', 'demo%')
+            ->where('slug', 'not like', 'dummy%')
             ->select('slug', 'updated_at')
             ->get();
 
@@ -232,6 +235,20 @@ class PagesController extends Controller
                 'lastmod' => $category->updated_at->toAtomString(),
                 'changefreq' => 'daily',
                 'priority' => '0.7'
+            ];
+        }
+
+        // Author pages (E-E-A-T)
+        $authors = \App\Models\User::whereHas('newsArticles', fn($q) => $q->where('status', 'published'))
+            ->select('id', 'updated_at')
+            ->get();
+
+        foreach ($authors as $author) {
+            $urls[] = [
+                'url' => route('author.show', $author->id),
+                'lastmod' => $author->updated_at->toAtomString(),
+                'changefreq' => 'weekly',
+                'priority' => '0.6'
             ];
         }
 

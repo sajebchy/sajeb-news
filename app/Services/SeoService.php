@@ -107,9 +107,44 @@ class SeoService
             $newsArticle['keywords']       = $news->meta_keywords ?? $news->category->name;
         }
 
+        // Speakable — voice search / Google Assistant
+        $speakableCss = ['[itemprop="headline"]', '[itemprop="description"]'];
+        $newsArticle['speakable'] = [
+            '@type'    => 'SpeakableSpecification',
+            'cssSelector' => $speakableCss,
+        ];
+
         $schemas[] = $newsArticle;
 
-        // ── 2. BreadcrumbList ─────────────────────────────────────────
+        // ── 2. ClaimReview (fact-check articles) ─────────────────────
+        if ($news->is_claim_review && $news->claim_being_reviewed) {
+            $claimReview = [
+                '@context'      => 'https://schema.org',
+                '@type'         => 'ClaimReview',
+                'url'           => route('news.show', $news->slug),
+                'claimReviewed' => $news->claim_being_reviewed,
+                'author'        => [
+                    '@type' => 'NewsMediaOrganization',
+                    'name'  => $siteName,
+                    'url'   => $siteUrl,
+                ],
+                'reviewRating'  => [
+                    '@type'       => 'Rating',
+                    'ratingValue' => $this->claimRatingValue($news->claim_rating),
+                    'bestRating'  => 5,
+                    'worstRating' => 1,
+                    'alternateName' => $news->claim_rating ?? 'অনিশ্চিত',
+                ],
+                'itemReviewed'  => [
+                    '@type'           => 'CreativeWork',
+                    'author'          => ['@type' => 'Organization', 'name' => 'Unknown'],
+                    'datePublished'   => $news->claim_review_date?->toIso8601String() ?? $news->published_at?->toIso8601String(),
+                ],
+            ];
+            $schemas[] = $claimReview;
+        }
+
+        // ── 3. BreadcrumbList ─────────────────────────────────────────
         $breadcrumbItems = [
             ['@type' => 'ListItem', 'position' => 1, 'name' => 'হোম',           'item' => route('home')],
         ];
@@ -255,6 +290,53 @@ class SeoService
         }
 
         return ['@context' => 'https://schema.org', '@type' => 'BreadcrumbList', 'itemListElement' => $breadcrumbs];
+    }
+
+    /** Author/Person schema — for author profile pages (E-E-A-T) */
+    public function getAuthorSchema($author, $totalArticles = 0, $totalViews = 0): array
+    {
+        $seo      = SeoSetting::first();
+        $siteName = $seo?->site_name ?: 'সজীব নিউজ';
+
+        $schema = [
+            '@context'    => 'https://schema.org',
+            '@type'       => 'Person',
+            'name'        => $author->name,
+            'url'         => route('author.show', $author->id),
+            'description' => $author->bio ?? $author->name . ' — ' . $siteName . ' প্রতিনিধি',
+            'worksFor'    => [
+                '@type' => 'NewsMediaOrganization',
+                'name'  => $siteName,
+                'url'   => $seo?->site_url ?: url('/'),
+            ],
+            'jobTitle'    => 'সাংবাদিক',
+        ];
+
+        if ($author->avatar) {
+            $schema['image'] = \storage_image_url($author->avatar);
+        }
+
+        if ($totalArticles > 0) {
+            $schema['interactionStatistic'] = [
+                '@type'                => 'InteractionCounter',
+                'interactionType'      => 'https://schema.org/WriteAction',
+                'userInteractionCount' => $totalArticles,
+            ];
+        }
+
+        return $schema;
+    }
+
+    private function claimRatingValue(?string $rating): int
+    {
+        return match ($rating) {
+            'সত্য', 'true', 'True'                         => 5,
+            'অধিকাংশ সত্য', 'mostly true', 'Mostly True'  => 4,
+            'মিশ্র', 'mixed', 'Mixed'                      => 3,
+            'অধিকাংশ মিথ্যা', 'mostly false', 'Mostly False' => 2,
+            'মিথ্যা', 'false', 'False'                      => 1,
+            default                                         => 3,
+        };
     }
 
     public function generateRobotsTxt(): string
