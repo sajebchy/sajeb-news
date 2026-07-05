@@ -61,6 +61,7 @@ class SeoSetting extends Model
     protected $casts = [
         'enable_sitemap' => 'boolean',
         'enable_robots' => 'boolean',
+        'enable_analytics' => 'boolean',
         'recaptcha_enabled' => 'boolean',
         'show_anchor_ads' => 'boolean',
         'show_sidebar_ads' => 'boolean',
