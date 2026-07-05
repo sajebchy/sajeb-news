@@ -53,7 +53,22 @@ jobs:
           port: ${{ secrets.PORT }}
           script: |
             cd /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html
-            rm -f robots.txt
+            cat > robots.txt << 'ROBOTS'
+            # Sajeb NEWS - Robots.txt
+            User-agent: *
+            Allow: /
+            Disallow: /admin/
+            Disallow: /login
+            Disallow: /register
+            Disallow: /dashboard
+            Disallow: /profile
+            Sitemap: https://darkred-dunlin-612828.hostingersite.com/sitemap.xml
+            Sitemap: https://darkred-dunlin-612828.hostingersite.com/news-sitemap.xml
+            User-agent: Googlebot
+            Crawl-delay: 0
+            User-agent: MJ12bot
+            Disallow: /
+            ROBOTS
             cd sajeb-news
             rm -rf storage/framework/views/*.php
             rm -rf bootstrap/cache/config.php
