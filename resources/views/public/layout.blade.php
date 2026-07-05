@@ -139,8 +139,8 @@ tailwind.config = {
   }
 </style>
 @stack('styles')
-{{-- Analytics Tracking Codes --}}
-@if($__layoutSeo?->enable_analytics)
+{{-- Analytics Tracking Codes (inject if tracking ID exists; enable_analytics=false disables) --}}
+@if($__layoutSeo && ($__layoutSeo->enable_analytics ?? true) !== false)
 @if($__layoutSeo->ga_tracking_id)
 <script async src="https://www.googletagmanager.com/gtag/js?id={{ $__layoutSeo->ga_tracking_id }}"></script>
 <script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','{{ $__layoutSeo->ga_tracking_id }}');</script>
@@ -158,7 +158,7 @@ tailwind.config = {
 @endif
 </head>
 <body class="bg-background text-on-surface font-body-main selection:bg-secondary selection:text-on-secondary">
-@if($__layoutSeo?->enable_analytics && $__layoutSeo->google_tag_manager_id)
+@if($__layoutSeo && ($__layoutSeo->enable_analytics ?? true) !== false && $__layoutSeo->google_tag_manager_id)
 <noscript><iframe src="https://www.googletagmanager.com/ns.html?id={{ $__layoutSeo->google_tag_manager_id }}" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
 @endif
 <div id="reading-progress"></div>
