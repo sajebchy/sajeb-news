@@ -161,7 +161,7 @@
                     {{-- Thumbnail --}}
                     <div class="w-full sm:w-1/3 flex-shrink-0 overflow-hidden rounded-lg" style="min-height:160px;max-height:180px;">
                         <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                             src="{{ $article->featured_image ? Storage::url($article->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                             src="{{ $article->featured_image ? storage_image_url($article->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                              alt="{{ $article->title }}">
                     </div>
 

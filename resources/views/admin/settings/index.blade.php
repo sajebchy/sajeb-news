@@ -196,7 +196,7 @@
                                 <div class="preview-container">
                                     <label class="form-label small">Current Logo:</label>
                                     <div class="border rounded p-2" style="background: #f8f9fa;">
-                                        <img src="{{ Storage::url($seoSettings->logo) }}" alt="Desktop Logo" style="max-width: 100%; max-height: 100px;">
+                                        <img src="{{ storage_image_url($seoSettings->logo) }}" alt="Desktop Logo" style="max-width: 100%; max-height: 100px;">
                                     </div>
                                 </div>
                             @else
@@ -229,7 +229,7 @@
                                 <div class="preview-container">
                                     <label class="form-label small">Current Logo:</label>
                                     <div class="border rounded p-2" style="background: #f8f9fa;">
-                                        <img src="{{ Storage::url($seoSettings->mobile_logo) }}" alt="Mobile Logo" style="max-width: 100%; max-height: 80px;">
+                                        <img src="{{ storage_image_url($seoSettings->mobile_logo) }}" alt="Mobile Logo" style="max-width: 100%; max-height: 80px;">
                                     </div>
                                 </div>
                             @else
@@ -262,7 +262,7 @@
                                 <div class="preview-container">
                                     <label class="form-label small">Current Image:</label>
                                     <div class="border rounded p-2" style="background: #f8f9fa;">
-                                        <img src="{{ Storage::url($seoSettings->og_image) }}" alt="OG Image" style="max-width: 100%; max-height: 150px;">
+                                        <img src="{{ storage_image_url($seoSettings->og_image) }}" alt="OG Image" style="max-width: 100%; max-height: 150px;">
                                     </div>
                                 </div>
                             @else
@@ -295,7 +295,7 @@
                                 <div class="preview-container">
                                     <label class="form-label small">Current Favicon:</label>
                                     <div class="border rounded p-2" style="background: #f8f9fa;">
-                                        <img src="{{ Storage::url($seoSettings->favicon) }}" alt="Favicon" style="max-width: 100%; max-height: 50px;">
+                                        <img src="{{ storage_image_url($seoSettings->favicon) }}" alt="Favicon" style="max-width: 100%; max-height: 50px;">
                                     </div>
                                 </div>
                             @else
@@ -328,7 +328,7 @@
                                 <div class="preview-container">
                                     <label class="form-label small">Current Image:</label>
                                     <div class="border rounded p-2" style="background: #f8f9fa;">
-                                        <img src="{{ Storage::url($seoSettings->default_featured_image) }}" alt="Default Featured Image" style="max-width: 100%; max-height: 150px;">
+                                        <img src="{{ storage_image_url($seoSettings->default_featured_image) }}" alt="Default Featured Image" style="max-width: 100%; max-height: 150px;">
                                     </div>
                                 </div>
                             @else
@@ -361,7 +361,7 @@
                                 <div class="preview-container">
                                     <label class="form-label small">Current Logo:</label>
                                     <div class="border rounded p-2" style="background: #f8f9fa;">
-                                        <img src="{{ Storage::url($seoSettings->photo_card_logo) }}" alt="Photo Card Logo" style="max-width: 100%; max-height: 150px;">
+                                        <img src="{{ storage_image_url($seoSettings->photo_card_logo) }}" alt="Photo Card Logo" style="max-width: 100%; max-height: 150px;">
                                     </div>
                                 </div>
                             @else

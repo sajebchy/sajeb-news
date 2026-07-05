@@ -55,7 +55,7 @@
       <div class="grid grid-cols-1 md:grid-cols-12 gap-0 overflow-hidden">
         <div class="md:col-span-8 overflow-hidden">
           <img class="w-full h-[300px] md:h-[400px] object-cover transition-transform duration-700 group-hover:scale-105"
-               src="{{ $featuredArticle->featured_image ? \Storage::url($featuredArticle->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+               src="{{ $featuredArticle->featured_image ? storage_image_url($featuredArticle->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                alt="{{ $featuredArticle->title }}"/>
         </div>
         <div class="md:col-span-4 p-gutter flex flex-col justify-center bg-white">
@@ -84,7 +84,7 @@
       <article class="flex flex-col md:flex-row gap-6 p-4 border border-transparent hover:bg-surface-container-low rounded-lg group hover-lift">
         <div class="md:w-1/3 flex-shrink-0">
           <img class="w-full h-48 md:h-44 object-cover rounded-md"
-               src="{{ $article->featured_image ? \Storage::url($article->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+               src="{{ $article->featured_image ? storage_image_url($article->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                alt="{{ $article->title }}"/>
         </div>
         <div class="flex-1 flex flex-col">

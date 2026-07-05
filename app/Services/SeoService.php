@@ -46,7 +46,7 @@ class SeoService
         $seo      = SeoSetting::first();
         $siteName = $seo?->site_name ?: 'সজীব নিউজ';
         $siteUrl  = $seo?->site_url  ?: url('/');
-        $logoUrl  = $seo?->logo ? \Storage::url($seo->logo) : asset('images/logo.png');
+        $logoUrl  = $seo?->logo ? \storage_image_url($seo->logo) : asset('images/logo.png');
 
         $imageUrl = $news->featured_image
             ? (str_starts_with($news->featured_image, 'http') ? $news->featured_image : asset($news->featured_image))
@@ -167,7 +167,7 @@ class SeoService
         $seo      = SeoSetting::first();
         $siteName = $seo?->site_name ?: 'সজীব নিউজ';
         $siteUrl  = $seo?->site_url  ?: url('/');
-        $logoUrl  = $seo?->logo ? \Storage::url($seo->logo) : asset('images/logo.png');
+        $logoUrl  = $seo?->logo ? \storage_image_url($seo->logo) : asset('images/logo.png');
 
         $schema = [
             '@context'    => 'https://schema.org',

@@ -37,7 +37,7 @@
             <div class="w-28 h-28 md:w-40 md:h-40 rounded-full border-4 border-white shadow-xl overflow-hidden bg-white">
                 @if($author->avatar)
                     <img class="w-full h-full object-cover"
-                         src="{{ Storage::url($author->avatar) }}"
+                         src="{{ storage_image_url($author->avatar) }}"
                          alt="{{ $author->name }}">
                 @else
                     <div class="w-full h-full flex items-center justify-center bg-primary-container">
@@ -135,7 +135,7 @@
                class="bg-white rounded-xl overflow-hidden border border-outline-variant shadow-sm hover:shadow-md transition-shadow group cursor-pointer block">
                 <div class="relative h-48">
                     <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                         src="{{ $item->featured_image ? Storage::url($item->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                         src="{{ $item->featured_image ? storage_image_url($item->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                          alt="{{ $item->title }}">
                     @if($item->category)
                     <div class="absolute top-3 left-3 bg-primary-container text-white text-[11px] px-2 py-1 rounded font-bold uppercase tracking-widest">
@@ -190,7 +190,7 @@
            class="bg-white p-5 rounded-xl border border-outline-variant flex gap-5 items-center hover:bg-surface-container-low transition-colors cursor-pointer group">
             <div class="w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                 <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                     src="{{ $item->featured_image ? Storage::url($item->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
+                     src="{{ $item->featured_image ? storage_image_url($item->featured_image) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
                      alt="{{ $item->title }}">
             </div>
             <div class="flex-1 min-w-0">

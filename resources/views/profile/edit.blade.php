@@ -138,7 +138,7 @@
                             <div class="flex items-center gap-4">
                                 <div class="w-20 h-20 rounded-full overflow-hidden bg-surface-container flex-shrink-0 border-2 border-primary-container">
                                     @if($user->avatar)
-                                    <img src="{{ Storage::url($user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
+                                    <img src="{{ storage_image_url($user->avatar) }}" alt="{{ $user->name }}" class="w-full h-full object-cover">
                                     @else
                                     <div class="w-full h-full flex items-center justify-center bg-primary-container text-on-primary-container">
                                         <span class="material-symbols-outlined text-[36px]">person</span>

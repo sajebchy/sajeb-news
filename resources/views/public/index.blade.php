@@ -69,7 +69,7 @@
         <a href="{{ route('news.show', $heroNews->slug) }}">
           <div class="relative overflow-hidden rounded-lg aspect-[16/9]">
             <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                 src="{{ $heroNews->featured_image ? \Storage::url($heroNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+                 src="{{ $heroNews->featured_image ? storage_image_url($heroNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                  alt="{{ $heroNews->title }}" width="800" height="450" fetchpriority="high"/>
             <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-16">
               @if($heroNews->category)
@@ -92,7 +92,7 @@
       <a href="{{ route('news.show', $shn->slug) }}" class="flex gap-3 group cursor-pointer border-b border-subtle pb-3 last:border-0 last:pb-0">
         <div class="flex-shrink-0 w-28 h-20 md:w-36 md:h-24 overflow-hidden rounded-lg">
           <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-               src="{{ $shn->featured_image ? \Storage::url($shn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+               src="{{ $shn->featured_image ? storage_image_url($shn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                alt="{{ $shn->title }}" loading="lazy" width="144" height="96"/>
         </div>
         <div class="min-w-0 flex-1">
@@ -119,7 +119,7 @@
     <a href="{{ route('news.show', $sn->slug) }}" class="group block">
       <div class="aspect-[16/10] overflow-hidden rounded-lg mb-2">
         <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-             src="{{ $sn->featured_image ? \Storage::url($sn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+             src="{{ $sn->featured_image ? storage_image_url($sn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
              alt="{{ $sn->title }}" loading="lazy" width="300" height="188"/>
       </div>
       @if($sn->category)
@@ -165,7 +165,7 @@
             <a href="{{ route('news.show', $firstNews->slug) }}" class="md:col-span-7 group block">
               <div class="relative aspect-[16/9] overflow-hidden rounded-lg mb-2">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                     src="{{ $firstNews->featured_image ? \Storage::url($firstNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+                     src="{{ $firstNews->featured_image ? storage_image_url($firstNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                      alt="{{ $firstNews->title }}" loading="lazy" width="600" height="338"/>
                 @if($firstNews->is_breaking)
                 <span class="absolute top-2 left-2 bg-secondary text-white text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider">ব্রেকিং</span>
@@ -183,7 +183,7 @@
               <a href="{{ route('news.show', $cn->slug) }}" class="flex gap-2 group cursor-pointer border-b border-subtle pb-2 last:border-0 last:pb-0">
                 <div class="flex-shrink-0 w-20 h-14 overflow-hidden rounded">
                   <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                       src="{{ $cn->featured_image ? \Storage::url($cn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+                       src="{{ $cn->featured_image ? storage_image_url($cn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                        alt="{{ $cn->title }}" loading="lazy" width="80" height="56"/>
                 </div>
                 <div class="min-w-0 flex-1">
@@ -204,7 +204,7 @@
             <a href="{{ route('news.show', $extraNews->slug) }}" class="group block">
               <div class="aspect-[16/10] overflow-hidden rounded mb-1.5">
                 <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                     src="{{ $extraNews->featured_image ? \Storage::url($extraNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+                     src="{{ $extraNews->featured_image ? storage_image_url($extraNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                      alt="{{ $extraNews->title }}" loading="lazy" width="240" height="150"/>
               </div>
               <h4 class="font-headline-md text-sm leading-snug group-hover:text-secondary transition-colors line-clamp-2">{{ $extraNews->title }}</h4>
@@ -334,7 +334,7 @@
     <a href="{{ route('news.show', $ln->slug) }}" class="group block">
       <div class="aspect-[16/10] overflow-hidden rounded-lg mb-1.5">
         <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-             src="{{ $ln->featured_image ? \Storage::url($ln->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
+             src="{{ $ln->featured_image ? storage_image_url($ln->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
              alt="{{ $ln->title }}" loading="lazy"/>
       </div>
       @if($ln->category)

@@ -11,7 +11,7 @@
 
     @php $seoSettings = \App\Models\SeoSetting::first(); @endphp
     @if($seoSettings?->favicon)
-        <link rel="icon" type="image/png" href="{{ Storage::url($seoSettings->favicon) }}">
+        <link rel="icon" type="image/png" href="{{ storage_image_url($seoSettings->favicon) }}">
     @else
         <link rel="icon" type="image/x-icon" href="/favicon.ico">
     @endif
@@ -175,7 +175,7 @@
     <div class="mb-8 flex items-center justify-between">
         <a href="{{ route('admin.dashboard') }}" class="block">
             @if($seoSettings?->logo)
-                <img src="{{ Storage::url($seoSettings->logo) }}" alt="Logo" class="h-10 object-contain"/>
+                <img src="{{ storage_image_url($seoSettings->logo) }}" alt="Logo" class="h-10 object-contain"/>
             @else
                 <h1 class="font-display text-xl font-bold text-primary leading-tight">
                     {{ $seoSettings?->site_name ?: 'সজীব নিউজ' }}

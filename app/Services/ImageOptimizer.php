@@ -194,7 +194,7 @@ class ImageOptimizer
 
     private function storeFallback(UploadedFile $file, string $path): string
     {
-        $filename = Str::random(40) . '.' . strtolower($file->getClientOriginalExtension());
+        $filename = Str::random(40) . '.webp';
         return $file->storeAs($path, $filename, 'public');
     }
 }

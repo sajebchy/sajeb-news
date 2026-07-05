@@ -171,7 +171,7 @@
     <div class="bg-surface-container-lowest p-3 rounded-xl flex gap-4 shadow-sm border border-outline-variant/30 hover:shadow-md transition-shadow">
       <div class="w-16 h-16 rounded-lg overflow-hidden flex-shrink-0">
         <img class="w-full h-full object-cover"
-             src="{{ $article->featured_image ? Storage::url($article->featured_image) : 'https://picsum.photos/seed/'.$article->id.'/200/200' }}"
+             src="{{ $article->featured_image ? storage_image_url($article->featured_image) : 'https://picsum.photos/seed/'.$article->id.'/200/200' }}"
              alt="{{ $article->title }}">
       </div>
       <div class="flex-1 flex flex-col justify-between min-w-0">

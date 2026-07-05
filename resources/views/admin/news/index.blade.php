@@ -127,7 +127,7 @@
         {{-- Thumbnail --}}
         <div class="relative h-48 w-full overflow-hidden flex-shrink-0 rounded-t-xl">
             <img class="w-full h-full object-cover {{ $item->status === 'draft' ? 'grayscale opacity-70' : '' }}"
-                 src="{{ $item->featured_image ? Storage::url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/600/400' }}"
+                 src="{{ $item->featured_image ? storage_image_url($item->featured_image) : 'https://picsum.photos/seed/'.$item->id.'/600/400' }}"
                  alt="{{ $item->title }}">
 
             {{-- Status Badge --}}

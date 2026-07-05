@@ -1,0 +1,58 @@
+name: Deploy to Hostinger
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: gd, mbstring, xml, curl, zip
+
+      - name: Install Composer dependencies
+        run: composer install --optimize-autoloader --no-dev --no-interaction
+
+      - name: Deploy to Hostinger via rsync
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --delete --exclude='.git' --exclude='.github' --exclude='.env' --exclude='storage/logs/*' --exclude='storage/framework/cache/*' --exclude='storage/framework/sessions/*' --exclude='storage/framework/views/*' --exclude='storage/app/public/*' --exclude='node_modules' --exclude='tests' --exclude='public'
+          path: ./
+          remote_path: /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html/sajeb-news/
+          remote_host: ${{ secrets.HOST }}
+          remote_user: ${{ secrets.USERNAME }}
+          remote_port: ${{ secrets.PORT }}
+          remote_key: ${{ secrets.SSH_KEY }}
+
+      - name: Deploy public files
+        uses: burnett01/rsync-deployments@7.0.1
+        with:
+          switches: -avzr --exclude='.git' --exclude='index.php' --exclude='.htaccess' --exclude='.env*' --exclude='storage' --exclude='sajeb-news' --exclude='test.php' --exclude='text.php'
+          path: ./public/
+          remote_path: /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html/
+          remote_host: ${{ secrets.HOST }}
+          remote_user: ${{ secrets.USERNAME }}
+          remote_port: ${{ secrets.PORT }}
+          remote_key: ${{ secrets.SSH_KEY }}
+
+      - name: Clear cached views
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          port: ${{ secrets.PORT }}
+          script: |
+            cd /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html/sajeb-news
+            rm -rf storage/framework/views/*.php
+            rm -rf bootstrap/cache/config.php
+            rm -rf bootstrap/cache/routes-v7.php

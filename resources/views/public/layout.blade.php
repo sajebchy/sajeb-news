@@ -150,7 +150,7 @@ tailwind.config = {
   $siteName = $globalSeo?->site_name ?: 'সজীব নিউজ';
   $siteNameEn = $globalSeo?->site_title ?: 'Sajeb News';
   $siteDesc  = $globalSeo?->site_description ?: '';
-  $siteLogo  = $globalSeo?->logo ? \Storage::url($globalSeo->logo) : null;
+  $siteLogo  = $globalSeo?->logo ? storage_image_url($globalSeo->logo) : null;
   $defaultFeaturedImage = $globalSeo?->default_featured_image
       ? asset('storage/'.$globalSeo->default_featured_image)
       : ($globalSeo?->logo ? asset('storage/'.$globalSeo->logo) : null);
