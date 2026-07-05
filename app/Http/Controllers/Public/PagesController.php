@@ -203,17 +203,22 @@ class PagesController extends Controller
 
         // Published News
         $news = News::where('status', 'published')
-            ->select('slug', 'updated_at')
+            ->select('slug', 'updated_at', 'featured_image', 'title')
             ->limit(50000)
             ->get();
 
         foreach ($news as $item) {
-            $urls[] = [
+            $entry = [
                 'url' => route('news.show', ['news' => $item->slug]),
                 'lastmod' => $item->updated_at->toAtomString(),
-                'changefreq' => 'never',
-                'priority' => '0.8'
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
             ];
+            if ($item->featured_image) {
+                $entry['image_url'] = asset('storage/' . $item->featured_image);
+                $entry['image_title'] = $item->title;
+            }
+            $urls[] = $entry;
         }
 
         // Categories
@@ -232,6 +237,51 @@ class PagesController extends Controller
 
         return response()->view('sitemap', ['urls' => $urls])
             ->header('Content-Type', 'text/xml; charset=UTF-8');
+    }
+
+    /**
+     * Google News Sitemap — last 48 hours of published news
+     */
+    public function newsSitemapXml()
+    {
+        $seo = SeoSetting::first();
+        $siteName = $seo?->site_name ?: 'সজীব নিউজ';
+
+        $news = News::where('status', 'published')
+            ->where('published_at', '>=', now()->subHours(48))
+            ->with('category')
+            ->select('id', 'slug', 'title', 'published_at', 'category_id', 'meta_keywords', 'featured_image')
+            ->latest('published_at')
+            ->limit(1000)
+            ->get();
+
+        return response()->view('news-sitemap', [
+            'news' => $news,
+            'siteName' => $siteName,
+        ])->header('Content-Type', 'text/xml; charset=UTF-8');
+    }
+
+    /**
+     * RSS Feed — latest 50 published news
+     */
+    public function rssFeed()
+    {
+        $seo = SeoSetting::first();
+        $siteName = $seo?->site_name ?: 'সজীব নিউজ';
+        $siteDescription = $seo?->site_description ?: 'বাংলাদেশের নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল';
+
+        $news = News::where('status', 'published')
+            ->with(['category', 'author'])
+            ->latest('published_at')
+            ->limit(50)
+            ->get();
+
+        return response()->view('rss-feed', [
+            'news' => $news,
+            'siteName' => $siteName,
+            'siteDescription' => $siteDescription,
+            'siteUrl' => url('/'),
+        ])->header('Content-Type', 'application/rss+xml; charset=UTF-8');
     }
 
     /**
@@ -335,6 +385,7 @@ Allow: /storage/
 
 # Sitemap location
 Sitemap: {$sitemap}
+Sitemap: {$host}/news-sitemap.xml
 Sitemap: {$llmTxt}
 
 # Crawl delay for respectful crawling

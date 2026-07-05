@@ -39,6 +39,7 @@
 <link rel="alternate" type="text/plain" href="{{ url('/llm.txt') }}" title="LLM Information">
 {{-- SEO: RSS/Sitemap discovery --}}
 <link rel="sitemap" type="application/xml" href="{{ url('/sitemap.xml') }}">
+<link rel="alternate" type="application/rss+xml" title="{{ $__layoutSeo?->site_name ?: 'সজীব নিউজ' }} — RSS Feed" href="{{ url('/feed') }}">
 {{-- Preconnect hints for performance --}}
 <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">

@@ -52,7 +52,9 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.PORT }}
           script: |
-            cd /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html/sajeb-news
+            cd /home/u914546033/domains/darkred-dunlin-612828.hostingersite.com/public_html
+            rm -f robots.txt
+            cd sajeb-news
             rm -rf storage/framework/views/*.php
             rm -rf bootstrap/cache/config.php
             rm -rf bootstrap/cache/routes-v7.php

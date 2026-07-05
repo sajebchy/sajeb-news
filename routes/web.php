@@ -20,6 +20,8 @@ Route::get('/privacy-policy', [PagesController::class, 'privacy'])->name('privac
 Route::get('/terms-and-conditions', [PagesController::class, 'terms'])->name('terms');
 Route::get('/sitemap', [PagesController::class, 'sitemap'])->name('sitemap');
 Route::get('/sitemap.xml', [PagesController::class, 'sitemapXml'])->name('sitemap.xml');
+Route::get('/news-sitemap.xml', [PagesController::class, 'newsSitemapXml'])->name('news-sitemap.xml');
+Route::get('/feed', [PagesController::class, 'rssFeed'])->name('rss.feed');
 Route::get('/llm.txt', [PagesController::class, 'llmTxt'])->name('llm.txt');
 Route::get('/robots.txt', [PagesController::class, 'robotsTxt'])->name('robots.txt');
 
