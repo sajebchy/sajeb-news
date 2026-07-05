@@ -80,12 +80,6 @@ class NewsController extends Controller
                 );
             }
 
-            // Reporters can only save as draft (needs approval)
-            if (auth()->user()->hasRole('reporter')) {
-                $validated['status'] = 'draft';
-                $validated['published_at'] = null;
-            }
-
             // Set published_at to now if status is published and date not set
             if ($validated['status'] === 'published' && empty($validated['published_at'])) {
                 $validated['published_at'] = now();
@@ -201,12 +195,6 @@ class NewsController extends Controller
                     'featured_image',
                     'news'
                 );
-            }
-
-            // Reporters cannot publish — force draft
-            if (auth()->user()->hasRole('reporter')) {
-                $validated['status'] = 'draft';
-                $validated['published_at'] = null;
             }
 
             // Store old data for comparison
