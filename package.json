@@ -3,7 +3,7 @@
     "private": true,
     "type": "module",
     "scripts": {
-        "build": "vite build",
+        "build": "vite build && npx tailwindcss -i resources/css/public.css -o public/css/tailwind.css --minify",
         "dev": "vite"
     },
     "devDependencies": {

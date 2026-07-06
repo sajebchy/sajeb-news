@@ -63,7 +63,7 @@
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
 <!-- Tailwind CSS (build-time compiled) -->
-@vite('resources/css/public.css')
+<link rel="stylesheet" href="/css/tailwind.css">
 @stack('styles')
 @if($__layoutSeo?->analytics_head_code)
 {!! $__layoutSeo->analytics_head_code !!}
