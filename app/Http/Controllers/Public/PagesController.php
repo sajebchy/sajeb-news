@@ -326,9 +326,10 @@ class PagesController extends Controller
         $seo = SeoSetting::first();
         $siteName = $seo?->site_name ?: 'সজীব নিউজ';
         $siteUrl = $seo?->site_url ?: config('app.url');
+        $siteDescription = $seo?->site_description ?: 'বাংলাদেশের বিশ্বস্ত নিউজ পোর্টাল';
 
         $content = "# {$siteName}\n\n";
-        $content .= "> {$seo?->site_description ?: 'বাংলাদেশের বিশ্বস্ত নিউজ পোর্টাল'}\n\n";
+        $content .= "> {$siteDescription}\n\n";
 
         $content .= "## Overview\n";
         $content .= "- **Name**: {$siteName}\n";
