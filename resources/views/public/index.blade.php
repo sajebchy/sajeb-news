@@ -44,9 +44,9 @@
 @if($breaking->count() > 0)
 <div class="w-full bg-primary text-white overflow-hidden h-10">
   <div class="w-full h-full flex items-center">
-    <div class="bg-secondary px-4 font-headline-md whitespace-nowrap z-10 flex items-center gap-2 flex-shrink-0 h-full">
-      <span class="animate-pulse w-2 h-2 bg-white rounded-full inline-block"></span>
-      ব্রেকিং নিউজ
+    <div class="bg-secondary px-2 md:px-4 text-[11px] md:text-headline-md font-bold md:font-headline-md whitespace-nowrap z-10 flex items-center gap-1.5 md:gap-2 flex-shrink-0 h-full">
+      <span class="animate-pulse w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full inline-block"></span>
+      ব্রেকিং
     </div>
     <div class="overflow-hidden flex-1 h-full flex items-center">
       <div class="ticker-scroll whitespace-nowrap font-body-main text-body-sm flex gap-6 items-center" style="font-family:'SolaimanLipi',serif;">
