@@ -270,8 +270,8 @@
 <header class="sticky top-0 w-full z-50 bg-surface/95 backdrop-blur-sm border-b border-subtle shadow-sm">
   <div class="max-w-container-max mx-auto px-gutter py-3 flex items-center justify-between gap-4">
 
-    {{-- LEFT: Logo --}}
-    <div class="flex-shrink-0">
+    {{-- LEFT: Logo (desktop) / Centered Logo (mobile) --}}
+    <div class="flex-shrink-0 md:flex-shrink-0 flex-1 md:flex-none flex justify-center md:justify-start">
       <a href="{{ route('home') }}" class="inline-block group">
         @if($siteLogo)
           <img src="{{ $siteLogo }}" alt="{{ $siteName }}" class="h-10 md:h-14 object-contain group-hover:opacity-80 transition-opacity"/>
@@ -282,11 +282,11 @@
       </a>
     </div>
 
-    {{-- CENTER: spacer --}}
-    <div class="flex-1"></div>
+    {{-- CENTER: spacer (desktop only) --}}
+    <div class="hidden md:block flex-1"></div>
 
-    {{-- RIGHT: Date + Search + Live + Hamburger --}}
-    <div class="flex items-center gap-2 flex-shrink-0">
+    {{-- RIGHT: Date + Search + Live + Hamburger (desktop only) --}}
+    <div class="hidden md:flex items-center gap-2 flex-shrink-0">
       {{-- Date — desktop only --}}
       <span class="hidden lg:block font-meta-data text-[11px] text-on-surface-variant border-r border-subtle pr-3 mr-1" id="current-date"></span>
 
@@ -301,10 +301,6 @@
          class="hidden sm:flex items-center gap-1.5 bg-secondary text-white px-3 py-1.5 rounded-lg hover:bg-news-red-accent transition-colors whitespace-nowrap">
         <span class="w-1.5 h-1.5 bg-white rounded-full animate-pulse"></span>
         <span class="font-label-caps text-label-caps text-[11px]">লাইভ</span>
-      </a>
-      <a href="{{ route('live.index') }}"
-         class="sm:hidden w-9 h-9 flex items-center justify-center rounded-full text-secondary">
-        <span class="material-symbols-outlined text-[22px]">live_tv</span>
       </a>
 
       {{-- Hamburger menu button --}}
@@ -422,9 +418,9 @@
   <a href="{{ route('live.index') }}" class="flex flex-col items-center justify-center text-on-surface-variant p-2 rounded">
     <span class="material-symbols-outlined">live_tv</span><span class="font-label-caps text-[10px] mt-1">লাইভ</span>
   </a>
-  <a href="{{ route('about') }}" class="flex flex-col items-center justify-center text-on-surface-variant p-2 rounded">
-    <span class="material-symbols-outlined">info</span><span class="font-label-caps text-[10px] mt-1">সম্পর্কে</span>
-  </a>
+  <button onclick="openDrawer()" class="flex flex-col items-center justify-center text-on-surface-variant p-2 rounded">
+    <span class="material-symbols-outlined">menu</span><span class="font-label-caps text-[10px] mt-1">মেনু</span>
+  </button>
 </nav>
 <div class="h-14 md:hidden"></div>
 
