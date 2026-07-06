@@ -50,11 +50,12 @@
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
-{{-- SolaimanLipi Bengali Font (local, preloaded for LCP) --}}
-<link rel="preload" href="/fonts/SolaimanLipi.ttf" as="font" type="font/ttf" crossorigin>
+{{-- SolaimanLipi Bengali Font (local WOFF2, preloaded for LCP) --}}
+<link rel="preload" href="/fonts/SolaimanLipi.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="/fonts/SolaimanLipi-Bold.woff2" as="font" type="font/woff2" crossorigin>
 <style>
-    @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi.ttf') format('truetype'); font-weight: 400; font-display: swap; }
-    @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
+    @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi.woff2') format('woff2'), url('/fonts/SolaimanLipi.ttf') format('truetype'); font-weight: 400; font-display: swap; }
+    @font-face { font-family: 'SolaimanLipi'; src: url('/fonts/SolaimanLipi-Bold.woff2') format('woff2'), url('/fonts/SolaimanLipi-Bold.ttf') format('truetype'); font-weight: 700; font-display: swap; }
 </style>
 {{-- Google Fonts (non-render-blocking) --}}
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;700&family=Work+Sans:wght@400;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
