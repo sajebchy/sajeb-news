@@ -40,13 +40,13 @@
 <link rel="alternate" hreflang="x-default" href="{{ url()->current() }}">
 {{-- GEO: LLM.txt discovery --}}
 <link rel="alternate" type="text/plain" href="{{ url('/llm.txt') }}" title="LLM Information">
+<link rel="alternate" type="text/plain" href="{{ url('/llm-full.txt') }}" title="LLM Full Article Index">
 {{-- SEO: RSS/Sitemap discovery --}}
 <link rel="sitemap" type="application/xml" href="{{ url('/sitemap.xml') }}">
 <link rel="alternate" type="application/rss+xml" title="{{ $__layoutSeo?->site_name ?: 'সজীব নিউজ' }} — RSS Feed" href="{{ url('/feed') }}">
 {{-- Preconnect hints for performance --}}
 <link rel="dns-prefetch" href="https://fonts.googleapis.com">
 <link rel="dns-prefetch" href="https://fonts.gstatic.com">
-<link rel="dns-prefetch" href="https://cdn.tailwindcss.com">
 <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://cdn.tailwindcss.com" crossorigin>
@@ -62,87 +62,8 @@
 <noscript><link href="https://fonts.googleapis.com/css2?family=Libre+Franklin:wght@400;500;700&family=Work+Sans:wght@400;600;700&display=swap" rel="stylesheet"/></noscript>
 <link rel="preload" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
 <noscript><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/></noscript>
-<!-- Tailwind CSS with Stitch Design Tokens -->
-<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
-<script id="tailwind-config">
-tailwind.config = {
-  darkMode: "class",
-  theme: {
-    extend: {
-      colors: {
-        "secondary": "#bb0112", "surface-container-low": "#f6f3f5",
-        "on-secondary": "#ffffff", "background": "#fcf8fa",
-        "inverse-surface": "#303032", "on-surface": "#1b1b1d",
-        "primary-fixed": "#dae2fd", "news-red-accent": "#B91C1C",
-        "inverse-on-surface": "#f3f0f2", "surface-container-high": "#eae7e9",
-        "secondary-fixed-dim": "#ffb4ab", "on-tertiary": "#ffffff",
-        "surface-container-lowest": "#ffffff", "inverse-primary": "#bec6e0",
-        "primary": "#000000", "primary-fixed-dim": "#bec6e0",
-        "tertiary": "#000000", "on-primary": "#ffffff",
-        "news-blue-dark": "#1E293B", "primary-container": "#131b2e",
-        "surface-container": "#f0edef", "secondary-fixed": "#ffdad6",
-        "on-surface-variant": "#45464d", "on-error-container": "#93000a",
-        "on-secondary-fixed": "#410002", "on-background": "#1b1b1d",
-        "surface-tint": "#565e74", "surface-bright": "#fcf8fa",
-        "surface-dim": "#dcd9db", "on-primary-container": "#7c839b",
-        "secondary-container": "#e02928", "on-primary-fixed": "#131b2e",
-        "outline-variant": "#c6c6cd", "surface": "#fcf8fa",
-        "tertiary-fixed": "#fcdeb5", "on-error": "#ffffff",
-        "surface-variant": "#e4e2e4", "on-tertiary-container": "#98805d",
-        "surface-container-highest": "#e4e2e4", "border-subtle": "#E2E8F0",
-        "on-secondary-container": "#fffbff", "tertiary-fixed-dim": "#dec29a",
-        "tertiary-container": "#271901", "outline": "#76777d",
-        "error-container": "#ffdad6", "error": "#ba1a1a",
-        "on-primary-fixed-variant": "#3f465c", "surface-muted": "#F8FAFC",
-        "on-tertiary-fixed": "#271901", "on-tertiary-fixed-variant": "#574425",
-        "on-secondary-fixed-variant": "#93000b"
-      },
-      borderRadius: { "DEFAULT": "0.125rem", "lg": "0.25rem", "xl": "0.5rem", "full": "0.75rem" },
-      spacing: {
-        "container-max": "100%", "stack-lg": "2rem", "stack-sm": "0.5rem",
-        "gutter": "2rem", "section-padding": "4rem", "stack-md": "1rem"
-      },
-      fontFamily: {
-        "body-main": ["Libre Franklin"], "body-sm": ["Libre Franklin"],
-        "display-breaking": ["SolaimanLipi"], "headline-lg": ["SolaimanLipi"],
-        "label-caps": ["Work Sans"], "headline-md": ["SolaimanLipi"],
-        "meta-data": ["Work Sans"], "headline-lg-mobile": ["SolaimanLipi"]
-      },
-      fontSize: {
-        "body-main": ["18px", {"lineHeight":"1.6","fontWeight":"400"}],
-        "body-sm": ["15px", {"lineHeight":"1.5","fontWeight":"400"}],
-        "display-breaking": ["48px", {"lineHeight":"1.1","letterSpacing":"-0.02em","fontWeight":"700"}],
-        "headline-lg": ["32px", {"lineHeight":"1.2","fontWeight":"700"}],
-        "label-caps": ["12px", {"lineHeight":"1","letterSpacing":"0.05em","fontWeight":"700"}],
-        "headline-md": ["20px", {"lineHeight":"1.3","fontWeight":"700"}],
-        "meta-data": ["13px", {"lineHeight":"1","fontWeight":"400"}],
-        "headline-lg-mobile": ["24px", {"lineHeight":"1.2","fontWeight":"700"}]
-      }
-    }
-  }
-}
-</script>
-<style>
-  #nav-drawer { transition: transform 0.3s ease-in-out; }
-  .nav-drawer-closed { transform: translateX(100%); }
-  .nav-drawer-open { transform: translateX(0) !important; }
-  .ticker-scroll { animation: ticker 35s linear infinite; }
-  .ticker-scroll:hover { animation-play-state: paused; }
-  @keyframes ticker { 0% { transform: translateX(100%); } 100% { transform: translateX(-100%); } }
-  .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; display: inline-block; vertical-align: middle; line-height: 1; }
-  .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-  .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
-  .line-clamp-4 { display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden; }
-  .no-scrollbar::-webkit-scrollbar { display: none; }
-  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-  #reading-progress { position: fixed; top: 0; left: 0; height: 3px; background: #bb0112; z-index: 9999; width: 0%; transition: width 0.1s ease; pointer-events: none; }
-  .hover-lift { transition: transform 0.2s ease; }
-  .hover-lift:hover { transform: translateY(-2px); }
-  .prose-readable { max-width: 800px; }
-  @media (min-width: 1600px) {
-    .max-w-container-max { padding-left: 3rem; padding-right: 3rem; }
-  }
-</style>
+<!-- Tailwind CSS (build-time compiled) -->
+@vite('resources/css/public.css')
 @stack('styles')
 @if($__layoutSeo?->analytics_head_code)
 {!! $__layoutSeo->analytics_head_code !!}

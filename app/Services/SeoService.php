@@ -58,22 +58,26 @@ class SeoService
         $schemas = [];
 
         // ── 1. NewsArticle ────────────────────────────────────────────
+        $articleUrl = route('news.show', $news->slug);
         $newsArticle = [
             '@context'          => 'https://schema.org',
             '@type'             => 'NewsArticle',
+            '@id'               => $articleUrl . '#article',
             'headline'          => $news->title,
             'description'       => $news->excerpt ?? substr($articleBody, 0, 200),
             'articleBody'       => substr($articleBody, 0, 5000),
             'inLanguage'        => 'bn',
+            'isAccessibleForFree' => true,
             'datePublished'     => $news->published_at?->toIso8601String(),
             'dateModified'      => $news->updated_at->toIso8601String(),
-            'url'               => route('news.show', $news->slug),
+            'url'               => $articleUrl,
             'mainEntityOfPage'  => [
                 '@type' => 'WebPage',
-                '@id'   => route('news.show', $news->slug),
+                '@id'   => $articleUrl,
             ],
             'publisher' => [
                 '@type' => 'NewsMediaOrganization',
+                '@id'   => $siteUrl . '#organization',
                 'name'  => $siteName,
                 'url'   => $siteUrl,
                 'logo'  => [
@@ -83,11 +87,17 @@ class SeoService
                     'height' => 60,
                 ],
             ],
+            'isPartOf' => [
+                '@type' => 'WebSite',
+                '@id'   => $siteUrl . '#website',
+                'name'  => $siteName,
+            ],
         ];
 
         if ($news->author) {
             $newsArticle['author'] = [
                 '@type' => 'Person',
+                '@id'   => route('author.show', $news->author->id) . '#person',
                 'name'  => $news->author->name,
                 'url'   => route('author.show', $news->author->id),
             ];
@@ -120,10 +130,13 @@ class SeoService
         }
 
         // Speakable — voice search / Google Assistant
-        $speakableCss = ['[itemprop="headline"]', '[itemprop="description"]'];
         $newsArticle['speakable'] = [
-            '@type'    => 'SpeakableSpecification',
-            'cssSelector' => $speakableCss,
+            '@type'       => 'SpeakableSpecification',
+            'cssSelector' => [
+                '[itemprop="headline"]',
+                '[itemprop="description"]',
+                '.article-body > p:first-of-type',
+            ],
         ];
 
         $schemas[] = $newsArticle;
@@ -194,9 +207,11 @@ class SeoService
         return [
             '@context' => 'https://schema.org',
             '@type'    => 'WebSite',
+            '@id'      => $siteUrl . '#website',
             'name'     => $siteName,
             'url'      => $siteUrl,
             'inLanguage' => 'bn',
+            'publisher'  => ['@id' => $siteUrl . '#organization'],
             'potentialAction' => [
                 '@type'       => 'SearchAction',
                 'target'      => [
@@ -219,6 +234,7 @@ class SeoService
         $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => 'NewsMediaOrganization',
+            '@id'         => $siteUrl . '#organization',
             'name'        => $siteName,
             'url'         => $siteUrl,
             'description' => $seo?->site_description ?: null,
@@ -228,14 +244,13 @@ class SeoService
                 'width'  => 250,
                 'height' => 60,
             ],
-            'sameAs'      => array_filter([
+            'sameAs'      => array_values(array_unique(array_filter([
                 $seo?->facebook_url  ?? null,
                 $seo?->twitter_url   ?? null,
                 $seo?->youtube_url   ?? null,
                 $seo?->instagram_url ?? null,
-                $seo?->youtube_url   ?? null,
                 $seo?->linkedin_url  ?? null,
-            ]),
+            ]))),
         ];
 
         if ($seo?->office_address) {
@@ -309,20 +324,36 @@ class SeoService
     {
         $seo      = SeoSetting::first();
         $siteName = $seo?->site_name ?: 'সজীব নিউজ';
+        $siteUrl  = $seo?->site_url ?: url('/');
+
+        $jobTitle = $this->resolveJobTitle($author, $totalArticles);
+        $bio = $author->bio ?: $author->name . ' — ' . $siteName . ' ' . $jobTitle;
 
         $schema = [
             '@context'    => 'https://schema.org',
             '@type'       => 'Person',
+            '@id'         => route('author.show', $author->id) . '#person',
             'name'        => $author->name,
             'url'         => route('author.show', $author->id),
-            'description' => $author->bio ?? $author->name . ' — ' . $siteName . ' প্রতিনিধি',
+            'description' => $bio,
             'worksFor'    => [
                 '@type' => 'NewsMediaOrganization',
+                '@id'   => $siteUrl . '#organization',
                 'name'  => $siteName,
-                'url'   => $seo?->site_url ?: url('/'),
+                'url'   => $siteUrl,
             ],
-            'jobTitle'    => 'সাংবাদিক',
+            'jobTitle'    => $jobTitle,
+            'knowsAbout'  => ['বাংলাদেশ', 'সংবাদ', 'সাংবাদিকতা'],
         ];
+
+        $sameAs = array_values(array_filter([
+            $author->facebook_url  ?? null,
+            $author->twitter_url   ?? null,
+            $author->linkedin_url  ?? null,
+        ]));
+        if (!empty($sameAs)) {
+            $schema['sameAs'] = $sameAs;
+        }
 
         if ($author->avatar) {
             $schema['image'] = \storage_image_url($author->avatar);
@@ -337,6 +368,14 @@ class SeoService
         }
 
         return $schema;
+    }
+
+    private function resolveJobTitle($author, int $totalArticles): string
+    {
+        if (method_exists($author, 'isAdmin') && $author->isAdmin()) return 'সম্পাদক';
+        if ($totalArticles >= 100) return 'সিনিয়র সাংবাদিক';
+        if ($totalArticles >= 10) return 'সাংবাদিক';
+        return 'প্রতিনিধি';
     }
 
     /**

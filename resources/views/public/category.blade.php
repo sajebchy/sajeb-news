@@ -5,7 +5,7 @@
 @if($category->meta_keywords)
 @section('meta_keywords', $category->meta_keywords)
 @endif
-@section('canonical', $news->url($news->currentPage()))
+@section('canonical', route('category.show', $category->slug) . ($news->currentPage() > 1 ? '?page=' . $news->currentPage() : ''))
 
 @push('styles')
 {{-- OG tags for category page --}}

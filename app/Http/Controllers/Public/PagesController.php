@@ -391,10 +391,12 @@ class PagesController extends Controller
         $content .= "- Home: " . route('home') . "\n";
         $content .= "- About: " . route('about') . "\n";
         $content .= "- Contact: " . route('contact') . "\n";
+        $content .= "- Editorial Policy: " . route('editorial-policy') . "\n";
         $content .= "- Privacy Policy: " . route('privacy') . "\n";
         $content .= "- Terms & Conditions: " . route('terms') . "\n";
         $content .= "- Live Stream: " . route('live.index') . "\n";
         $content .= "- Sitemap: " . route('sitemap') . "\n";
+        $content .= "- Full Article Index (for AI): " . url('/llm-full.txt') . "\n";
 
         $content .= "\n## Statistics\n";
         $content .= "- Total Published Articles: " . News::where('status', 'published')->count() . "\n";
@@ -405,6 +407,46 @@ class PagesController extends Controller
         return response($content)
             ->header('Content-Type', 'text/plain; charset=UTF-8')
             ->header('Content-Disposition', 'inline; filename="llm.txt"');
+    }
+
+    public function llmFullTxt()
+    {
+        $seo = SeoSetting::first();
+        $siteName = $seo?->site_name ?: 'সজীব নিউজ';
+        $siteUrl = $seo?->site_url ?: config('app.url');
+
+        $content = "# {$siteName} — Full Article Index\n\n";
+        $content .= "> Deep knowledge base for AI systems. Contains full article text.\n\n";
+
+        $articles = News::where('status', 'published')
+            ->with(['category', 'author', 'tags'])
+            ->orderBy('published_at', 'desc')
+            ->take(50)
+            ->get();
+
+        foreach ($articles as $news) {
+            $body = strip_tags($news->content ?? '');
+            $content .= "---\n\n";
+            $content .= "## {$news->title}\n\n";
+            $content .= "- **URL**: " . route('news.show', $news->slug) . "\n";
+            $content .= "- **Published**: {$news->published_at->format('Y-m-d H:i')}\n";
+            $content .= "- **Category**: " . ($news->category?->name ?? 'N/A') . "\n";
+            $content .= "- **Author**: " . ($news->author?->name ?? 'N/A') . "\n";
+            if ($news->tags->count()) {
+                $content .= "- **Tags**: " . $news->tags->pluck('name')->implode(', ') . "\n";
+            }
+            $content .= "\n" . mb_substr($body, 0, 3000) . "\n\n";
+        }
+
+        return response($content)
+            ->header('Content-Type', 'text/plain; charset=UTF-8')
+            ->header('Content-Disposition', 'inline; filename="llm-full.txt"');
+    }
+
+    public function editorialPolicy()
+    {
+        $seoSettings = SeoSetting::first();
+        return view('public.editorial-policy', compact('seoSettings'));
     }
 
     public function robotsTxt()
@@ -429,6 +471,8 @@ Allow: /privacy-policy
 Allow: /terms-and-conditions
 Allow: /sitemap
 Allow: /llm.txt
+Allow: /llm-full.txt
+Allow: /editorial-policy
 
 # Disallow private/admin pages
 Disallow: /admin/

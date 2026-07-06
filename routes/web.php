@@ -23,6 +23,8 @@ Route::get('/sitemap.xml', [PagesController::class, 'sitemapXml'])->name('sitema
 Route::get('/news-sitemap.xml', [PagesController::class, 'newsSitemapXml'])->name('news-sitemap.xml');
 Route::get('/feed', [PagesController::class, 'rssFeed'])->name('rss.feed');
 Route::get('/llm.txt', [PagesController::class, 'llmTxt'])->name('llm.txt');
+Route::get('/llm-full.txt', [PagesController::class, 'llmFullTxt'])->name('llm-full.txt');
+Route::get('/editorial-policy', [PagesController::class, 'editorialPolicy'])->name('editorial-policy');
 Route::get('/robots.txt', [PagesController::class, 'robotsTxt'])->name('robots.txt');
 
 // Live Stream Routes (Public)

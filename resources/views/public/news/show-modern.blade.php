@@ -125,7 +125,7 @@
             @php $authorAvatar = $news->author->profile_photo_path ?? $news->author->avatar ?? null; @endphp
             @if(isset($authorAvatar) && $authorAvatar)
             <img class="w-full h-full object-cover"
-                 src="{{ asset('storage/' . $authorAvatar) }}" alt="{{ $news->author->name ?? 'সাংবাদিক' }}"/>
+                 src="{{ asset('storage/' . $authorAvatar) }}" alt="{{ $news->author->name ?? 'সাংবাদিক' }}" width="48" height="48" loading="lazy"/>
             @else
             <div class="w-full h-full flex items-center justify-center bg-secondary text-white font-headline-md text-xl">
               {{ mb_substr($news->author->name ?? 'স', 0, 1) }}
@@ -177,7 +177,7 @@
       <figure class="mb-stack-lg">
         <div class="aspect-video w-full overflow-hidden rounded-lg"
              style="box-shadow:0 4px 6px -1px rgba(0,0,0,.08),0 2px 4px -1px rgba(0,0,0,.04)">
-          <img itemprop="image" class="w-full h-full object-cover" src="{{ $heroImg }}" alt="{{ $news->title }}"/>
+          <img itemprop="image" class="w-full h-full object-cover" src="{{ $heroImg }}" alt="{{ $news->title }}" width="1200" height="630" loading="eager"/>
         </div>
         @if($news->og_description)
         <figcaption class="mt-stack-sm font-meta-data text-meta-data text-on-surface-variant italic text-center">
@@ -220,7 +220,7 @@
                 <a href="{{ route('news.show', $tr->slug) }}" class="flex gap-3 items-start group">
                   <img class="w-16 h-12 rounded-lg object-cover flex-shrink-0"
                        src="{{ $tr->featured_image ? (Str::startsWith($tr->featured_image,'http') ? $tr->featured_image : asset('storage/'.$tr->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
-                       alt="{{ $tr->title }}" loading="lazy">
+                       alt="{{ $tr->title }}" width="64" height="48" loading="lazy">
                   <div class="min-w-0">
                     <p class="font-body-main text-body-main font-semibold leading-snug group-hover:text-primary transition-colors">{{ $tr->title }}</p>
                     <p class="text-meta-data font-meta-data text-on-surface-variant mt-1">{{ $tr->published_at?->diffForHumans() }}</p>
@@ -493,7 +493,7 @@
     <a href="{{ route('news.show', $ln->slug) }}" class="group block bg-surface-container-lowest border border-subtle rounded-xl overflow-hidden hover:shadow-lg transition-shadow duration-300">
       <div class="aspect-[16/10] overflow-hidden bg-surface-container">
         <img src="{{ $ln->featured_image ? (str_starts_with($ln->featured_image,'http') ? $ln->featured_image : asset('storage/'.$ln->featured_image)) : ($defaultFeaturedImage ?? asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? ''))) }}"
-             alt="{{ $ln->title }}"
+             alt="{{ $ln->title }}" width="400" height="250"
              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy"/>
       </div>
       <div class="p-4">

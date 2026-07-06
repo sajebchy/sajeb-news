@@ -1,8 +1,18 @@
 @extends('public.layout')
 
-@section('title', 'সজীব নিউজ | নির্ভরযোগ্য খবরের ঠিকানা')
-@section('meta_description', 'সজীব নিউজ - বাংলাদেশের সর্বশেষ সংবাদ, রাজনীতি, খেলাধুলা, বিনোদন ও প্রযুক্তির নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')
+@php $__homeSeo = \App\Models\SeoSetting::first(); @endphp
+@section('title', ($__homeSeo?->site_name ?: 'সজীব নিউজ') . ' | ' . ($__homeSeo?->site_title ?: 'নির্ভরযোগ্য খবরের ঠিকানা'))
+@section('meta_description', $__homeSeo?->site_description ?: 'বাংলাদেশের সর্বশেষ সংবাদ, রাজনীতি, খেলাধুলা, বিনোদন ও প্রযুক্তির নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')
 @section('canonical', route('home'))
+@section('og_type', 'website')
+@section('og_title', ($__homeSeo?->site_name ?: 'সজীব নিউজ') . ' — ' . ($__homeSeo?->site_title ?: 'নির্ভরযোগ্য খবরের ঠিকানা'))
+@section('og_description', $__homeSeo?->site_description ?: 'বাংলাদেশের নির্ভরযোগ্য অনলাইন সংবাদ পোর্টাল')
+@section('og_url', route('home'))
+@if($__homeSeo?->og_image)
+@section('og_image', asset('storage/' . $__homeSeo->og_image))
+@elseif($__homeSeo?->logo)
+@section('og_image', asset('storage/' . $__homeSeo->logo))
+@endif
 
 @section('content')
 
