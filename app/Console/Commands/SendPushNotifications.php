@@ -7,7 +7,8 @@ use App\Models\PushSubscription;
 use App\Models\SeoSetting;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Http;
+use Minishlink\WebPush\WebPush;
+use Minishlink\WebPush\Subscription;
 
 class SendPushNotifications extends Command
 {
@@ -17,9 +18,9 @@ class SendPushNotifications extends Command
     public function handle()
     {
         $newsId = $this->argument('news_id');
-        
+
         if (!$newsId) {
-            $this->info("No news ID provided. Usage: php artisan notifications:send-push {news_id}");
+            $this->info("Usage: php artisan notifications:send-push {news_id}");
             return Command::FAILURE;
         }
 
@@ -35,114 +36,81 @@ class SendPushNotifications extends Command
             return Command::FAILURE;
         }
 
-        $this->info("Sending push notifications for: {$news->title}");
-
-        // Get VAPID keys
         $settings = SeoSetting::first();
         if (!$settings?->vapid_public_key || !$settings?->vapid_private_key) {
-            $this->error("VAPID keys not configured. Please configure them in Site Settings.");
+            $this->error("VAPID keys not configured. Set them in Admin > Site Settings.");
             return Command::FAILURE;
         }
 
-        // Get all active subscriptions
-        $subscriptions = PushSubscription::active()->cursor();
         $total = PushSubscription::active()->count();
-        
         if ($total === 0) {
             $this->error("No active subscriptions found.");
             return Command::FAILURE;
+        }
+
+        $this->info("Sending push for: {$news->title}");
+        $this->info("Active subscribers: {$total}");
+
+        $auth = [
+            'VAPID' => [
+                'subject' => 'mailto:' . ($settings->office_email ?? 'admin@sajeb.news'),
+                'publicKey' => $settings->vapid_public_key,
+                'privateKey' => $settings->vapid_private_key,
+            ],
+        ];
+
+        $webPush = new WebPush($auth);
+
+        $payload = json_encode([
+            'title' => mb_substr($news->title, 0, 60),
+            'body' => mb_substr(strip_tags($news->excerpt ?? $news->content ?? ''), 0, 120),
+            'icon' => $news->featured_image
+                ? asset('storage/' . $news->featured_image)
+                : asset('images/logo.png'),
+            'badge' => asset('images/badge.png'),
+            'tag' => 'news-' . $news->id,
+            'data' => [
+                'url' => route('news.show', $news->slug),
+                'news_id' => $news->id,
+            ],
+        ]);
+
+        $subscriptions = PushSubscription::active()->cursor();
+        foreach ($subscriptions as $sub) {
+            $webPush->queueNotification(
+                Subscription::create([
+                    'endpoint' => $sub->endpoint,
+                    'publicKey' => $sub->public_key,
+                    'authToken' => $sub->auth_token,
+                ]),
+                $payload
+            );
         }
 
         $sent = 0;
         $failed = 0;
         $bar = $this->output->createProgressBar($total);
 
-        foreach ($subscriptions as $subscription) {
-            try {
-                $this->sendNotificationToSubscriber($subscription, $news, $settings);
+        foreach ($webPush->flush() as $report) {
+            $bar->advance();
+
+            if ($report->isSuccess()) {
                 $sent++;
-                $this->line('');
-                $this->info("✓ Sent to: " . substr($subscription->endpoint, 0, 50) . "...");
-            } catch (\Exception $e) {
+            } else {
                 $failed++;
-                $this->line('');
-                $this->error("✗ Failed: " . $e->getMessage());
-                Log::warning("Failed to send notification to {$subscription->endpoint}: " . $e->getMessage());
-                
-                // If subscription endpoint is invalid, deactivate it
-                if (str_contains($e->getMessage(), '410') || str_contains($e->getMessage(), '404')) {
-                    $subscription->deactivate();
-                    $this->warn("  Subscription deactivated.");
+                if ($report->isSubscriptionExpired()) {
+                    PushSubscription::where('endpoint', $report->getEndpoint())
+                        ->update(['is_active' => false]);
+                    $this->newLine();
+                    $this->warn("  Expired subscription deactivated.");
                 }
             }
-            $bar->advance();
         }
 
         $bar->finish();
         $this->newLine(2);
-
-        $this->info("✓ Push notifications finished!");
-        $this->line("<info>Total subscriptions: {$total}</info>");
-        $this->line("<info>Sent: {$sent}</info>");
-        if ($failed > 0) {
-            $this->line("<error>Failed: {$failed}</error>");
-        }
+        $this->info("Done! Sent: {$sent}, Failed: {$failed}");
 
         return Command::SUCCESS;
     }
-
-    private function sendNotificationToSubscriber($subscription, $news, $settings)
-    {
-        // Prepare notification payload
-        $title = 'নতুন নিউজ: ' . substr($news->title, 0, 50);
-        $body = substr(strip_tags($news->content ?? $news->excerpt), 0, 100);
-        $icon = $news->featured_image 
-            ? asset('storage/' . $news->featured_image)
-            : asset('images/logo.png');
-
-        $payload = [
-            'title' => $title,
-            'body' => $body,
-            'icon' => $icon,
-            'badge' => asset('images/badge.png'),
-            'tag' => 'news-' . $news->id,
-            'requireInteraction' => false,
-            'data' => [
-                'url' => route('news.show', $news->slug),
-                'news_id' => $news->id,
-                'news_title' => $news->title,
-            ],
-        ];
-
-        // Send via Web Push Protocol
-        $response = Http::timeout(10)
-            ->asJson()
-            ->withHeaders([
-                'TTL' => '24',
-                'Urgency' => 'high',
-                'Content-Type' => 'application/octet-stream',
-                'Content-Encoding' => 'aes128gcm',
-            ])
-            ->post($subscription->endpoint, $payload);
-
-        if (!$response->successful()) {
-            $status = $response->status();
-            
-            if ($status === 410 || $status === 404) {
-                $subscription->deactivate();
-                throw new \Exception("Endpoint invalid (status {$status}) - subscription deactivated");
-            }
-            
-            throw new \Exception("Web Push API error (status {$status}): " . $response->body());
-        }
-
-        Log::info('Push notification sent', [
-            'subscription_id' => $subscription->id,
-            'news_id' => $news->id,
-            'title' => $title,
-        ]);
-
-        return true;
-    }
 }
-

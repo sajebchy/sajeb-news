@@ -67,15 +67,10 @@ class NewsObserver
         }
 
         try {
-            // Dispatch the command as a background job for better performance
-            // This prevents the news creation/update from being slow
-            Queue::job(new \App\Jobs\SendNewsNotification($news->id))
-                ->onConnection('sync')
-                ->dispatch();
-
-            Log::info("Push notification job queued for news ID: {$news->id}");
+            \App\Jobs\SendNewsNotification::dispatch($news->id);
+            Log::info("Push notification job dispatched for news ID: {$news->id}");
         } catch (\Exception $e) {
-            Log::error("Failed to queue push notifications for news ID {$news->id}: " . $e->getMessage());
+            Log::error("Failed to dispatch push notifications for news ID {$news->id}: " . $e->getMessage());
         }
     }
 }

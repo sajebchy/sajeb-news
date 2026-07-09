@@ -9,6 +9,9 @@
 @hasSection('meta_keywords')<meta name="keywords" content="@yield('meta_keywords')">@endif
 <link rel="canonical" href="@yield('canonical', url()->current())">
 <meta name="csrf-token" content="{{ csrf_token() }}">
+@if($__layoutSeo?->vapid_public_key && $__layoutSeo?->push_notifications_enabled)
+<meta name="vapid-public-key" content="{{ $__layoutSeo->vapid_public_key }}">
+@endif
 {{-- SEO: Robots directive --}}
 <meta name="robots" content="@yield('robots', 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1')">
 {{-- SEO: Theme color for mobile browsers --}}
@@ -475,6 +478,11 @@ window.addEventListener('scroll',()=>{const b=document.getElementById('reading-p
 document.querySelectorAll('.material-symbols-outlined').forEach(i=>{i.addEventListener('mouseover',()=>i.style.fontVariationSettings="'FILL' 1");i.addEventListener('mouseout',()=>i.style.fontVariationSettings="'FILL' 0");});
 </script>
 @stack('scripts')
+
+@if($__layoutSeo?->vapid_public_key && $__layoutSeo?->push_notifications_enabled)
+<script src="/js/push-notification-manager.js" defer></script>
+<script src="/js/push-notification-client.js" defer></script>
+@endif
 
 {{-- Bottom Sticky Ad --}}
 @php $__stickyBottomAd = \App\Helpers\AdHelper::getRandomAdByPlacement('sticky_bottom'); @endphp
