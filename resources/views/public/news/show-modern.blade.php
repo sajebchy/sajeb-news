@@ -486,7 +486,7 @@
 <section class="max-w-container-max mx-auto px-gutter py-section-padding">
   <div class="flex items-center gap-3 mb-6">
     <span class="w-1 h-8 bg-secondary rounded-full"></span>
-    <h2 class="font-headline-md text-2xl text-on-surface" style="font-family:'SolaimanLipi',serif;">সর্বশেষ আপডেট</h2>
+    <h2 class="font-headline-md text-2xl text-on-surface">সর্বশেষ আপডেট</h2>
   </div>
   <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
     @foreach($latestNews as $ln)
@@ -500,7 +500,7 @@
         @if($ln->category)
         <span class="font-label-caps text-[10px] text-secondary uppercase tracking-widest">{{ $ln->category->name }}</span>
         @endif
-        <h3 class="font-headline-md text-[15px] leading-snug text-on-surface mt-1 line-clamp-2 group-hover:text-primary transition-colors" style="font-family:'SolaimanLipi',serif;">{{ $ln->title }}</h3>
+        <h3 class="font-headline-md text-[15px] leading-snug text-on-surface mt-1 line-clamp-2 group-hover:text-primary transition-colors">{{ $ln->title }}</h3>
         <p class="font-meta-data text-[11px] text-outline mt-2">{{ $ln->updated_at->diffForHumans() }}</p>
       </div>
     </a>

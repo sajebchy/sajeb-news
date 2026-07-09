@@ -28,7 +28,7 @@
 
     {{-- ===== Search Header ===== --}}
     <div class="mb-8">
-        <h1 class="text-3xl md:text-4xl font-bold text-on-surface mb-1" style="font-family:'SolaimanLipi',serif;">
+        <h1 class="text-3xl md:text-4xl font-bold text-on-surface mb-1">
             @if($query)
                 ফলাফল: "{{ $query }}"
             @else
@@ -141,7 +141,7 @@
                         <span class="text-2xl font-bold text-outline-variant group-hover:text-primary transition-colors leading-none flex-shrink-0">
                             {{ str_pad($i+1, 2, '0', STR_PAD_LEFT) }}
                         </span>
-                        <p class="text-sm text-on-surface-variant group-hover:text-primary transition-colors line-clamp-2" style="font-family:'SolaimanLipi',serif;">
+                        <p class="text-sm text-on-surface-variant group-hover:text-primary transition-colors line-clamp-2">
                             {{ $t->title }}
                         </p>
                     </a>
@@ -186,7 +186,7 @@
 
                             {{-- Title --}}
                             <h2 class="text-lg md:text-xl font-semibold text-on-surface mb-2 leading-snug group-hover:text-primary transition-colors"
-                                style="font-family:'SolaimanLipi',serif;">
+                               >
                                 {{ $article->title }}
                             </h2>
 
@@ -219,7 +219,7 @@
                 @empty
                 <div class="text-center py-24">
                     <span class="material-symbols-outlined text-outline-variant" style="font-size:80px;">search_off</span>
-                    <h3 class="text-xl font-semibold text-on-surface-variant mt-4" style="font-family:'SolaimanLipi',serif;">
+                    <h3 class="text-xl font-semibold text-on-surface-variant mt-4">
                         "{{ $query }}" এর জন্য কোনো ফলাফল পাওয়া যায়নি
                     </h3>
                     <p class="text-sm text-on-surface-variant mt-2">ভিন্ন কীওয়ার্ড দিয়ে চেষ্টা করুন</p>
@@ -272,7 +272,7 @@
                 {{-- Empty state - no query --}}
                 <div class="text-center py-24">
                     <span class="material-symbols-outlined text-outline-variant" style="font-size:80px;">manage_search</span>
-                    <h3 class="text-xl font-semibold text-on-surface-variant mt-4" style="font-family:'SolaimanLipi',serif;">
+                    <h3 class="text-xl font-semibold text-on-surface-variant mt-4">
                         কী খুঁজছেন লিখুন
                     </h3>
                     <p class="text-sm text-on-surface-variant mt-1">উপরের সার্চ বক্সে লিখে অনুসন্ধান শুরু করুন</p>

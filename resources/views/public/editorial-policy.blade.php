@@ -43,7 +43,7 @@
     </aside>
 
     <div class="lg:col-span-9">
-      <div class="prose prose-lg max-w-none space-y-8" style="font-family: 'SolaimanLipi', serif;">
+      <div class="prose prose-lg max-w-none space-y-8">
 
         <section id="mission">
           <h2 class="font-headline-md text-headline-md text-primary border-l-4 border-secondary pl-4 mb-4">১. আমাদের লক্ষ্য</h2>

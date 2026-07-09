@@ -16,7 +16,7 @@
                 @endif
             </div>
             <div class="text-center sm:text-left flex-1">
-                <h1 class="text-xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">{{ $user->name }}</h1>
+                <h1 class="text-xl font-bold text-on-surface">{{ $user->name }}</h1>
                 <p class="text-sm text-on-surface-variant mt-1">{{ $user->email }}</p>
                 <div class="flex flex-wrap gap-2 mt-3 justify-center sm:justify-start">
                     <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-primary/10 text-primary text-xs font-medium">
@@ -41,7 +41,7 @@
     {{-- Comments Section --}}
     <div class="bg-surface-container-lowest rounded-2xl shadow-sm border border-outline-variant/30 overflow-hidden">
         <div class="px-6 py-4 border-b border-outline-variant/30 flex items-center justify-between">
-            <h2 class="text-lg font-bold text-on-surface flex items-center gap-2" style="font-family:'SolaimanLipi',serif;">
+            <h2 class="text-lg font-bold text-on-surface flex items-center gap-2">
                 <span class="material-symbols-outlined text-primary">forum</span>
                 আমার মন্তব্যসমূহ
             </h2>
@@ -55,13 +55,13 @@
             <div class="flex items-start justify-between gap-3">
                 <div class="flex-1 min-w-0">
                     @if($comment->news)
-                    <a href="{{ route('news.show', $comment->news->slug) }}" class="text-sm font-semibold text-primary hover:underline line-clamp-1" style="font-family:'SolaimanLipi',serif;">
+                    <a href="{{ route('news.show', $comment->news->slug) }}" class="text-sm font-semibold text-primary hover:underline line-clamp-1">
                         {{ $comment->news->title }}
                     </a>
                     @else
                     <span class="text-sm text-on-surface-variant italic">(সংবাদটি মুছে ফেলা হয়েছে)</span>
                     @endif
-                    <p class="text-sm text-on-surface mt-1" style="font-family:'SolaimanLipi',serif;">{{ $comment->comment_text }}</p>
+                    <p class="text-sm text-on-surface mt-1">{{ $comment->comment_text }}</p>
                 </div>
                 <div class="flex flex-col items-end gap-1 flex-shrink-0">
                     <span class="text-[11px] text-on-surface-variant">{{ $comment->created_at->diffForHumans() }}</span>
@@ -80,7 +80,7 @@
         @empty
         <div class="px-6 py-12 text-center">
             <span class="material-symbols-outlined text-[48px] text-outline/40">chat_bubble_outline</span>
-            <p class="text-on-surface-variant mt-2" style="font-family:'SolaimanLipi',serif;">আপনি এখনও কোনো মন্তব্য করেননি</p>
+            <p class="text-on-surface-variant mt-2">আপনি এখনও কোনো মন্তব্য করেননি</p>
         </div>
         @endforelse
 

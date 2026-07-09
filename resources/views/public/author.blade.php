@@ -85,7 +85,7 @@
 <div class="max-w-[1200px] mx-auto px-4 md:px-6 pt-4 pb-2">
     <div class="flex flex-col md:flex-row md:items-start justify-between gap-3">
         <div>
-            <h1 class="text-2xl md:text-4xl font-bold text-on-surface" style="font-family: 'SolaimanLipi', serif;">
+            <h1 class="text-2xl md:text-4xl font-bold text-on-surface">
                 {{ $author->name }}
             </h1>
             <p class="text-sm md:text-base text-on-surface-variant max-w-2xl mt-1">
@@ -118,28 +118,28 @@
     <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
         <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
             <span class="material-symbols-outlined text-primary-container text-4xl mb-1" style="font-size: 40px;">menu_book</span>
-            <span class="text-2xl md:text-3xl font-bold text-on-surface" style="font-family: 'SolaimanLipi', serif;">
+            <span class="text-2xl md:text-3xl font-bold text-on-surface">
                 {{ $totalViews > 1000 ? number_format($totalViews/1000, 1).'K' : number_format($totalViews) }}
             </span>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">মোট পাঠক</span>
         </div>
         <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
             <span class="material-symbols-outlined text-secondary-container text-4xl mb-1" style="font-size: 40px;">article</span>
-            <span class="text-2xl md:text-3xl font-bold text-on-surface" style="font-family: 'SolaimanLipi', serif;">
+            <span class="text-2xl md:text-3xl font-bold text-on-surface">
                 {{ $totalPublished }}
             </span>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">প্রকাশিত নিবন্ধ</span>
         </div>
         <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
             <span class="material-symbols-outlined text-tertiary-container text-4xl mb-1" style="font-size: 40px;">comment</span>
-            <span class="text-2xl md:text-3xl font-bold text-on-surface" style="font-family: 'SolaimanLipi', serif;">
+            <span class="text-2xl md:text-3xl font-bold text-on-surface">
                 {{ $totalComments }}
             </span>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">মন্তব্য</span>
         </div>
         <div class="bg-white p-5 rounded-xl border border-outline-variant shadow-sm flex flex-col items-center text-center">
             <span class="material-symbols-outlined text-outline text-4xl mb-1" style="font-size: 40px;">calendar_today</span>
-            <span class="text-lg md:text-xl font-bold text-on-surface" style="font-family: 'SolaimanLipi', serif;">
+            <span class="text-lg md:text-xl font-bold text-on-surface">
                 {{ $author->created_at ? $author->created_at->format('M Y') : 'N/A' }}
             </span>
             <span class="text-xs font-bold text-on-surface-variant uppercase tracking-wider mt-1">সদস্য হওয়ার তারিখ</span>
@@ -177,7 +177,7 @@
                 </div>
                 <div class="p-5">
                     <h3 class="font-semibold text-[17px] leading-snug text-on-surface group-hover:text-primary transition-colors line-clamp-2"
-                        style="font-family: 'SolaimanLipi', serif;">
+                       >
                         {{ $item->title }}
                     </h3>
                     @if($item->excerpt)
@@ -235,7 +235,7 @@
                     <span class="text-xs text-outline">{{ $item->published_at?->diffForHumans() }}</span>
                 </div>
                 <h4 class="font-semibold text-[16px] text-on-surface line-clamp-2 group-hover:text-primary transition-colors"
-                    style="font-family: 'SolaimanLipi', serif;">
+                   >
                     {{ $item->title }}
                 </h4>
                 <span class="text-xs text-outline flex items-center gap-1 mt-1">

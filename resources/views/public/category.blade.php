@@ -41,10 +41,10 @@
   <div class="w-full h-full flex items-center">
     <div class="bg-secondary px-2 md:px-4 text-[11px] md:text-headline-md font-bold md:font-headline-md whitespace-nowrap z-10 flex items-center gap-1.5 md:gap-2 flex-shrink-0 h-full">
       <span class="animate-pulse w-1.5 h-1.5 md:w-2 md:h-2 bg-white rounded-full inline-block"></span>
-      <span style="font-family:'SolaimanLipi',serif;">ব্রেকিং নিউজ</span>
+      <span>ব্রেকিং নিউজ</span>
     </div>
     <div class="overflow-hidden flex-1 h-full flex items-center">
-      <div class="ticker-scroll whitespace-nowrap font-body-main text-body-sm flex gap-6 items-center" style="font-family:'SolaimanLipi',serif;">
+      <div class="ticker-scroll whitespace-nowrap font-body-main text-body-sm flex gap-6 items-center">
         @foreach($catBreaking as $bk)
         <a href="{{ route('news.show', $bk->slug) }}" class="hover:underline">{{ $bk->title }}</a>
         <span class="text-white/50">•</span>
