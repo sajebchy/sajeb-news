@@ -172,103 +172,107 @@ class PagesController extends Controller
      */
     public function sitemapXml()
     {
-        $urls = [];
+        try {
+            $now = now()->toAtomString();
+            $urls = [];
 
-        // Home page
-        $urls[] = [
-            'url' => route('home'),
-            'lastmod' => now()->toAtomString(),
-            'changefreq' => 'daily',
-            'priority' => '1.0'
-        ];
-
-        // Static pages
-        $staticPages = [
-            ['route' => 'about', 'changefreq' => 'monthly', 'priority' => '0.8'],
-            ['route' => 'contact', 'changefreq' => 'monthly', 'priority' => '0.7'],
-            ['route' => 'privacy', 'changefreq' => 'yearly', 'priority' => '0.6'],
-            ['route' => 'terms', 'changefreq' => 'yearly', 'priority' => '0.6'],
-            ['route' => 'sitemap', 'changefreq' => 'weekly', 'priority' => '0.7'],
-            ['route' => 'live.index', 'changefreq' => 'daily', 'priority' => '0.8'],
-        ];
-
-        foreach ($staticPages as $page) {
             $urls[] = [
-                'url' => route($page['route']),
-                'lastmod' => now()->toAtomString(),
-                'changefreq' => $page['changefreq'],
-                'priority' => $page['priority']
-            ];
-        }
-
-        // Published News
-        $news = News::where('status', 'published')
-            ->select('slug', 'updated_at', 'featured_image', 'title')
-            ->limit(50000)
-            ->get();
-
-        foreach ($news as $item) {
-            $entry = [
-                'url' => route('news.show', ['news' => $item->slug]),
-                'lastmod' => $item->updated_at->toAtomString(),
-                'changefreq' => 'weekly',
-                'priority' => '0.8',
-            ];
-            if ($item->featured_image) {
-                $entry['image_url'] = asset('storage/' . $item->featured_image);
-                $entry['image_title'] = $item->title;
-            }
-            $urls[] = $entry;
-        }
-
-        // Categories (exclude test/dummy categories)
-        $categories = Category::where('is_active', true)
-            ->where('slug', 'not like', 'test%')
-            ->where('slug', 'not like', 'demo%')
-            ->where('slug', 'not like', 'dummy%')
-            ->select('slug', 'updated_at')
-            ->get();
-
-        foreach ($categories as $category) {
-            $urls[] = [
-                'url' => route('category.show', ['category' => $category->slug]),
-                'lastmod' => $category->updated_at->toAtomString(),
+                'url' => route('home'),
+                'lastmod' => $now,
                 'changefreq' => 'daily',
-                'priority' => '0.7'
+                'priority' => '1.0'
             ];
-        }
 
-        // Author pages (E-E-A-T)
-        $authors = \App\Models\User::whereHas('newsArticles', fn($q) => $q->where('status', 'published'))
-            ->select('id', 'updated_at')
-            ->get();
-
-        foreach ($authors as $author) {
-            $urls[] = [
-                'url' => route('author.show', $author->id),
-                'lastmod' => $author->updated_at->toAtomString(),
-                'changefreq' => 'weekly',
-                'priority' => '0.6'
+            $staticPages = [
+                ['route' => 'about', 'changefreq' => 'monthly', 'priority' => '0.8'],
+                ['route' => 'contact', 'changefreq' => 'monthly', 'priority' => '0.7'],
+                ['route' => 'privacy', 'changefreq' => 'yearly', 'priority' => '0.6'],
+                ['route' => 'terms', 'changefreq' => 'yearly', 'priority' => '0.6'],
+                ['route' => 'editorial-policy', 'changefreq' => 'monthly', 'priority' => '0.6'],
+                ['route' => 'sitemap', 'changefreq' => 'weekly', 'priority' => '0.7'],
+                ['route' => 'live.index', 'changefreq' => 'daily', 'priority' => '0.8'],
             ];
+
+            foreach ($staticPages as $page) {
+                $urls[] = [
+                    'url' => route($page['route']),
+                    'lastmod' => $now,
+                    'changefreq' => $page['changefreq'],
+                    'priority' => $page['priority']
+                ];
+            }
+
+            News::where('status', 'published')
+                ->whereNotNull('updated_at')
+                ->select('slug', 'updated_at', 'featured_image', 'title')
+                ->orderBy('updated_at', 'desc')
+                ->limit(5000)
+                ->chunk(500, function ($items) use (&$urls) {
+                    foreach ($items as $item) {
+                        $entry = [
+                            'url' => route('news.show', ['news' => $item->slug]),
+                            'lastmod' => $item->updated_at->toAtomString(),
+                            'changefreq' => 'weekly',
+                            'priority' => '0.8',
+                        ];
+                        if ($item->featured_image) {
+                            $entry['image_url'] = asset('storage/' . $item->featured_image);
+                            $entry['image_title'] = $item->title;
+                        }
+                        $urls[] = $entry;
+                    }
+                });
+
+            Category::where('is_active', true)
+                ->where('slug', 'not like', 'test%')
+                ->where('slug', 'not like', 'demo%')
+                ->where('slug', 'not like', 'dummy%')
+                ->whereNotNull('updated_at')
+                ->select('slug', 'updated_at')
+                ->get()
+                ->each(function ($category) use (&$urls) {
+                    $urls[] = [
+                        'url' => route('category.show', ['category' => $category->slug]),
+                        'lastmod' => $category->updated_at->toAtomString(),
+                        'changefreq' => 'daily',
+                        'priority' => '0.7'
+                    ];
+                });
+
+            \App\Models\User::whereHas('newsArticles', fn($q) => $q->where('status', 'published'))
+                ->whereNotNull('updated_at')
+                ->select('id', 'updated_at')
+                ->get()
+                ->each(function ($author) use (&$urls) {
+                    $urls[] = [
+                        'url' => route('author.show', $author->id),
+                        'lastmod' => $author->updated_at->toAtomString(),
+                        'changefreq' => 'weekly',
+                        'priority' => '0.6'
+                    ];
+                });
+
+            \App\Models\Tag::whereHas('news', fn($q) => $q->where('status', 'published'))
+                ->whereNotNull('updated_at')
+                ->select('slug', 'updated_at')
+                ->get()
+                ->each(function ($tag) use (&$urls) {
+                    $urls[] = [
+                        'url' => route('tag.show', $tag->slug),
+                        'lastmod' => $tag->updated_at->toAtomString(),
+                        'changefreq' => 'weekly',
+                        'priority' => '0.5'
+                    ];
+                });
+
+            return response()->view('sitemap', ['urls' => $urls])
+                ->header('Content-Type', 'text/xml; charset=UTF-8')
+                ->header('Cache-Control', 'public, max-age=3600');
+        } catch (\Throwable $e) {
+            \Log::error('Sitemap generation failed: ' . $e->getMessage());
+            return response('<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"><url><loc>' . route('home') . '</loc></url></urlset>')
+                ->header('Content-Type', 'text/xml; charset=UTF-8');
         }
-
-        // Tags with published articles
-        $tags = \App\Models\Tag::whereHas('news', fn($q) => $q->where('status', 'published'))
-            ->select('slug', 'updated_at')
-            ->get();
-
-        foreach ($tags as $tag) {
-            $urls[] = [
-                'url' => route('tag.show', $tag->slug),
-                'lastmod' => $tag->updated_at->toAtomString(),
-                'changefreq' => 'weekly',
-                'priority' => '0.5'
-            ];
-        }
-
-        return response()->view('sitemap', ['urls' => $urls])
-            ->header('Content-Type', 'text/xml; charset=UTF-8')
-            ->header('Cache-Control', 'public, max-age=3600');
     }
 
     /**
