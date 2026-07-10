@@ -1,6 +1,10 @@
 <?php
-require __DIR__ . '/../sajeb-news/vendor/autoload.php';
-$app = require_once __DIR__ . '/../sajeb-news/bootstrap/app.php';
+$basePath = __DIR__ . '/sajeb-news';
+if (!file_exists($basePath . '/vendor/autoload.php')) {
+    $basePath = __DIR__ . '/../sajeb-news';
+}
+require $basePath . '/vendor/autoload.php';
+$app = require_once $basePath . '/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
