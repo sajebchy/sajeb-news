@@ -34,13 +34,17 @@ class JobPostController extends Controller
 
         $jobs = $query->latest()->paginate(15)->appends($request->only(['search', 'status', 'sector']));
 
-        $stats = [
-            'total' => JobPost::count(),
-            'published' => JobPost::where('status', 'published')->count(),
-            'draft' => JobPost::where('status', 'draft')->count(),
-            'expired' => JobPost::where('status', 'published')
-                ->where('application_deadline', '<', now()->toDateString())->count(),
-        ];
+        try {
+            $stats = [
+                'total' => JobPost::count(),
+                'published' => JobPost::where('status', 'published')->count(),
+                'draft' => JobPost::where('status', 'draft')->count(),
+                'expired' => JobPost::where('status', 'published')
+                    ->where('application_deadline', '<', now()->toDateString())->count(),
+            ];
+        } catch (\Throwable $e) {
+            $stats = ['total' => 0, 'published' => 0, 'draft' => 0, 'expired' => 0];
+        }
 
         return view('admin.job-posts.index', compact('jobs', 'stats'));
     }

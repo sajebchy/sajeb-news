@@ -73,6 +73,23 @@ if (!Schema::hasTable('job_posts')) {
     echo "- job_posts table already exists\n";
 }
 
+// Create 'চাকরির খবর' category if not exists
+$existingCat = \Illuminate\Support\Facades\DB::table('categories')->where('slug', 'chakrir-khobor')->first();
+if (!$existingCat) {
+    \Illuminate\Support\Facades\DB::table('categories')->insert([
+        'name' => 'চাকরির খবর',
+        'slug' => 'chakrir-khobor',
+        'description' => 'বাংলাদেশের সর্বশেষ চাকরির খবর ও নিয়োগ বিজ্ঞপ্তি',
+        'is_active' => true,
+        'order' => 99,
+        'created_at' => now(),
+        'updated_at' => now(),
+    ]);
+    echo "✓ 'চাকরির খবর' category created\n";
+} else {
+    echo "- 'চাকরির খবর' category already exists\n";
+}
+
 echo "\n=== Migration Complete ===\n";
 echo "\n⚠ DELETE THIS FILE immediately after running!\n";
 echo "</pre>";

@@ -11,43 +11,48 @@ class JobPostController extends Controller
 {
     public function index(Request $request)
     {
-        $query = JobPost::published()
-            ->where(function ($q) {
-                $q->whereNull('application_deadline')
-                  ->orWhere('application_deadline', '>=', now()->toDateString());
-            });
+        try {
+            $query = JobPost::published()
+                ->where(function ($q) {
+                    $q->whereNull('application_deadline')
+                      ->orWhere('application_deadline', '>=', now()->toDateString());
+                });
 
-        if ($search = $request->input('q')) {
-            $query->where(function ($q) use ($search) {
-                $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('company_name', 'like', "%{$search}%")
-                  ->orWhere('location', 'like', "%{$search}%")
-                  ->orWhere('skills', 'like', "%{$search}%");
-            });
+            if ($search = $request->input('q')) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('title', 'like', "%{$search}%")
+                      ->orWhere('company_name', 'like', "%{$search}%")
+                      ->orWhere('location', 'like', "%{$search}%")
+                      ->orWhere('skills', 'like', "%{$search}%");
+                });
+            }
+
+            if ($sector = $request->input('sector')) {
+                $query->where('job_sector', $sector);
+            }
+
+            if ($type = $request->input('type')) {
+                $query->where('job_type', $type);
+            }
+
+            if ($division = $request->input('division')) {
+                $query->where('division', $division);
+            }
+
+            $jobs = $query->latest('published_at')->paginate(12)->appends($request->only(['q', 'sector', 'type', 'division']));
+
+            $featuredJobs = JobPost::featured()
+                ->where(function ($q) {
+                    $q->whereNull('application_deadline')
+                      ->orWhere('application_deadline', '>=', now()->toDateString());
+                })
+                ->latest('published_at')
+                ->limit(5)
+                ->get();
+        } catch (\Throwable $e) {
+            $jobs = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
+            $featuredJobs = collect();
         }
-
-        if ($sector = $request->input('sector')) {
-            $query->where('job_sector', $sector);
-        }
-
-        if ($type = $request->input('type')) {
-            $query->where('job_type', $type);
-        }
-
-        if ($division = $request->input('division')) {
-            $query->where('division', $division);
-        }
-
-        $jobs = $query->latest('published_at')->paginate(12)->appends($request->only(['q', 'sector', 'type', 'division']));
-
-        $featuredJobs = JobPost::featured()
-            ->where(function ($q) {
-                $q->whereNull('application_deadline')
-                  ->orWhere('application_deadline', '>=', now()->toDateString());
-            })
-            ->latest('published_at')
-            ->limit(5)
-            ->get();
 
         return view('public.jobs.index', compact('jobs', 'featuredJobs'));
     }
