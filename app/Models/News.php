@@ -24,6 +24,7 @@ class News extends Model
         'status',
         'is_featured',
         'is_breaking',
+        'hero_position',
         'published_at',
         'scheduled_at',
         'views',

@@ -171,6 +171,25 @@
                             </div>
                         </div>
 
+                        <!-- Hero Section Position (Homepage) -->
+                        <div class="mb-3">
+                            <label for="hero_position" class="form-label">
+                                <i class="bi bi-layout-text-window-reverse"></i> হোম পেইজ হিরো সেকশন
+                            </label>
+                            <select class="form-select @error('hero_position') is-invalid @enderror" id="hero_position" name="hero_position">
+                                <option value="">-- হিরোতে দেখাবে না --</option>
+                                <option value="1" @selected(old('hero_position', $news->hero_position ?? '') == 1)>Position 1 — বড় নিউজ (বাম দিকে)</option>
+                                <option value="2" @selected(old('hero_position', $news->hero_position ?? '') == 2)>Position 2 — ডান দিকে উপরের সারি</option>
+                                <option value="3" @selected(old('hero_position', $news->hero_position ?? '') == 3)>Position 3 — ডান দিকে নিচের সারি</option>
+                            </select>
+                            <small class="text-muted">
+                                Position 1-এ ১টি, Position 2 ও 3-এ ২টি করে নিউজ দেখানো হয়। খালি স্লট সর্বশেষ নিউজ দিয়ে পূরণ হবে।
+                            </small>
+                            @error('hero_position')
+                                <div class="invalid-feedback">{{ $message }}</div>
+                            @enderror
+                        </div>
+
                         <!-- Fact-Check Configuration -->
                         <div class="mb-3">
                             <div class="form-check">
