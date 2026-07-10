@@ -102,6 +102,9 @@ class PushNotificationClient {
             const registration = await navigator.serviceWorker.register(this.serviceWorkerPath, {
                 scope: '/',
             });
+            // Check for a newer worker on every load. Without this a browser can
+            // keep an old worker — and its caches — for up to a day.
+            registration.update().catch(() => {});
             console.log('✓ Service Worker registered:', registration);
             return registration;
         } catch (error) {
