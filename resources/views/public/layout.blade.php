@@ -79,7 +79,15 @@
 <div id="reading-progress"></div>
 
 @php
-  $navCategories = \App\Models\Category::where('is_active', true)->whereNull('parent_id')->with(['children' => fn($q) => $q->where('is_active', true)->orderBy('name')])->orderByRaw('featured_order IS NULL, featured_order ASC')->orderBy('name')->limit(8)->get();
+  // Featured categories (featured_order 1-5) show in the main nav, in that order.
+  // Non-featured active categories go to the "অন্যান্য" section of the drawer.
+  $navCategories = \App\Models\Category::where('is_active', true)->whereNull('parent_id')->whereNotNull('featured_order')->with(['children' => fn($q) => $q->where('is_active', true)->orderBy('name')])->orderBy('featured_order')->get();
+  $otherNavCategories = \App\Models\Category::where('is_active', true)->whereNull('parent_id')->whereNull('featured_order')->with(['children' => fn($q) => $q->where('is_active', true)->orderBy('name')])->orderBy('name')->get();
+  if ($navCategories->isEmpty()) {
+      // Fallback: nothing featured yet — behave like before (all categories, featured first)
+      $navCategories = $otherNavCategories->take(8);
+      $otherNavCategories = collect();
+  }
   $currentRouteName = optional(request()->route())->getName() ?? '';
   $globalSeo = $globalSeo ?? \App\Models\SeoSetting::first();
   $siteName = $globalSeo?->site_name ?: 'সজীব নিউজ';
@@ -213,6 +221,15 @@
     <div class="h-px bg-subtle mx-3 my-3 border-t border-subtle"></div>
     <p class="font-label-caps text-label-caps text-on-surface-variant px-3 mb-2 tracking-widest">অন্যান্য</p>
     <ul class="space-y-0.5">
+      @foreach($otherNavCategories as $otherCat)
+      <li>
+        <a href="{{ route('category.show', $otherCat->slug) }}" onclick="closeDrawer()"
+           class="flex items-center gap-3 px-3 py-3 rounded-lg font-body-sm
+                  {{ (request()->route('category') && request()->route('category')->slug === $otherCat->slug) ? 'bg-surface-container text-secondary' : 'text-on-surface-variant hover:bg-surface-container-low hover:text-secondary' }} transition-colors group">
+          <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary">article</span> {{ $otherCat->name }}
+        </a>
+      </li>
+      @endforeach
       <li>
         <a href="{{ route('about') }}" onclick="closeDrawer()"
            class="flex items-center gap-3 px-3 py-3 rounded-lg font-body-sm text-on-surface-variant hover:bg-surface-container-low hover:text-secondary transition-colors group">

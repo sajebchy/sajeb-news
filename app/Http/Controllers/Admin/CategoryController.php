@@ -69,6 +69,12 @@ class CategoryController extends Controller
             $validated['slug'] = \Str::slug($validated['name']);
         }
 
+        // Featured order: free the slot if another category already holds it
+        if (!empty($validated['featured_order'])) {
+            Category::where('featured_order', $validated['featured_order'])
+                ->update(['featured_order' => null]);
+        }
+
         Category::create($validated);
 
         return redirect()
@@ -103,7 +109,7 @@ class CategoryController extends Controller
             'parent_id' => 'nullable|exists:categories,id',
             'color' => 'nullable|regex:/^#[0-9A-F]{6}$/i',
             'icon' => 'nullable|string',
-            'featured_order' => 'nullable|integer|min:1|max:5|unique:categories,featured_order,' . $category->id,
+            'featured_order' => 'nullable|integer|min:1|max:5',
             'is_fact_checker' => 'nullable|boolean',
             'claim_review_enabled' => 'nullable|boolean',
             'claim_rating_scale' => 'nullable|in:True,Mostly True,Partly False,False,Unproven',
@@ -114,6 +120,13 @@ class CategoryController extends Controller
         // Generate slug if not provided
         if (!$validated['slug']) {
             $validated['slug'] = \Str::slug($validated['name']);
+        }
+
+        // Featured order: free the slot if another category already holds it
+        if (!empty($validated['featured_order'])) {
+            Category::where('featured_order', $validated['featured_order'])
+                ->where('id', '!=', $category->id)
+                ->update(['featured_order' => null]);
         }
 
         $category->update($validated);
