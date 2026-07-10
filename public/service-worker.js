@@ -1,19 +1,22 @@
 // Service Worker for Web Push Notifications
-const CACHE_NAME = 'sajeb-news-v1';
-const urlsToCache = [
-    '/',
-    '/css/app.css',
-    '/js/app.js',
-    '/offline.html'
-];
+// Bump this whenever the caching rules change — `activate` deletes every other cache.
+const CACHE_NAME = 'sajeb-news-v2';
+const OFFLINE_URL = '/offline.html';
+
+// Pages that must never be answered from the cache: they are per-user, or they
+// show data that changes the moment an editor saves something.
+const NEVER_CACHE = /^\/(admin|login|register|logout|dashboard|profile|my-profile|api)(\/|$)/;
+
+// Only these are safe to serve cache-first — their contents never change in place.
+const IMMUTABLE_ASSET = /\.(png|jpe?g|webp|gif|svg|ico|woff2?|ttf|eot)$/i;
 
 // Install event
 self.addEventListener('install', event => {
     event.waitUntil(
         caches.open(CACHE_NAME)
             .then(cache => {
-                return cache.addAll(urlsToCache).catch(() => {
-                    console.log('Some resources could not be cached');
+                return cache.add(OFFLINE_URL).catch(() => {
+                    console.log('Offline page could not be cached');
                 });
             })
     );
@@ -36,33 +39,58 @@ self.addEventListener('activate', event => {
     self.clients.claim();
 });
 
+function putInCache(request, response) {
+    if (response && response.status === 200 && response.type === 'basic') {
+        const copy = response.clone();
+        caches.open(CACHE_NAME).then(cache => cache.put(request, copy));
+    }
+    return response;
+}
+
 // Fetch event (for offline support)
 self.addEventListener('fetch', event => {
-    if (event.request.method !== 'GET') {
+    const request = event.request;
+
+    if (request.method !== 'GET') {
         return;
     }
 
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                return response || fetch(event.request)
-                    .then(response => {
-                        if (!response || response.status !== 200 || response.type === 'error') {
-                            return response;
-                        }
+    const url = new URL(request.url);
 
-                        const responseToCache = response.clone();
-                        caches.open(CACHE_NAME)
-                            .then(cache => {
-                                cache.put(event.request, responseToCache);
-                            });
+    // Leave cross-origin requests (fonts, analytics) to the browser.
+    if (url.origin !== self.location.origin) {
+        return;
+    }
 
-                        return response;
-                    })
-                    .catch(() => {
-                        return caches.match('/offline.html');
-                    });
+    // Admin, auth and API traffic always goes straight to the network.
+    if (NEVER_CACHE.test(url.pathname)) {
+        return;
+    }
+
+    // Images and fonts: cache-first, refreshed in the background.
+    if (IMMUTABLE_ASSET.test(url.pathname)) {
+        event.respondWith(
+            caches.match(request).then(cached => {
+                const network = fetch(request)
+                    .then(response => putInCache(request, response))
+                    .catch(() => cached);
+                return cached || network;
             })
+        );
+        return;
+    }
+
+    // Everything else — pages, CSS, JS — must be fresh, so hit the network first
+    // and only fall back to the cache when the request fails.
+    event.respondWith(
+        fetch(request)
+            .then(response => putInCache(request, response))
+            .catch(() => caches.match(request).then(cached => {
+                if (cached) {
+                    return cached;
+                }
+                return request.mode === 'navigate' ? caches.match(OFFLINE_URL) : Response.error();
+            }))
     );
 });
 
