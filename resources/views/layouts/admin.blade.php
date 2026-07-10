@@ -217,6 +217,7 @@
         @endif
 
         @if(auth()->user()->hasRole(['super-admin', 'admin']))
+        {!! adminNavLink('admin.job-posts.index', 'bi-briefcase', 'চাকরি', 'admin.job-posts') !!}
         {!! adminNavLink('admin.advertisements.index', 'bi-megaphone', 'বিজ্ঞাপন', 'admin.advertisements') !!}
         {!! adminNavLink('admin.users.index', 'bi-people', 'ব্যবহারকারী', 'admin.users') !!}
         {!! adminNavLink('admin.newsletters.index', 'bi-envelope', 'নিউজলেটার', 'admin.newsletters') !!}

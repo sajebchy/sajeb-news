@@ -265,6 +265,28 @@ class PagesController extends Controller
                     ];
                 });
 
+            $urls[] = [
+                'url' => route('jobs.index'),
+                'lastmod' => $now,
+                'changefreq' => 'daily',
+                'priority' => '0.8'
+            ];
+
+            \App\Models\JobPost::where('status', 'published')
+                ->whereNotNull('updated_at')
+                ->select('slug', 'updated_at', 'title')
+                ->orderBy('updated_at', 'desc')
+                ->limit(1000)
+                ->get()
+                ->each(function ($job) use (&$urls) {
+                    $urls[] = [
+                        'url' => route('jobs.show', $job->slug),
+                        'lastmod' => $job->updated_at->toAtomString(),
+                        'changefreq' => 'weekly',
+                        'priority' => '0.7'
+                    ];
+                });
+
             return response()->view('sitemap', ['urls' => $urls])
                 ->header('Content-Type', 'text/xml; charset=UTF-8')
                 ->header('Cache-Control', 'public, max-age=3600');

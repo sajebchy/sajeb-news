@@ -197,6 +197,19 @@
       @endforeach
     </ul>
 
+    <li>
+        <a href="{{ route('jobs.index') }}" onclick="closeDrawer()"
+           class="flex items-center justify-between px-3 py-3 rounded-lg font-headline-md text-[16px]
+                  {{ $currentRouteName === 'jobs.index' ? 'bg-surface-container text-secondary' : 'text-on-surface hover:bg-surface-container-low hover:text-secondary' }} transition-colors group">
+          <span class="flex items-center gap-3">
+            <span class="material-symbols-outlined text-[20px] text-outline group-hover:text-secondary transition-colors">work</span>
+            চাকরি
+          </span>
+          <span class="material-symbols-outlined text-[18px] text-outline-variant">chevron_right</span>
+        </a>
+      </li>
+    </ul>
+
     <div class="h-px bg-subtle mx-3 my-3 border-t border-subtle"></div>
     <p class="font-label-caps text-label-caps text-on-surface-variant px-3 mb-2 tracking-widest">অন্যান্য</p>
     <ul class="space-y-0.5">
@@ -368,6 +381,7 @@
         <li><a href="{{ route('terms') }}" class="hover:text-secondary hover:underline transition-all">ব্যবহারের শর্তাবলি</a></li>
         <li><a href="{{ route('sitemap') }}" class="hover:text-secondary hover:underline transition-all">সাইটম্যাপ</a></li>
         <li><a href="{{ route('live.index') }}" class="hover:text-secondary hover:underline transition-all">লাইভ টিভি</a></li>
+        <li><a href="{{ route('jobs.index') }}" class="hover:text-secondary hover:underline transition-all">চাকরির খবর</a></li>
       </ul>
     </div>
     <div>

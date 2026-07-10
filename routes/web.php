@@ -27,6 +27,10 @@ Route::get('/llm-full.txt', [PagesController::class, 'llmFullTxt'])->name('llm-f
 Route::get('/editorial-policy', [PagesController::class, 'editorialPolicy'])->name('editorial-policy');
 Route::get('/robots.txt', [PagesController::class, 'robotsTxt'])->name('robots.txt');
 
+// Job Posts (Public)
+Route::get('/jobs', [\App\Http\Controllers\Public\JobPostController::class, 'index'])->name('jobs.index');
+Route::get('/jobs/{job_post:slug}', [\App\Http\Controllers\Public\JobPostController::class, 'show'])->name('jobs.show');
+
 // Live Stream Routes (Public)
 Route::get('/live', [\App\Http\Controllers\LiveStreamViewController::class, 'index'])->name('live.index');
 Route::get('/live/{stream:slug}', [\App\Http\Controllers\LiveStreamViewController::class, 'watch'])->name('live.watch');
@@ -149,6 +153,9 @@ Route::middleware(['auth', 'verified', 'no-back-history', 'role:super-admin|admi
         Route::resource('advertisements', \App\Http\Controllers\Admin\AdController::class);
         Route::post('/advertisements/{advertisement}/toggle-status', [\App\Http\Controllers\Admin\AdController::class, 'toggleStatus'])->name('advertisements.toggle-status');
         Route::get('/advertisements/{advertisement}/statistics', [\App\Http\Controllers\Admin\AdController::class, 'statistics'])->name('advertisements.statistics');
+
+        // Job Posts Management (super-admin, admin only)
+        Route::resource('job-posts', \App\Http\Controllers\Admin\JobPostController::class);
 
         // Live Streams — create/edit/delete (super-admin, admin only)
         Route::post('/live-streams', [\App\Http\Controllers\Admin\LiveStreamController::class, 'store'])->name('live-streams.store');
