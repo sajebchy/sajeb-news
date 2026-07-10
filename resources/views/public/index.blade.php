@@ -82,26 +82,39 @@
             <img class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
                  src="{{ $heroNews->featured_image ? storage_image_url($heroNews->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                  alt="{{ $heroNews->title }}" width="800" height="450" fetchpriority="high"/>
-            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-16">
+            <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 pt-16 lg:hidden">
               @if($heroNews->category)
               <span class="inline-block bg-secondary text-white px-2 py-0.5 text-xs font-label-caps mb-2">{{ $heroNews->category->name }}</span>
               @endif
-              <h2 class="font-headline-lg text-white text-xl md:text-2xl lg:text-3xl leading-tight group-hover:underline">{{ $heroNews->title }}</h2>
+              <h2 class="font-headline-lg text-white text-xl md:text-2xl leading-tight group-hover:underline">{{ $heroNews->title }}</h2>
               @if($heroNews->published_at)
               <p class="text-white/70 text-xs mt-2">{{ $heroNews->published_at->locale('bn')->isoFormat('D MMMM, YYYY') }}</p>
               @endif
             </div>
+          </div>
+          <!-- Desktop: Prothom Alo style — text below image -->
+          <div class="hidden lg:block pt-3">
+            @if($heroNews->category)
+            <span class="inline-block text-secondary text-xs font-label-caps uppercase">{{ $heroNews->category->name }}</span>
+            @endif
+            <h2 class="font-headline-lg text-primary text-3xl leading-snug mt-1.5 group-hover:text-secondary transition-colors">{{ $heroNews->title }}</h2>
+            @if($heroNews->excerpt)
+            <p class="font-body-main text-[15px] text-outline leading-relaxed mt-2 line-clamp-2">{{ $heroNews->excerpt }}</p>
+            @endif
+            @if($heroNews->published_at)
+            <p class="text-xs text-outline mt-2.5">{{ $heroNews->published_at->locale('bn')->isoFormat('D MMMM, YYYY') }}</p>
+            @endif
           </div>
         </a>
       </article>
     </div>
     @endif
 
-    <!-- Hero Right: 3 stacked news -->
-    <div class="lg:col-span-5 flex flex-col gap-3">
+    <!-- Hero Right: 3 stacked news (Prothom Alo list style on desktop: text left, thumb right) -->
+    <div class="lg:col-span-5 flex flex-col gap-3 lg:gap-0 lg:border-l lg:border-subtle lg:pl-4 lg:divide-y">
       @foreach($sideHeroNews as $shn)
-      <a href="{{ route('news.show', $shn->slug) }}" class="flex gap-3 group cursor-pointer border-b border-subtle pb-3 last:border-0 last:pb-0">
-        <div class="flex-shrink-0 w-28 h-20 md:w-36 md:h-24 overflow-hidden rounded-lg">
+      <a href="{{ route('news.show', $shn->slug) }}" class="flex gap-3 group cursor-pointer border-b border-subtle pb-3 last:border-0 last:pb-0 lg:flex-row-reverse lg:justify-between lg:items-start lg:border-b-0 lg:py-3 lg:first:pt-0 lg:last:pb-0">
+        <div class="flex-shrink-0 w-28 h-20 md:w-36 md:h-24 lg:w-32 lg:h-24 overflow-hidden rounded-lg">
           <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                src="{{ $shn->featured_image ? storage_image_url($shn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                alt="{{ $shn->title }}" loading="lazy" width="144" height="96"/>
@@ -110,7 +123,10 @@
           @if($shn->category)
           <span class="text-secondary text-xs font-label-caps uppercase">{{ $shn->category->name }}</span>
           @endif
-          <h3 class="font-headline-md text-base leading-snug group-hover:text-secondary transition-colors line-clamp-2 mt-0.5">{{ $shn->title }}</h3>
+          <h3 class="font-headline-md text-base lg:text-lg leading-snug group-hover:text-secondary transition-colors line-clamp-2 mt-0.5">{{ $shn->title }}</h3>
+          @if($shn->excerpt)
+          <p class="hidden lg:block font-body-main text-[14px] text-outline leading-relaxed mt-1 line-clamp-1">{{ $shn->excerpt }}</p>
+          @endif
           @if($shn->published_at)
           <p class="text-xs text-outline mt-1">{{ $shn->published_at->diffForHumans() }}</p>
           @endif
