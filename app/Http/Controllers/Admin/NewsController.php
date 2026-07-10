@@ -16,14 +16,41 @@ class NewsController extends Controller
     /**
      * Display a listing of news posts.
      */
-    public function index()
+    public function index(Request $request)
     {
         $query = News::with(['category', 'author', 'tags']);
 
-        $news = $query->latest()->paginate(15);
+        if ($search = $request->input('search')) {
+            $query->where(function ($q) use ($search) {
+                $q->where('title', 'like', "%{$search}%")
+                  ->orWhere('excerpt', 'like', "%{$search}%");
+            });
+        }
+
+        if ($status = $request->input('status')) {
+            $query->where('status', $status);
+        }
+
+        if ($category = $request->input('category')) {
+            $query->where('category_id', $category);
+        }
+
+        // Drafts have no published_at, so range on created_at to keep the date
+        // filter usable alongside every status.
+        if ($dateFrom = $request->input('date_from')) {
+            $query->whereDate('created_at', '>=', $dateFrom);
+        }
+
+        if ($dateTo = $request->input('date_to')) {
+            $query->whereDate('created_at', '<=', $dateTo);
+        }
+
+        $news = $query->latest()->paginate(15)
+            ->appends($request->only('search', 'status', 'category', 'date_from', 'date_to'));
 
         return view('admin.news.index', [
             'news' => $news,
+            'categories' => Category::orderBy('name')->get(),
         ]);
     }
 
