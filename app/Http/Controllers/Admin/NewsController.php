@@ -57,7 +57,7 @@ class NewsController extends Controller
                 'published_at' => 'required_if:status,published,scheduled|date|nullable',
                 'is_featured' => 'boolean',
                 'is_breaking' => 'boolean',
-                'hero_position' => 'nullable|integer|in:1,2,3',
+                'hero_position' => 'nullable|integer|in:1,2,3,4,5',
                 'is_claim_review' => 'nullable|boolean',
                 'claim_being_reviewed' => 'nullable|required_if:is_claim_review,1|string|max:1000',
                 'claim_rating' => 'nullable|required_if:is_claim_review,1|in:True,Mostly True,Partly False,False,Unproven',
@@ -69,6 +69,12 @@ class NewsController extends Controller
             // Generate slug if not provided
             if (!$validated['slug']) {
                 $validated['slug'] = \Str::slug($validated['title']);
+            }
+
+            // A hero slot holds one news, so free it from whoever holds it now.
+            if (!empty($validated['hero_position'])) {
+                News::where('hero_position', $validated['hero_position'])
+                    ->update(['hero_position' => null]);
             }
 
             // Handle featured image upload with optimization
@@ -166,7 +172,7 @@ class NewsController extends Controller
                 'published_at' => 'required_if:status,published,scheduled|date|nullable',
                 'is_featured' => 'boolean',
                 'is_breaking' => 'boolean',
-                'hero_position' => 'nullable|integer|in:1,2,3',
+                'hero_position' => 'nullable|integer|in:1,2,3,4,5',
                 'is_claim_review' => 'nullable|boolean',
                 'claim_being_reviewed' => 'nullable|required_if:is_claim_review,1|string|max:1000',
                 'claim_rating' => 'nullable|required_if:is_claim_review,1|in:True,Mostly True,Partly False,False,Unproven',
@@ -178,6 +184,13 @@ class NewsController extends Controller
             // Generate slug if not provided
             if (!$validated['slug']) {
                 $validated['slug'] = \Str::slug($validated['title']);
+            }
+
+            // A hero slot holds one news, so free it from whoever holds it now.
+            if (!empty($validated['hero_position'])) {
+                News::where('hero_position', $validated['hero_position'])
+                    ->where('id', '!=', $news->id)
+                    ->update(['hero_position' => null]);
             }
 
             // Set published_at to now if status is published and date not set

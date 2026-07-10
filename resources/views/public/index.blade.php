@@ -34,42 +34,43 @@
 @endif
 
 @php
-  // ── Hero section: manual placement via news.hero_position ──
-  //   1 = big lead (left) · 2 = top-right pair · 3 = bottom-right pair
-  //   Empty slots auto-fill with the latest published news.
-  $heroUsed = collect();
-  $heroPick = function ($position, $limit) use (&$heroUsed) {
-      $items = \App\Models\News::with('category')
+  // ── Hero section: one news per slot, set via news.hero_position ──
+  //   Slot 1 = big lead card (left column).
+  //   Slots 2..5 stack down the right column and are labelled for editors as
+  //   "Position 2-1", "Position 2-2", "Position 3-1", "Position 3-2".
+  //   Any slot left empty auto-fills with the latest published news.
+  $heroSlotIds = [1, 2, 3, 4, 5];
+  $heroUsed    = collect();
+  $heroSlots   = [];
+
+  foreach ($heroSlotIds as $slot) {
+      $pinned = \App\Models\News::with('category')
           ->where('status', 'published')
-          ->where('hero_position', $position)
+          ->where('hero_position', $slot)
           ->whereNotIn('id', $heroUsed->all())
           ->latest('published_at')
-          ->limit($limit)
-          ->get();
-      $heroUsed = $heroUsed->merge($items->pluck('id'));
-      return $items;
-  };
-  $heroMainSet   = $heroPick(1, 1);
-  $heroTopSet    = $heroPick(2, 2);
-  $heroBottomSet = $heroPick(3, 2);
+          ->first();
+      if ($pinned) {
+          $heroUsed->push($pinned->id);
+      }
+      $heroSlots[$slot] = $pinned;
+  }
 
-  // Auto-fill remaining slots (1 + 2 + 2 = 5 total) with latest published news.
-  $heroFillNeed = (1 - $heroMainSet->count()) + (2 - $heroTopSet->count()) + (2 - $heroBottomSet->count());
+  $heroFillNeed = count(array_filter($heroSlots, fn($n) => $n === null));
   $heroFill = $heroFillNeed > 0
       ? \App\Models\News::with('category')->where('status', 'published')
           ->whereNotIn('id', $heroUsed->all())->latest('published_at')->limit($heroFillNeed)->get()
       : collect();
-  $heroTake = function ($set, $limit) use (&$heroFill) {
-      while ($set->count() < $limit && $heroFill->isNotEmpty()) {
-          $set->push($heroFill->shift());
+
+  foreach ($heroSlotIds as $slot) {
+      if (!$heroSlots[$slot] && $heroFill->isNotEmpty()) {
+          $heroSlots[$slot] = $heroFill->shift();
+          $heroUsed->push($heroSlots[$slot]->id);
       }
-      return $set;
-  };
-  $heroMain   = $heroTake($heroMainSet, 1)->first();
-  $heroTop    = $heroTake($heroTopSet, 2);
-  $heroBottom = $heroTake($heroBottomSet, 2);
-  $heroSide   = $heroTop->concat($heroBottom);        // top pair then bottom pair
-  $heroUsed   = $heroUsed->merge($heroSide->pluck('id'))->merge($heroMain?->id ? [$heroMain->id] : []);
+  }
+
+  $heroMain = $heroSlots[1];
+  $heroSide = collect([$heroSlots[2], $heroSlots[3], $heroSlots[4], $heroSlots[5]])->filter()->values();
 
   // Secondary strip: latest published news not already shown in the hero.
   $secondaryNews = \App\Models\News::with('category')->where('status', 'published')
@@ -149,18 +150,18 @@
     </div>
     @endif
 
-    <!-- Hero Positions 2 & 3: 2×2 boxed cards (right). Mobile keeps stacked list. -->
-    <div class="lg:col-span-5 flex flex-col gap-3 lg:grid lg:grid-cols-2 lg:gap-3 lg:content-start">
+    <!-- Hero slots 2-5: boxed cards stacked top-to-bottom (right). Mobile keeps the plain stacked list. -->
+    <div class="lg:col-span-5 flex flex-col gap-3">
       @foreach($heroSide as $shn)
       <a href="{{ route('news.show', $shn->slug) }}"
          class="group cursor-pointer flex gap-3 pb-3 border-b border-subtle last:border-b-0 last:pb-0
-                lg:flex-col lg:gap-0 lg:pb-0 lg:border lg:border-subtle lg:rounded-xl lg:overflow-hidden lg:bg-surface lg:shadow-sm lg:hover:shadow-lg lg:transition-shadow lg:duration-300">
-        <div class="flex-shrink-0 w-28 h-20 md:w-36 md:h-24 lg:w-full lg:h-36 overflow-hidden rounded-lg lg:rounded-none">
+                lg:gap-0 lg:pb-0 lg:flex-1 lg:items-stretch lg:border lg:border-subtle lg:rounded-xl lg:overflow-hidden lg:bg-surface lg:shadow-sm lg:hover:shadow-lg lg:transition-shadow lg:duration-300">
+        <div class="flex-shrink-0 w-28 h-20 md:w-36 md:h-24 lg:w-40 lg:h-auto overflow-hidden rounded-lg lg:rounded-none">
           <img class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                src="{{ $shn->featured_image ? storage_image_url($shn->featured_image) : asset('storage/' . (\App\Models\SeoSetting::first()?->logo ?? '')) }}"
                alt="{{ $shn->title }}" loading="lazy" width="288" height="192"/>
         </div>
-        <div class="min-w-0 flex-1 lg:p-3">
+        <div class="min-w-0 flex-1 lg:flex lg:flex-col lg:justify-center lg:p-3">
           @if($shn->category)
           <span class="text-secondary text-xs font-label-caps uppercase">{{ $shn->category->name }}</span>
           @endif

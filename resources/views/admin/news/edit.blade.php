@@ -152,11 +152,14 @@
                             <select class="form-select @error('hero_position') is-invalid @enderror" id="hero_position" name="hero_position">
                                 <option value="">-- হিরোতে দেখাবে না --</option>
                                 <option value="1" @selected(old('hero_position', $news->hero_position ?? '') == 1)>Position 1 — বড় নিউজ (বাম দিকে)</option>
-                                <option value="2" @selected(old('hero_position', $news->hero_position ?? '') == 2)>Position 2 — ডান দিকে উপরের সারি</option>
-                                <option value="3" @selected(old('hero_position', $news->hero_position ?? '') == 3)>Position 3 — ডান দিকে নিচের সারি</option>
+                                <option value="2" @selected(old('hero_position', $news->hero_position ?? '') == 2)>Position 2 - 1 — ডান কলামের ১ম (সবার উপরে)</option>
+                                <option value="3" @selected(old('hero_position', $news->hero_position ?? '') == 3)>Position 2 - 2 — ডান কলামের ২য়</option>
+                                <option value="4" @selected(old('hero_position', $news->hero_position ?? '') == 4)>Position 3 - 1 — ডান কলামের ৩য়</option>
+                                <option value="5" @selected(old('hero_position', $news->hero_position ?? '') == 5)>Position 3 - 2 — ডান কলামের ৪র্থ (সবার নিচে)</option>
                             </select>
                             <small class="text-muted">
-                                Position 1-এ ১টি, Position 2 ও 3-এ ২টি করে নিউজ দেখানো হয়। খালি স্লট সর্বশেষ নিউজ দিয়ে পূরণ হবে।
+                                প্রতিটি স্লটে একটি করে নিউজ বসে। কোনো স্লটে আগে থেকে অন্য নিউজ থাকলে সেটি সরে যাবে।
+                                খালি স্লট সর্বশেষ নিউজ দিয়ে পূরণ হবে।
                             </small>
                             @error('hero_position')
                                 <div class="invalid-feedback">{{ $message }}</div>
