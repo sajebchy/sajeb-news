@@ -59,6 +59,11 @@
             </button>
         </li>
         <li class="nav-item" role="presentation">
+            <button class="nav-link" id="mail-tab" data-bs-toggle="tab" data-bs-target="#mailSettings" type="button" role="tab" aria-controls="mailSettings" aria-selected="false">
+                <i class="bi bi-envelope-at"></i> ইমেইল / SMTP
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
             <button class="nav-link" id="push-tab" data-bs-toggle="tab" data-bs-target="#pushSettings" type="button" role="tab" aria-controls="pushSettings" aria-selected="false">
                 <i class="bi bi-bell"></i> Push Notifications
             </button>
@@ -659,6 +664,108 @@
                 <div class="col-12">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-check-circle"></i> Save Schema Settings
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Mail / SMTP Settings Tab -->
+        <div class="tab-pane fade" id="mailSettings" role="tabpanel" aria-labelledby="mail-tab">
+            <form action="{{ route('admin.settings.update') }}" method="POST" class="row g-3">
+                @csrf
+
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        <strong><i class="bi bi-info-circle"></i> ইমেইল পাঠানোর সেটিংস (SMTP)</strong>
+                        <p class="mb-1 mt-2">এই সেটিংস দিলে ওয়েবসাইট থেকে পাসওয়ার্ড রিসেট লিংক ও যোগাযোগ ফর্মের মেইল সরাসরি ইউজারের ইনবক্সে যাবে। খালি রাখলে কোনো মেইল পাঠানো হবে না।</p>
+                        <p class="mb-0"><strong>Hostinger ইমেইল ব্যবহার করলে:</strong> Host = <code>smtp.hostinger.com</code>, Port = <code>465</code>, Encryption = <code>SSL</code>. প্রথমে hPanel → Emails থেকে <code>contact@yourdomain.com</code> অ্যাকাউন্ট তৈরি করে নিন।</p>
+                    </div>
+                </div>
+
+                <!-- SMTP Server -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-primary bg-opacity-10">
+                            <h5 class="mb-0"><i class="bi bi-hdd-network"></i> SMTP সার্ভার</h5>
+                        </div>
+                        <div class="card-body row g-3">
+                            <div class="col-md-8">
+                                <label for="mail_host" class="form-label">SMTP Host</label>
+                                <input type="text" class="form-control @error('mail_host') is-invalid @enderror"
+                                       id="mail_host" name="mail_host"
+                                       value="{{ old('mail_host', optional($seoSettings)->mail_host ?? '') }}"
+                                       placeholder="smtp.hostinger.com">
+                                @error('mail_host')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-4">
+                                <label for="mail_port" class="form-label">Port</label>
+                                <input type="text" class="form-control @error('mail_port') is-invalid @enderror"
+                                       id="mail_port" name="mail_port"
+                                       value="{{ old('mail_port', optional($seoSettings)->mail_port ?? '') }}"
+                                       placeholder="465">
+                                @error('mail_port')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mail_username" class="form-label">Username (সম্পূর্ণ ইমেইল)</label>
+                                <input type="text" class="form-control @error('mail_username') is-invalid @enderror"
+                                       id="mail_username" name="mail_username"
+                                       value="{{ old('mail_username', optional($seoSettings)->mail_username ?? '') }}"
+                                       placeholder="contact@yourdomain.com" autocomplete="off">
+                                @error('mail_username')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mail_password" class="form-label">Password</label>
+                                <input type="password" class="form-control @error('mail_password') is-invalid @enderror"
+                                       id="mail_password" name="mail_password"
+                                       placeholder="{{ optional($seoSettings)->mail_password ? '•••••••• (সংরক্ষিত আছে — পরিবর্তন করতে নতুন পাসওয়ার্ড দিন)' : 'ইমেইল অ্যাকাউন্টের পাসওয়ার্ড' }}"
+                                       autocomplete="new-password">
+                                @error('mail_password')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mail_encryption" class="form-label">Encryption</label>
+                                <select class="form-control @error('mail_encryption') is-invalid @enderror" id="mail_encryption" name="mail_encryption">
+                                    @php $__enc = old('mail_encryption', optional($seoSettings)->mail_encryption ?? 'ssl'); @endphp
+                                    <option value="ssl" @selected($__enc === 'ssl')>SSL (Port 465)</option>
+                                    <option value="tls" @selected($__enc === 'tls')>TLS (Port 587)</option>
+                                    <option value="none" @selected($__enc === 'none')>None</option>
+                                </select>
+                                @error('mail_encryption')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- From Address -->
+                <div class="col-12">
+                    <div class="card">
+                        <div class="card-header bg-success bg-opacity-10">
+                            <h6 class="mb-0"><i class="bi bi-send"></i> প্রেরকের তথ্য (From)</h6>
+                        </div>
+                        <div class="card-body row g-3">
+                            <div class="col-md-6">
+                                <label for="mail_from_address" class="form-label">From Address</label>
+                                <input type="email" class="form-control @error('mail_from_address') is-invalid @enderror"
+                                       id="mail_from_address" name="mail_from_address"
+                                       value="{{ old('mail_from_address', optional($seoSettings)->mail_from_address ?? '') }}"
+                                       placeholder="contact@yourdomain.com">
+                                <small class="text-muted">সাধারণত SMTP Username-এর মতোই হয়।</small>
+                                @error('mail_from_address')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
+                                <label for="mail_from_name" class="form-label">From Name</label>
+                                <input type="text" class="form-control @error('mail_from_name') is-invalid @enderror"
+                                       id="mail_from_name" name="mail_from_name"
+                                       value="{{ old('mail_from_name', optional($seoSettings)->mail_from_name ?? (optional($seoSettings)->site_name ?? '')) }}"
+                                       placeholder="সজীব নিউজ">
+                                @error('mail_from_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-check-circle"></i> ইমেইল সেটিংস সংরক্ষণ করুন
                     </button>
                 </div>
             </form>

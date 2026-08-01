@@ -60,6 +60,14 @@ class SettingController extends Controller
             'enable_analytics' => 'nullable|boolean',
             'analytics_head_code' => 'nullable|string',
             'analytics_body_code' => 'nullable|string',
+            // Mail / SMTP settings
+            'mail_host' => 'nullable|string|max:255',
+            'mail_port' => 'nullable|string|max:10',
+            'mail_username' => 'nullable|string|max:255',
+            'mail_password' => 'nullable|string|max:255',
+            'mail_encryption' => 'nullable|in:ssl,tls,none',
+            'mail_from_address' => 'nullable|email|max:255',
+            'mail_from_name' => 'nullable|string|max:255',
             'robots_txt' => 'nullable|string',
             'facebook_url' => 'nullable|url',
             'twitter_url' => 'nullable|url',
@@ -103,6 +111,12 @@ class SettingController extends Controller
             'show_sidebar_ads' => 'nullable|boolean',
             'show_between_articles_ads' => 'nullable|boolean',
         ]);
+
+        // Keep the existing SMTP password when the field is submitted empty
+        // (password inputs are never re-rendered with their value for safety).
+        if (array_key_exists('mail_password', $validated) && ($validated['mail_password'] ?? '') === '') {
+            unset($validated['mail_password']);
+        }
 
         // Handle PC logo upload with optimization
         if ($request->hasFile('logo')) {

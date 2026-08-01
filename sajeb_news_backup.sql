@@ -1100,6 +1100,13 @@ CREATE TABLE `seo_settings` (
   `enable_analytics` tinyint(1) NOT NULL DEFAULT '1',
   `analytics_head_code` text COLLATE utf8mb4_unicode_ci,
   `analytics_body_code` text COLLATE utf8mb4_unicode_ci,
+  `mail_host` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail_port` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail_username` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail_password` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail_encryption` varchar(10) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail_from_address` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `mail_from_name` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -1112,7 +1119,7 @@ CREATE TABLE `seo_settings` (
 
 LOCK TABLES `seo_settings` WRITE;
 /*!40000 ALTER TABLE `seo_settings` DISABLE KEYS */;
-INSERT INTO `seo_settings` VALUES (1,'Sajeb News',NULL,NULL,NULL,NULL,1,1,1,0,NULL,NULL,'Sajeb News','http://localhost','Test NEWSTest NEWS','সজীব বাহাদুর','বাংলা মোটর','01834380873','info@test.com',NULL,NULL,'settings/logos/MIiGOxrZBVcSzKJgp4bNRXd9t6q6O9AgLbHDtizd.webp','settings/logos/X6VNgu3M1eLSXQTTK30EfVpmXBUAfx1OxMLdjHUm.png','settings/416NeBtHldSiP7o6T7TQvsmRHYCtlHI365UQHGOG.jpeg','settings/q42ESFou8rYaHThzOiIYcjCqPYvsjoYLNUP7L9Oo.webp','settings/logos/iqP4NRgNGFAJ6lcgmHeRngX85maS6Nly1sFMIMmX.webp','settings/Nhl4ilI5CnjoySR9RGIRkXiRzl9dtTYZmO1Nel9g.jpeg',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy',NULL,NULL,'BJxBz8FcstM_Me2a7Db_xxFRuSa9NrkONAOZFWzzcseVxUNeu5CE8qC69ab_s8wgh0lCVg-Hup6P6EqxgCR9i7I','T_AaafxMuhgcAvnjxz6SppYr2GMNGaqaMdCnFJLEAwQ',1,0.5,0,NULL,1,1,1,NULL,NULL,'2026-06-30 09:38:54','2026-07-09 05:16:21');
+INSERT INTO `seo_settings` VALUES (1,'Sajeb News',NULL,NULL,NULL,NULL,1,1,1,0,NULL,NULL,'Sajeb News','http://localhost','Test NEWSTest NEWS','সজীব বাহাদুর','বাংলা মোটর','01834380873','info@test.com',NULL,NULL,'settings/logos/MIiGOxrZBVcSzKJgp4bNRXd9t6q6O9AgLbHDtizd.webp','settings/logos/X6VNgu3M1eLSXQTTK30EfVpmXBUAfx1OxMLdjHUm.png','settings/416NeBtHldSiP7o6T7TQvsmRHYCtlHI365UQHGOG.jpeg','settings/q42ESFou8rYaHThzOiIYcjCqPYvsjoYLNUP7L9Oo.webp','settings/logos/iqP4NRgNGFAJ6lcgmHeRngX85maS6Nly1sFMIMmX.webp','settings/Nhl4ilI5CnjoySR9RGIRkXiRzl9dtTYZmO1Nel9g.jpeg',NULL,NULL,NULL,NULL,NULL,NULL,NULL,'https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy','https://fb.com/sajebchy',NULL,NULL,'BJxBz8FcstM_Me2a7Db_xxFRuSa9NrkONAOZFWzzcseVxUNeu5CE8qC69ab_s8wgh0lCVg-Hup6P6EqxgCR9i7I','T_AaafxMuhgcAvnjxz6SppYr2GMNGaqaMdCnFJLEAwQ',1,0.5,0,NULL,1,1,1,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,NULL,'2026-06-30 09:38:54','2026-07-09 05:16:21');
 /*!40000 ALTER TABLE `seo_settings` ENABLE KEYS */;
 UNLOCK TABLES;
 

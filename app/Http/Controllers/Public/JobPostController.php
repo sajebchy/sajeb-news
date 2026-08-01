@@ -50,6 +50,7 @@ class JobPostController extends Controller
                 ->limit(5)
                 ->get();
         } catch (\Throwable $e) {
+            \Log::error('Job listing query failed: ' . $e->getMessage(), ['exception' => $e]);
             $jobs = new \Illuminate\Pagination\LengthAwarePaginator([], 0, 12);
             $featuredJobs = collect();
         }

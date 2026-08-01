@@ -48,7 +48,9 @@ class JobPost extends Model
 
     public function scopePublished($query)
     {
-        return $query->where('status', 'published')->whereNotNull('published_at');
+        // Status is the source of truth for visibility. A published job must
+        // always show, even if published_at somehow wasn't set on it.
+        return $query->where('status', 'published');
     }
 
     public function scopeActive($query)
