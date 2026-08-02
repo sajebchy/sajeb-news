@@ -96,7 +96,9 @@ class VisitorAnalytics {
             news_id: this.newsId,
             time_spent: this.trackingData.time_spent,
             scroll_percentage: this.trackingData.scroll_percentage,
-            completed_reading: this.trackingData.completed_reading,
+            // Send 1/0 (not true/false) so it validates under Laravel's `boolean`
+            // rule on both the sendBeacon (FormData) and fetch (JSON) paths.
+            completed_reading: this.trackingData.completed_reading ? 1 : 0,
             screen_resolution: this.trackingData.screen_resolution
         };
 

@@ -50,6 +50,8 @@
 @if($__faqSchema)
 <script type="application/ld+json">{!! json_encode($__faqSchema, JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES) !!}</script>
 @endif
+{{-- Visitor analytics tracking (records reading time, scroll, source, device) --}}
+<script src="{{ asset('js/visitor-analytics.js') }}?v=2" defer></script>
 @endpush
 
 @section('content')
@@ -90,7 +92,7 @@
   <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
 
     {{-- ─────── LEFT: Article Content (70%) ─────── --}}
-    <article class="lg:col-span-8" itemscope itemtype="https://schema.org/NewsArticle">
+    <article class="lg:col-span-8" itemscope itemtype="https://schema.org/NewsArticle" data-news-id="{{ $news->id }}">
 
       {{-- Breadcrumbs (Desktop only) --}}
       <nav class="hidden md:flex items-center gap-2 mb-stack-md text-on-surface-variant">
