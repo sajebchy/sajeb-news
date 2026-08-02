@@ -218,8 +218,14 @@
 
         @if(auth()->user()->hasRole(['super-admin', 'admin']))
         {!! adminNavLink('admin.job-posts.index', 'bi-briefcase', 'চাকরি', 'admin.job-posts') !!}
-        {!! adminNavLink('admin.external-news.index', 'bi-rss', 'এখন প্রকাশিত খবর', 'admin.external-news') !!}
-        {!! adminNavLink('admin.news-sources.index', 'bi-broadcast-pin', 'সোর্স ম্যানেজ', 'admin.news-sources') !!}
+        {{-- "এখন প্রকাশিত খবর" — সোর্স ম্যানেজ পেজেও highlight থাকে (আলাদা nav আইটেম নেই; সোর্স ম্যানেজ পেজের ভেতরের বাটন থেকে) --}}
+        @php $__extNewsActive = request()->routeIs('admin.external-news*') || request()->routeIs('admin.news-sources*'); @endphp
+        <a href="{{ route('admin.external-news.index') }}"
+           class="flex items-center gap-3 px-md py-sm rounded-xl text-sm font-medium transition-all duration-150 ease-in-out {{ $__extNewsActive ? 'bg-primary-container text-on-primary-container font-bold shadow-sm' : 'text-on-surface-variant hover:bg-surface-variant hover:text-on-surface' }}"
+           onclick="if(window.innerWidth<1024)closeSidebar()">
+            <i class="bi bi-rss" style="font-size:20px;line-height:1;"></i>
+            <span>এখন প্রকাশিত খবর</span>
+        </a>
         {!! adminNavLink('admin.advertisements.index', 'bi-megaphone', 'বিজ্ঞাপন', 'admin.advertisements') !!}
         {!! adminNavLink('admin.users.index', 'bi-people', 'ব্যবহারকারী', 'admin.users') !!}
         {!! adminNavLink('admin.newsletters.index', 'bi-envelope', 'নিউজলেটার', 'admin.newsletters') !!}

@@ -11,6 +11,12 @@
 </div>
 @endif
 
+<div class="mb-4">
+    <a href="{{ route('admin.external-news.index') }}" class="inline-flex items-center gap-1 text-sm text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span> এখন প্রকাশিত খবর
+    </a>
+</div>
+
 <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
     <div>
         <h2 class="text-2xl font-bold text-on-surface" style="font-family:'SolaimanLipi',serif;">সোর্স ম্যানেজ</h2>
