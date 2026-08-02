@@ -11,6 +11,16 @@
 </div>
 @endif
 
+@isset($setupNeeded)
+<div class="mb-5 flex items-start gap-3 bg-amber-50 border border-amber-300 text-amber-800 px-4 py-3 rounded-xl text-sm">
+    <span class="material-symbols-outlined text-[18px] mt-0.5">warning</span>
+    <div>
+        <strong>সেটআপ অসম্পূর্ণ:</strong> এই ফিচারের ডেটাবেজ টেবিল দুটি (<code>news_sources</code>, <code>external_news_items</code>) এখনো তৈরি হয়নি।
+        হোস্টিংয়ে মাইগ্রেশন চালান (phpMyAdmin-এ SQL অথবা <code>php artisan migrate</code>), তারপর এই পেজটি রিলোড করুন।
+    </div>
+</div>
+@endisset
+
 {{-- ===== Header ===== --}}
 <header class="flex flex-col md:flex-row justify-between items-start md:items-center mb-6 gap-4">
     <div>

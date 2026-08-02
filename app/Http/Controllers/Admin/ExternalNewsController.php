@@ -7,6 +7,9 @@ use App\Models\ExternalNewsItem;
 use App\Models\NewsSource;
 use App\Services\NewsAggregatorService;
 use Illuminate\Http\Request;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class ExternalNewsController extends Controller
 {
@@ -22,16 +25,31 @@ class ExternalNewsController extends Controller
      */
     public function index(Request $request)
     {
-        // Fetch-on-visit: if any active source is stale (never fetched or >15 min old).
-        $stale = NewsSource::active()
-            ->where(function ($q) {
-                $q->whereNull('last_fetched_at')
-                  ->orWhere('last_fetched_at', '<', now()->subMinutes(15));
-            })
-            ->exists();
+        // Guard: if the aggregator tables haven't been migrated on this
+        // environment yet, show a clear setup notice instead of a 500.
+        if (!Schema::hasTable('news_sources') || !Schema::hasTable('external_news_items')) {
+            return view('admin.external-news.index', [
+                'items' => new LengthAwarePaginator([], 0, 15),
+                'sources' => collect(),
+                'unreadCount' => 0,
+                'setupNeeded' => true,
+            ]);
+        }
 
-        if ($stale && !$request->boolean('nofetch')) {
-            $this->aggregator->fetchAllActive();
+        // Fetch-on-visit: if any active source is stale (never fetched or >15 min old).
+        try {
+            $stale = NewsSource::active()
+                ->where(function ($q) {
+                    $q->whereNull('last_fetched_at')
+                      ->orWhere('last_fetched_at', '<', now()->subMinutes(15));
+                })
+                ->exists();
+
+            if ($stale && !$request->boolean('nofetch')) {
+                $this->aggregator->fetchAllActive();
+            }
+        } catch (\Throwable $e) {
+            Log::error('External news fetch-on-visit failed: ' . $e->getMessage());
         }
 
         $query = ExternalNewsItem::with('source')->latest('published_at');
