@@ -157,6 +157,16 @@ Route::middleware(['auth', 'verified', 'no-back-history', 'role:super-admin|admi
         // Job Posts Management (super-admin, admin only)
         Route::resource('job-posts', \App\Http\Controllers\Admin\JobPostController::class);
 
+        // News Aggregator — "এখন প্রকাশিত খবর" (super-admin, admin only)
+        Route::post('/external-news/refresh', [\App\Http\Controllers\Admin\ExternalNewsController::class, 'refresh'])->name('external-news.refresh');
+        Route::get('/external-news', [\App\Http\Controllers\Admin\ExternalNewsController::class, 'index'])->name('external-news.index');
+        Route::get('/external-news/{external_news}', [\App\Http\Controllers\Admin\ExternalNewsController::class, 'show'])->name('external-news.show');
+        Route::post('/external-news/{external_news}/read', [\App\Http\Controllers\Admin\ExternalNewsController::class, 'markRead'])->name('external-news.read');
+        Route::delete('/external-news/{external_news}', [\App\Http\Controllers\Admin\ExternalNewsController::class, 'destroy'])->name('external-news.destroy');
+
+        Route::post('/news-sources/{news_source}/toggle', [\App\Http\Controllers\Admin\NewsSourceController::class, 'toggle'])->name('news-sources.toggle');
+        Route::resource('news-sources', \App\Http\Controllers\Admin\NewsSourceController::class)->except(['show']);
+
         // Live Streams — create/edit/delete (super-admin, admin only)
         Route::post('/live-streams', [\App\Http\Controllers\Admin\LiveStreamController::class, 'store'])->name('live-streams.store');
         Route::get('/live-streams/create', [\App\Http\Controllers\Admin\LiveStreamController::class, 'create'])->name('live-streams.create');

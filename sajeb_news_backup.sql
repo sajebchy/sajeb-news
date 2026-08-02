@@ -388,6 +388,80 @@ LOCK TABLES `job_batches` WRITE;
 UNLOCK TABLES;
 
 --
+-- Table structure for table `news_sources`
+--
+
+DROP TABLE IF EXISTS `news_sources`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `news_sources` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `site_url` varchar(255) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `feed_url` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `is_active` tinyint(1) NOT NULL DEFAULT '1',
+  `last_fetched_at` timestamp NULL DEFAULT NULL,
+  `last_status` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `last_error` text COLLATE utf8mb4_unicode_ci,
+  `items_count` int unsigned NOT NULL DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `news_sources_is_active_index` (`is_active`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `news_sources`
+--
+
+LOCK TABLES `news_sources` WRITE;
+/*!40000 ALTER TABLE `news_sources` DISABLE KEYS */;
+/*!40000 ALTER TABLE `news_sources` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `external_news_items`
+--
+
+DROP TABLE IF EXISTS `external_news_items`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `external_news_items` (
+  `id` bigint unsigned NOT NULL AUTO_INCREMENT,
+  `news_source_id` bigint unsigned NOT NULL,
+  `guid` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `url` text COLLATE utf8mb4_unicode_ci NOT NULL,
+  `title` varchar(500) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `author` varchar(255) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `excerpt` text COLLATE utf8mb4_unicode_ci,
+  `content` longtext COLLATE utf8mb4_unicode_ci,
+  `image_url` text COLLATE utf8mb4_unicode_ci,
+  `keywords` text COLLATE utf8mb4_unicode_ci,
+  `published_at` timestamp NULL DEFAULT NULL,
+  `fetched_at` timestamp NULL DEFAULT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT '0',
+  `imported_news_id` bigint unsigned DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `ext_news_source_guid_unique` (`news_source_id`,`guid`),
+  KEY `external_news_items_published_at_index` (`published_at`),
+  KEY `external_news_items_is_read_index` (`is_read`),
+  CONSTRAINT `external_news_items_news_source_id_foreign` FOREIGN KEY (`news_source_id`) REFERENCES `news_sources` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `external_news_items`
+--
+
+LOCK TABLES `external_news_items` WRITE;
+/*!40000 ALTER TABLE `external_news_items` DISABLE KEYS */;
+/*!40000 ALTER TABLE `external_news_items` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
 -- Table structure for table `job_posts`
 --
 
