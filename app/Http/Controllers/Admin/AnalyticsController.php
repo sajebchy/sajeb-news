@@ -14,13 +14,29 @@ class AnalyticsController extends Controller
     /**
      * Display the analytics dashboard.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // Get statistics
-        $totalViews = NewsAnalytics::sum('total_views') ?? 0;
-        $totalEngagement = NewsAnalytics::sum('social_shares') ?? 0;
-        $averageReadTime = NewsAnalytics::avg('average_time_on_page') ?? 0;
-        $totalClicks = NewsAnalytics::sum('daily_views') ?? 0;
+        // ── Period filter (applies to visitor analytics) ──
+        $period = in_array($request->get('period'), ['today', 'week', 'month', 'year'], true)
+            ? $request->get('period')
+            : 'all';
+
+        $startDate = match ($period) {
+            'today' => now()->startOfDay(),
+            'week'  => now()->subDays(7),
+            'month' => now()->subDays(30),
+            'year'  => now()->startOfYear(),
+            default => null,
+        };
+
+        // Helper: a fresh VisitorAnalytic query with the period applied.
+        $visitorQuery = fn () => VisitorAnalytic::query()
+            ->when($startDate, fn ($q) => $q->where('visit_date', '>=', $startDate));
+
+        // ── All-time totals (not period-based) ──
+        $totalViews = News::sum('views') ?? 0;
+        $totalNews  = News::where('status', 'published')->count();
+        $totalUsers = User::count();
 
         // Top performing news (by views)
         $topNews = News::with('category')
@@ -29,26 +45,28 @@ class AnalyticsController extends Controller
             ->limit(10)
             ->get();
 
-        // Total news & users for stat cards
-        $totalNews  = \App\Models\News::where('status', 'published')->count();
-        $totalUsers = \App\Models\User::count();
-
         // Category performance
         $categoryAnalytics = \DB::table('news')
             ->join('categories', 'news.category_id', '=', 'categories.id')
             ->selectRaw('categories.name, COUNT(news.id) as count, SUM(news.views) as total_views')
             ->groupBy('categories.id', 'categories.name')
+            ->orderByDesc('total_views')
             ->limit(10)
             ->get();
 
+        // ── Visitor analytics (period-filtered) ──
+        $totalVisitors = $visitorQuery()->count();
+
         // Recent visitor activity
-        $recentVisitors = VisitorAnalytic::with('news')
+        $recentVisitors = $visitorQuery()
+            ->with('news')
             ->latest('visit_date')
-            ->limit(10)
+            ->limit(15)
             ->get();
 
         // Traffic source breakdown
-        $sourceBreakdown = VisitorAnalytic::selectRaw('referrer_source, COUNT(*) as total')
+        $sourceBreakdown = $visitorQuery()
+            ->selectRaw('referrer_source, COUNT(*) as total')
             ->groupBy('referrer_source')
             ->orderByDesc('total')
             ->get()
@@ -71,20 +89,16 @@ class AnalyticsController extends Controller
                 return $row;
             });
 
-        $totalVisitors = $sourceBreakdown->sum('total') ?: 1;
-
-        // Device breakdown from visitor_analytics
-        $deviceBreakdown = VisitorAnalytic::selectRaw('visitor_device, COUNT(*) as total')
+        // Device breakdown from visitor_analytics (period-filtered)
+        $deviceBreakdown = $visitorQuery()
+            ->selectRaw('visitor_device, COUNT(*) as total')
             ->groupBy('visitor_device')
             ->get()
             ->keyBy('visitor_device');
-        $totalDevices = $deviceBreakdown->sum('total') ?: 1;
+        $totalDevices = $deviceBreakdown->sum('total');
 
         return view('admin.analytics.index', [
             'totalViews'       => $totalViews,
-            'totalEngagement'  => $totalEngagement,
-            'averageReadTime'  => $averageReadTime,
-            'totalClicks'      => $totalClicks,
             'totalNews'        => $totalNews,
             'totalUsers'       => $totalUsers,
             'topNews'          => $topNews,
@@ -94,6 +108,7 @@ class AnalyticsController extends Controller
             'totalVisitors'    => $totalVisitors,
             'deviceBreakdown'  => $deviceBreakdown,
             'totalDevices'     => $totalDevices,
+            'period'           => $period,
         ]);
     }
 
@@ -129,13 +144,12 @@ class AnalyticsController extends Controller
         $avgReadingTime = $visitors->isEmpty() ? 0 : round($visitors->sum('time_spent_seconds') / $visitors->total() / 60, 1);
         $completedReading = $visitors->isEmpty() ? 0 : round(($visitors->where('completed_reading', true)->count() / $visitors->total()) * 100);
         
-        // Get top referrer source
+        // Get top referrer source (null-safe when there are no visitors yet)
         $topSource = VisitorAnalytic::where('news_id', $newsId)
             ->selectRaw('referrer_source, COUNT(*) as count')
             ->groupBy('referrer_source')
             ->orderByDesc('count')
-            ->first()
-            ->referrer_source ?? 'Direct';
+            ->first()?->referrer_source ?? 'Direct';
 
         return view('admin.analytics.show', [
             'news' => $news,

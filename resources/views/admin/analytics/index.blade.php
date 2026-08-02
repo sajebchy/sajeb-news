@@ -4,6 +4,7 @@
 
 @section('content')
 @php
+    $period = $period ?? 'all';
     $mobile  = $deviceBreakdown->get('Mobile')?->total  ?? 0;
     $desktop = $deviceBreakdown->get('Desktop')?->total ?? 0;
     $tablet  = $deviceBreakdown->get('Tablet')?->total  ?? 0;
@@ -12,6 +13,11 @@
     $tabPct  = $totalDevices > 0 ? round($tablet  / $totalDevices * 100) : 0;
 
     $catTotal = $categoryAnalytics->sum('total_views') ?: 1;
+
+    $periodLabel = [
+        'all' => 'সর্বকাল', 'today' => 'আজ', 'week' => 'গত ৭ দিন',
+        'month' => 'গত ৩০ দিন', 'year' => 'এই বছর',
+    ][$period] ?? 'সর্বকাল';
 @endphp
 
 {{-- ── Header ─────────────────────────────────────────────── --}}
@@ -20,9 +26,23 @@
         <h2 class="font-display text-2xl font-bold text-primary">অ্যানালিটিক্স ওভারভিউ</h2>
         <p class="text-on-surface-variant text-sm mt-1">আপনার নিউজ পোর্টালের পারফরম্যান্স বিশ্লেষণ</p>
     </div>
-    <div class="flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-xl border border-outline-variant text-sm text-on-surface-variant">
-        <span class="material-symbols-outlined text-[18px]">calendar_today</span>
-        <span>আজকের তারিখ: {{ now()->locale('bn')->isoFormat('D MMMM, YYYY') }}</span>
+    <div class="flex items-center gap-2 flex-wrap">
+        {{-- Period filter — drives all visitor analytics below --}}
+        <form method="GET" class="flex items-center gap-2 bg-surface-container-high px-3 py-2 rounded-xl border border-outline-variant">
+            <span class="material-symbols-outlined text-[18px] text-on-surface-variant">filter_alt</span>
+            <select name="period" onchange="this.form.submit()"
+                    class="bg-transparent text-sm text-on-surface font-semibold outline-none cursor-pointer pr-2">
+                <option value="all"   @selected($period==='all')>সর্বকাল</option>
+                <option value="today" @selected($period==='today')>আজ</option>
+                <option value="week"  @selected($period==='week')>এই সপ্তাহ (৭ দিন)</option>
+                <option value="month" @selected($period==='month')>এই মাস (৩০ দিন)</option>
+                <option value="year"  @selected($period==='year')>এই বছর</option>
+            </select>
+        </form>
+        <div class="hidden sm:flex items-center gap-2 bg-surface-container-high px-4 py-2 rounded-xl border border-outline-variant text-sm text-on-surface-variant">
+            <span class="material-symbols-outlined text-[18px]">calendar_today</span>
+            <span>{{ now()->locale('bn')->isoFormat('D MMMM, YYYY') }}</span>
+        </div>
     </div>
 </div>
 
@@ -65,6 +85,7 @@
         </div>
         <p class="text-on-surface-variant text-xs font-semibold uppercase tracking-wide mb-1">মোট ভিজিটর</p>
         <p class="font-display text-2xl font-bold text-on-surface">{{ number_format($totalVisitors) }}</p>
+        <p class="text-[10px] text-on-surface-variant mt-0.5">{{ $periodLabel }}</p>
     </div>
 </div>
 
@@ -96,7 +117,7 @@
 
     {{-- Traffic Sources --}}
     <div class="bg-surface p-6 rounded-xl border border-outline-variant">
-        <h4 class="font-display text-base font-bold text-on-surface mb-5">ট্র্যাফিক সোর্স</h4>
+        <h4 class="font-display text-base font-bold text-on-surface mb-5">ট্র্যাফিক সোর্স <span class="text-xs font-normal text-on-surface-variant">· {{ $periodLabel }}</span></h4>
         @if($sourceBreakdown->count())
         <div class="space-y-3">
             @foreach($sourceBreakdown as $src)
@@ -126,7 +147,7 @@
 
     {{-- Device Breakdown --}}
     <div class="bg-surface p-6 rounded-xl border border-outline-variant">
-        <h4 class="font-display text-base font-bold text-on-surface mb-5">ডিভাইস ব্রেকডাউন</h4>
+        <h4 class="font-display text-base font-bold text-on-surface mb-5">ডিভাইস ব্রেকডাউন <span class="text-xs font-normal text-on-surface-variant">· {{ $periodLabel }}</span></h4>
         <div class="space-y-5">
             <div class="flex items-center gap-3">
                 <span class="material-symbols-outlined text-on-surface-variant text-[24px]">smartphone</span>
@@ -165,8 +186,8 @@
                 </div>
             </div>
         </div>
-        @if($totalDevices <= 1)
-        <p class="text-xs text-on-surface-variant text-center mt-4">ভিজিটর ডেটা জমা হলে এখানে দেখাবে</p>
+        @if($totalDevices < 1)
+        <p class="text-xs text-on-surface-variant text-center mt-4">এই সময়ে কোনো ভিজিটর ডেটা নেই</p>
         @endif
     </div>
 </div>
@@ -237,7 +258,7 @@
 {{-- ── Real-time Visitors ──────────────────────────────────── --}}
 <div class="bg-surface rounded-xl border border-outline-variant overflow-hidden">
     <div class="px-6 py-4 border-b border-outline-variant">
-        <h4 class="font-display text-base font-bold text-on-surface">সাম্প্রতিক ভিজিটর অ্যাক্টিভিটি</h4>
+        <h4 class="font-display text-base font-bold text-on-surface">সাম্প্রতিক ভিজিটর অ্যাক্টিভিটি <span class="text-xs font-normal text-on-surface-variant">· {{ $periodLabel }}</span></h4>
     </div>
     <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse text-sm">
@@ -276,7 +297,8 @@
                 <tr>
                     <td colspan="4" class="px-6 py-12 text-center text-on-surface-variant">
                         <span class="material-symbols-outlined text-[40px] block mb-2">sensors_off</span>
-                        এখনো কোনো ভিজিটর ডেটা নেই
+                        {{ $period === 'all' ? 'এখনো কোনো ভিজিটর ডেটা নেই' : 'এই সময়ে (' . $periodLabel . ') কোনো ভিজিটর ডেটা নেই' }}
+                        <p class="text-xs mt-1">নিউজ পেজে পাঠক এলে ডেটা জমা হবে।</p>
                     </td>
                 </tr>
                 @endforelse

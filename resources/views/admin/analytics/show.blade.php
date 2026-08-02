@@ -1,342 +1,130 @@
 @extends('layouts.admin')
 
-@section('page-title', 'Visitor Analytics - ' . $news->title)
+@section('page-title', 'ভিজিটর বিশ্লেষণ')
 
 @section('content')
+
+{{-- Back --}}
 <div class="mb-4">
-    <a href="{{ route('admin.analytics') }}" class="btn btn-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i> Back to Analytics
+    <a href="{{ route('admin.analytics') }}" class="inline-flex items-center gap-1 text-sm text-on-surface-variant hover:text-primary">
+        <span class="material-symbols-outlined text-[18px]">arrow_back</span> অ্যানালিটিক্সে ফিরে যান
     </a>
-    <h5 class="mt-3"><i class="bi bi-graph-up"></i> Visitor Analytics for: {{ $news->title }}</h5>
 </div>
 
-<!-- Summary Statistics -->
-<div class="row mb-4">
-    <div class="col-12 col-sm-6 col-lg-3 mb-3">
-        <div class="stat-card primary">
-            <div class="stat-card-icon text-primary">
-                <i class="bi bi-eye"></i>
-            </div>
-            <div class="stat-card-value">{{ $visitors->count() }}</div>
-            <div class="stat-card-label">Total Visitors</div>
-        </div>
-    </div>
+{{-- Header --}}
+<div class="mb-6">
+    <p class="text-xs font-semibold text-primary uppercase tracking-wide mb-1">ভিজিটর বিশ্লেষণ</p>
+    <h2 class="text-xl md:text-2xl font-bold text-on-surface leading-snug" style="font-family:'SolaimanLipi',serif;">{{ $news->title }}</h2>
+</div>
 
-    <div class="col-12 col-sm-6 col-lg-3 mb-3">
-        <div class="stat-card info">
-            <div class="stat-card-icon text-info">
-                <i class="bi bi-clock"></i>
-            </div>
-            <div class="stat-card-value">{{ round($avgReadingTime) }}m</div>
-            <div class="stat-card-label">Avg Reading Time</div>
-        </div>
+{{-- ── Summary Cards ── --}}
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant">
+        <span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg text-[22px] mb-3 inline-block">group</span>
+        <p class="text-on-surface-variant text-xs font-semibold uppercase tracking-wide mb-1">মোট ভিজিটর</p>
+        <p class="font-display text-2xl font-bold text-on-surface">{{ number_format($visitors->total()) }}</p>
     </div>
-
-    <div class="col-12 col-sm-6 col-lg-3 mb-3">
-        <div class="stat-card success">
-            <div class="stat-card-icon text-success">
-                <i class="bi bi-check-circle"></i>
-            </div>
-            <div class="stat-card-value">{{ $completedReading }}%</div>
-            <div class="stat-card-label">Completed Reading</div>
-        </div>
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant">
+        <span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg text-[22px] mb-3 inline-block">schedule</span>
+        <p class="text-on-surface-variant text-xs font-semibold uppercase tracking-wide mb-1">গড় পঠন সময়</p>
+        <p class="font-display text-2xl font-bold text-on-surface">{{ $avgReadingTime }}<span class="text-base"> মিনিট</span></p>
     </div>
-
-    <div class="col-12 col-sm-6 col-lg-3 mb-3">
-        <div class="stat-card warning">
-            <div class="stat-card-icon text-warning">
-                <i class="bi bi-share"></i>
-            </div>
-            <div class="stat-card-value">{{ $topSource }}</div>
-            <div class="stat-card-label">Top Referrer</div>
-        </div>
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant">
+        <span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg text-[22px] mb-3 inline-block">task_alt</span>
+        <p class="text-on-surface-variant text-xs font-semibold uppercase tracking-wide mb-1">সম্পূর্ণ পড়েছে</p>
+        <p class="font-display text-2xl font-bold text-on-surface">{{ $completedReading }}%</p>
+    </div>
+    <div class="bg-surface p-5 rounded-xl border border-outline-variant">
+        <span class="material-symbols-outlined text-primary bg-primary-fixed p-2 rounded-lg text-[22px] mb-3 inline-block">share</span>
+        <p class="text-on-surface-variant text-xs font-semibold uppercase tracking-wide mb-1">শীর্ষ সোর্স</p>
+        <p class="font-display text-xl font-bold text-on-surface capitalize">{{ $topSource }}</p>
     </div>
 </div>
 
-<!-- Filters -->
-<div class="card mb-4 shadow-sm">
-    <div class="card-body">
-        <form method="GET" class="row g-3">
-            <div class="col-md-4">
-                <input type="text" name="search" class="form-control" placeholder="Search by IP or country..." value="{{ request('search') }}">
-            </div>
-            <div class="col-md-4">
-                <select name="source" class="form-select">
-                    <option value="">All Sources</option>
-                    <option value="google" @selected(request('source') === 'google')>Google</option>
-                    <option value="facebook" @selected(request('source') === 'facebook')>Facebook</option>
-                    <option value="twitter" @selected(request('source') === 'twitter')>Twitter</option>
-                    <option value="chatgpt" @selected(request('source') === 'chatgpt')>ChatGPT</option>
-                    <option value="direct" @selected(request('source') === 'direct')>Direct</option>
-                </select>
-            </div>
-            <div class="col-md-4">
-                <button type="submit" class="btn btn-primary w-100">
-                    <i class="bi bi-search"></i> Filter
-                </button>
-            </div>
-        </form>
+{{-- ── Filter ── --}}
+<form method="GET" class="bg-surface-container-lowest border border-outline-variant rounded-xl p-4 mb-6 flex flex-col md:flex-row gap-3 items-center">
+    <div class="relative w-full md:w-72">
+        <span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[20px]">search</span>
+        <input type="text" name="search" value="{{ request('search') }}"
+               class="w-full pl-10 pr-4 py-2.5 bg-surface border border-outline-variant rounded-xl text-sm outline-none focus:ring-2 focus:ring-primary"
+               placeholder="IP, দেশ বা শহর খুঁজুন...">
+    </div>
+    <select name="source" class="bg-surface border border-outline-variant rounded-xl px-4 py-2.5 text-sm text-on-surface outline-none focus:ring-2 focus:ring-primary w-full md:w-auto">
+        <option value="">সব সোর্স</option>
+        @foreach(['google'=>'Google','facebook'=>'Facebook','twitter'=>'Twitter/X','chatgpt'=>'ChatGPT','bing'=>'Bing','whatsapp'=>'WhatsApp','linkedin'=>'LinkedIn','direct'=>'Direct','other'=>'অন্যান্য'] as $val=>$lbl)
+        <option value="{{ $val }}" @selected(request('source') === $val)>{{ $lbl }}</option>
+        @endforeach
+    </select>
+    <button type="submit" class="bg-primary text-white px-5 py-2.5 rounded-xl font-bold text-sm hover:opacity-90 transition-all whitespace-nowrap">
+        <span class="material-symbols-outlined text-[16px] align-middle">filter_alt</span> ফিল্টার
+    </button>
+</form>
+
+{{-- ── Visitor Table ── --}}
+<div class="bg-surface rounded-xl border border-outline-variant overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-sm">
+            <thead class="bg-surface-container-low">
+                <tr>
+                    <th class="px-5 py-3 text-on-surface-variant font-semibold text-xs uppercase tracking-wide">IP</th>
+                    <th class="px-5 py-3 text-on-surface-variant font-semibold text-xs uppercase tracking-wide hidden md:table-cell">লোকেশন ও ডিভাইস</th>
+                    <th class="px-5 py-3 text-on-surface-variant font-semibold text-xs uppercase tracking-wide">সোর্স</th>
+                    <th class="px-5 py-3 text-on-surface-variant font-semibold text-xs uppercase tracking-wide">পঠন</th>
+                    <th class="px-5 py-3 text-on-surface-variant font-semibold text-xs uppercase tracking-wide text-right">সময়</th>
+                    <th class="px-5 py-3 text-on-surface-variant font-semibold text-xs uppercase tracking-wide text-center hidden lg:table-cell">বিস্তারিত</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-outline-variant">
+                @forelse($visitors as $visitor)
+                <tr class="hover:bg-surface-container-lowest transition-colors">
+                    <td class="px-5 py-3">
+                        <code class="text-primary text-xs bg-primary-fixed px-2 py-0.5 rounded">{{ $visitor->visitor_ip ?? '—' }}</code>
+                    </td>
+                    <td class="px-5 py-3 hidden md:table-cell">
+                        <p class="text-xs text-on-surface">
+                            <span class="material-symbols-outlined text-[14px] align-middle">location_on</span>
+                            {{ $visitor->visitor_city ?? '—' }}, {{ $visitor->visitor_country ?? '—' }}
+                        </p>
+                        <p class="text-xs text-outline mt-0.5">{{ $visitor->visitor_device ?? '—' }} · {{ $visitor->browser ?? '' }} · {{ $visitor->os ?? '' }}</p>
+                    </td>
+                    <td class="px-5 py-3">
+                        <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-lg bg-surface-container text-on-surface">
+                            <i class="bi {{ $visitor->source_icon }} text-[12px]"></i>
+                            {{ ucfirst($visitor->referrer_source ?? 'direct') }}
+                        </span>
+                    </td>
+                    <td class="px-5 py-3">
+                        <span class="text-on-surface font-semibold">{{ $visitor->reading_time }}</span>
+                        <span class="block text-xs text-outline">{{ $visitor->scroll_percentage }}% স্ক্রল
+                            @if($visitor->completed_reading)<span class="text-tertiary">· সম্পূর্ণ</span>@endif
+                        </span>
+                    </td>
+                    <td class="px-5 py-3 text-right text-xs text-on-surface-variant whitespace-nowrap">
+                        {{ $visitor->visit_date?->diffForHumans() ?? '—' }}
+                    </td>
+                    <td class="px-5 py-3 text-center hidden lg:table-cell">
+                        <a href="{{ route('admin.analytics.visitor-detail', [$news->id, $visitor->id]) }}"
+                           class="inline-flex items-center gap-1 text-xs text-primary font-semibold hover:underline">
+                            <span class="material-symbols-outlined text-[16px]">visibility</span>
+                        </a>
+                    </td>
+                </tr>
+                @empty
+                <tr>
+                    <td colspan="6" class="px-6 py-16 text-center text-on-surface-variant">
+                        <span class="material-symbols-outlined text-[40px] block mb-2">sensors_off</span>
+                        এই সংবাদটির জন্য এখনো কোনো ভিজিটর ডেটা নেই।
+                        <p class="text-xs mt-1">পাঠক এই খবরটি পড়লে এখানে বিস্তারিত (লোকেশন, ডিভাইস, সোর্স, পঠন সময়) দেখাবে।</p>
+                    </td>
+                </tr>
+                @endforelse
+            </tbody>
+        </table>
     </div>
 </div>
 
-<!-- Visitors List - Card View -->
-<div class="card shadow-sm mb-4">
-    <div class="card-header bg-light">
-        <h6 class="mb-0"><i class="bi bi-people"></i> Visitor Details</h6>
-    </div>
-    <div class="card-body p-0">
-        @forelse ($visitors as $visitor)
-            <div class="visitor-card shadow-sm mb-3 p-4" style="border-left: 4px solid #667eea; background: #f9f9f9;">
-                <div class="row">
-                    <!-- Visitor Info -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-info">
-                            <label class="form-label text-muted small"><i class="bi bi-person-badge"></i> Visitor Info</label>
-                            <div>
-                                <strong class="d-block"><i class="bi bi-globe"></i> {{ $visitor->visitor_ip ?? 'Unknown' }}</strong>
-                                <small class="text-muted d-block">{{ $visitor->browser ?? 'Unknown Browser' }}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Location -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-location">
-                            <label class="form-label text-muted small"><i class="bi bi-geo-alt"></i> Location</label>
-                            <div>
-                                <strong class="d-block">{{ $visitor->visitor_country ?? 'Unknown' }}</strong>
-                                <small class="text-muted d-block">{{ $visitor->visitor_city ?? '-' }}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Device -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-device">
-                            <label class="form-label text-muted small"><i class="bi bi-phone"></i> Device</label>
-                            <div>
-                                @if($visitor->visitor_device)
-                                    @if(str_contains($visitor->visitor_device, 'Mobile'))
-                                        <span class="badge bg-info" style="font-size: 0.85rem;"><i class="bi bi-phone"></i> Mobile</span>
-                                    @elseif(str_contains($visitor->visitor_device, 'Tablet'))
-                                        <span class="badge bg-info" style="font-size: 0.85rem;"><i class="bi bi-tablet"></i> Tablet</span>
-                                    @else
-                                        <span class="badge bg-secondary" style="font-size: 0.85rem;"><i class="bi bi-laptop"></i> Desktop</span>
-                                    @endif
-                                @else
-                                    <span class="badge bg-secondary">Unknown</span>
-                                @endif
-                                <small class="text-muted d-block">{{ $visitor->os ?? '-' }}</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Referrer Source -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-referrer">
-                            <label class="form-label text-muted small"><i class="bi bi-link"></i> Referrer Source</label>
-                            <div>
-                                @php
-                                    $sourceColors = [
-                                        'google' => 'primary',
-                                        'facebook' => 'info',
-                                        'twitter' => 'info',
-                                        'linkedin' => 'primary',
-                                        'whatsapp' => 'success',
-                                        'bing' => 'primary',
-                                        'chatgpt' => 'warning',
-                                        'direct' => 'secondary',
-                                    ];
-                                @endphp
-                                <span class="badge bg-{{ $sourceColors[$visitor->referrer_source] ?? 'secondary' }}" style="font-size: 0.85rem;">
-                                    {{ ucfirst($visitor->referrer_source ?? 'Direct') }}
-                                </span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Reading Time -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-reading">
-                            <label class="form-label text-muted small"><i class="bi bi-clock"></i> Reading Time</label>
-                            <div>
-                                <strong class="d-block">{{ $visitor->readingTime }}</strong>
-                                <small class="text-muted d-block">{{ $visitor->scroll_percentage }}% scroll</small>
-                                @if($visitor->completed_reading)
-                                    <span class="badge bg-success" style="font-size: 0.75rem;"><i class="bi bi-check-circle"></i> Completed</span>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Visit Details -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-details">
-                            <label class="form-label text-muted small"><i class="bi bi-info-circle"></i> Visit Details</label>
-                            <div style="font-size: 0.85rem;">
-                                <small class="text-muted d-block"><i class="bi bi-clock"></i> {{ $visitor->time_spent_seconds }}s</small>
-                                <small class="text-muted d-block"><i class="bi bi-arrow-up"></i> {{ $visitor->scroll_percentage }}%</small>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Date & Time -->
-                    <div class="col-md-3 col-lg-2 mb-3 mb-md-0">
-                        <div class="visitor-date">
-                            <label class="form-label text-muted small"><i class="bi bi-calendar-event"></i> Date & Time</label>
-                            <div style="font-size: 0.85rem;">
-                                <small class="text-muted d-block">{{ $visitor->visit_date?->format('M d, Y') ?? '-' }}</small>
-                                <small class="text-muted d-block">{{ $visitor->visit_date?->format('H:i:s') ?? '-' }}</small>
-                                <small class="text-primary">{{ $visitor->visit_date?->diffForHumans() ?? '-' }}</small>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <hr class="my-3">
-
-                <!-- Action -->
-                <div class="d-flex justify-content-between align-items-center">
-                    <small class="text-muted">
-                        <i class="bi bi-fingerprint"></i> ID: {{ $visitor->id }}
-                    </small>
-                    <a href="{{ route('admin.analytics.visitor-detail', [$news->id, $visitor->id]) }}" class="btn btn-sm btn-primary">
-                        <i class="bi bi-eye"></i> View Detailed Info
-                    </a>
-                </div>
-            </div>
-        @empty
-            <div class="text-center py-5">
-                <i class="bi bi-inbox" style="font-size: 48px; color: #ddd;"></i>
-                <p class="text-muted mt-3">No visitor data found.</p>
-            </div>
-        @endforelse
-    </div>
-</div>
-
-<!-- Pagination -->
-@if ($visitors instanceof \Illuminate\Pagination\Paginator && $visitors->hasPages())
-    <nav aria-label="Page navigation" class="mt-4">
-        {{ $visitors->links() }}
-    </nav>
+@if($visitors->hasPages())
+<div class="mt-6">{{ $visitors->appends(request()->only(['search','source']))->links() }}</div>
 @endif
-
-<style>
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border-radius: 8px;
-        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-        border-left: 4px solid var(--primary);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    }
-
-    .stat-card.primary {
-        border-left-color: var(--primary);
-    }
-
-    .stat-card.info {
-        border-left-color: var(--info);
-    }
-
-    .stat-card.success {
-        border-left-color: var(--success);
-    }
-
-    .stat-card.warning {
-        border-left-color: var(--warning);
-    }
-
-    .stat-card-icon {
-        font-size: 32px;
-        margin-bottom: 10px;
-    }
-
-    .stat-card-value {
-        font-size: 28px;
-        font-weight: bold;
-        color: #333;
-    }
-
-    .stat-card-label {
-        color: #999;
-        font-size: 14px;
-    }
-
-    /* Visitor Card Styles */
-    .visitor-card {
-        border-radius: 8px;
-        border: 1px solid #e0e0e0;
-        transition: all 0.3s ease;
-    }
-
-    .visitor-card:hover {
-        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1) !important;
-        border-left-color: #0056b3 !important;
-    }
-
-    .visitor-card label {
-        font-weight: 600;
-        margin-bottom: 8px;
-    }
-
-    .visitor-info, 
-    .visitor-location, 
-    .visitor-device, 
-    .visitor-referrer, 
-    .visitor-reading,
-    .visitor-details,
-    .visitor-date {
-        padding: 10px 0;
-    }
-
-    .visitor-card .badge {
-        display: inline-block;
-    }
-
-    .table th {
-        font-weight: 600;
-        background-color: #f8f9fa;
-        border-top: 1px solid #dee2e6;
-    }
-
-    .table-wrapper {
-        background: white;
-        border-radius: 8px;
-        overflow: hidden;
-    }
-
-    @media (max-width: 768px) {
-        .visitor-card {
-            padding: 20px !important;
-        }
-
-        .visitor-info, 
-        .visitor-location, 
-        .visitor-device, 
-        .visitor-referrer, 
-        .visitor-reading,
-        .visitor-details,
-        .visitor-date {
-            margin-bottom: 15px !important;
-            padding-bottom: 15px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .visitor-date {
-            border-bottom: none;
-        }
-
-        .table td {
-            font-size: 12px;
-            padding: 8px !important;
-        }
-    }
-</style>
 
 @endsection
