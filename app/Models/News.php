@@ -121,13 +121,23 @@ class News extends Model
         // Register NewsObserver
         static::observe(\App\Observers\NewsObserver::class);
         
+        // These run AFTER the HasSlug trait's own listeners, so they correct the
+        // slug when Str::slug() yields an empty string (e.g. an emoji/symbol-only
+        // title). An empty slug would break the model's route key and 500 pages
+        // that generate its URL (news.show, admin.news.edit, …).
         static::creating(function ($news) {
             $news->reading_time = ceil(str_word_count(strip_tags($news->content)) / 200);
+            if (blank($news->slug)) {
+                $news->slug = 'news-' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(10));
+            }
         });
 
         static::updating(function ($news) {
             if ($news->isDirty('content')) {
                 $news->reading_time = ceil(str_word_count(strip_tags($news->content)) / 200);
+            }
+            if (blank($news->slug)) {
+                $news->slug = 'news-' . \Illuminate\Support\Str::lower(\Illuminate\Support\Str::random(10));
             }
         });
     }

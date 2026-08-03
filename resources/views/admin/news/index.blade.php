@@ -171,6 +171,7 @@
                         <span class="material-symbols-outlined text-outline text-[20px]">more_vert</span>
                     </button>
                     <div class="action-menu absolute right-0 top-9 w-44 bg-surface-container-lowest border border-outline-variant rounded-xl shadow-xl z-50 py-1 overflow-hidden">
+                        @if(filled($item->slug))
                         @if(!auth()->user()->hasRole('reporter') || $item->author_id === auth()->id())
                         <a href="{{ route('admin.news.edit', $item) }}"
                            class="flex items-center gap-3 px-4 py-2.5 text-sm text-on-surface hover:bg-surface-container-low transition-colors">
@@ -194,6 +195,11 @@
                                 মুছে ফেলুন
                             </button>
                         </form>
+                        @endif
+                        @else
+                        <div class="px-4 py-2.5 text-xs text-error leading-snug">
+                            ⚠ এই সংবাদের স্লাগ (slug) নেই, তাই এডিট করা যাচ্ছে না। একটি স্লাগ যোগ করতে অ্যাডমিনকে জানান।
+                        </div>
                         @endif
                     </div>
                 </div>
