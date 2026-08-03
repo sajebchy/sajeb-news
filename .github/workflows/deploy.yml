@@ -80,5 +80,4 @@ jobs:
             ROBOTS
             cd sajeb-news
             rm -rf storage/framework/views/*.php
-            rm -rf bootstrap/cache/config.php
-            rm -rf bootstrap/cache/routes-v7.php
+            rm -f bootstrap/cache/*.php
