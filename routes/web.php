@@ -87,7 +87,11 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 // Admin Routes (super-admin, admin, editor, reporter)
-Route::middleware(['auth', 'verified', 'no-back-history', 'role:super-admin|admin|editor|reporter'])->prefix('admin')->name('admin.')->group(function () {
+// 'no-back-history' runs FIRST so its no-store/no-cache headers land on every
+// admin response — including the redirect that 'auth' issues when a session has
+// expired. Otherwise browsers cache that 302 and replay a stale redirect loop
+// (/admin/news → /login → /dashboard → /admin) even after re-login.
+Route::middleware(['no-back-history', 'auth', 'verified', 'role:super-admin|admin|editor|reporter'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
 
     // News Management — all admin roles
